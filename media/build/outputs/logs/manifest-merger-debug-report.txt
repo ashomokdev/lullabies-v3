@@ -1,0 +1,81 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+	package
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:19:11-51
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:18:11-57
+	android:versionCode
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:1-56:12
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:17:11-69
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:21:5-76
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:21:22-74
+uses-permission#android.permission.INTERNET
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:22:5-66
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:22:22-64
+application
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:24:5-55:19
+meta-data#com.google.android.gms.car.application
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:27:9-28:58
+	android:resource
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:28:13-56
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:27:20-73
+service#com.example.android.uamp.media.MusicService
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:30:9-39:19
+	android:enabled
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:32:13-35
+	android:exported
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:33:13-36
+	tools:ignore
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:34:13-43
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:31:13-41
+intent-filter#action:name:android.media.browse.MediaBrowserService
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:36:13-38:29
+action#android.media.browse.MediaBrowserService
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:37:17-83
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:37:25-80
+receiver#androidx.media.session.MediaButtonReceiver
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:49:9-53:20
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:49:19-76
+intent-filter#action:name:android.intent.action.MEDIA_BUTTON
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:50:13-52:29
+action#android.intent.action.MEDIA_BUTTON
+ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:51:17-77
+	android:name
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:51:25-74
+uses-sdk
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
+		INJECTED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml
