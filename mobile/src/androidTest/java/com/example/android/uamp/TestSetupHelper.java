@@ -27,12 +27,7 @@ public class TestSetupHelper {
             throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         MusicProvider provider = new MusicProvider(source);
-        provider.retrieveMediaAsync(new MusicProvider.Callback() {
-            @Override
-            public void onMusicCatalogReady(boolean success) {
-                signal.countDown();
-            }
-        });
+        provider.retrieveMediaAsync(success -> signal.countDown());
         signal.await();
         return provider;
     }

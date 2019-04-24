@@ -31,6 +31,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 /**
  * Utility class to get a list of MusicTrack's based on a server-side JSON
@@ -41,65 +42,55 @@ public class RemoteJSONSource implements MusicProviderSource {
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);
 
     protected static final String CATALOG_URL =
-        "http://storage.googleapis.com/automotive-media/music.json";
+            "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/" +
+                    "json%2Fmisic.json?alt=media&token=65e98c89-a8d7-484c-99a9-5b45599a7865";
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";
     private static final String JSON_ALBUM = "album";
     private static final String JSON_ARTIST = "artist";
-    private static final String JSON_GENRE = "genre";
+    private static final String JSON_CATEGORY = "category";
     private static final String JSON_SOURCE = "source";
     private static final String JSON_IMAGE = "image";
     private static final String JSON_TRACK_NUMBER = "trackNumber";
     private static final String JSON_TOTAL_TRACK_COUNT = "totalTrackCount";
     private static final String JSON_DURATION = "duration";
+    private static final String JSON_ID = "id";
 
     @Override
-    public Iterator<MediaMetadataCompat> iterator() {
+    public LinkedHashSet<MediaMetadataCompat> getMusicList() {
         try {
-            int slashPos = CATALOG_URL.lastIndexOf('/');
-            String path = CATALOG_URL.substring(0, slashPos + 1);
             JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
-            ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
+            LinkedHashSet<MediaMetadataCompat> tracks = new LinkedHashSet<>();
             if (jsonObj != null) {
                 JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
 
                 if (jsonTracks != null) {
                     for (int j = 0; j < jsonTracks.length(); j++) {
-                        tracks.add(buildFromJSON(jsonTracks.getJSONObject(j), path));
+                        tracks.add(buildFromJSON(jsonTracks.getJSONObject(j)));
                     }
                 }
             }
-            return tracks.iterator();
+            return tracks;
         } catch (JSONException e) {
             LogHelper.e(TAG, e, "Could not retrieve music list");
             throw new RuntimeException("Could not retrieve music list", e);
         }
     }
 
-    private MediaMetadataCompat buildFromJSON(JSONObject json, String basePath) throws JSONException {
+    private MediaMetadataCompat buildFromJSON(JSONObject json) throws JSONException {
         String title = json.getString(JSON_TITLE);
         String album = json.getString(JSON_ALBUM);
         String artist = json.getString(JSON_ARTIST);
-        String genre = json.getString(JSON_GENRE);
+        String genre = json.getString(JSON_CATEGORY);
         String source = json.getString(JSON_SOURCE);
         String iconUrl = json.getString(JSON_IMAGE);
         int trackNumber = json.getInt(JSON_TRACK_NUMBER);
         int totalTrackCount = json.getInt(JSON_TOTAL_TRACK_COUNT);
-        int duration = json.getInt(JSON_DURATION) * 1000; // ms
+        int duration = json.getInt(JSON_DURATION); // ms
+        String id = json.getString(JSON_ID);
 
         LogHelper.d(TAG, "Found music track: ", json);
-
-        // Media is stored relative to JSON file
-        if (!source.startsWith("http")) {
-            source = basePath + source;
-        }
-        if (!iconUrl.startsWith("http")) {
-            iconUrl = basePath + iconUrl;
-        }
-        // Since we don't have a unique ID in the server, we fake one using the hashcode of
-        // the music source. In a real world app, this could come from the server.
-        String id = String.valueOf(source.hashCode());
 
         // Adding the music source to the MediaMetadata (and consequently using it in the
         // mediaSession.setMetadata) is not a good idea for a real world music app, because

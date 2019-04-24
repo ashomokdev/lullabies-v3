@@ -31,6 +31,7 @@ import com.example.android.uamp.utils.MediaIDHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -267,9 +268,8 @@ public class MusicProvider {
             if (mCurrentState == State.NON_INITIALIZED) {
                 mCurrentState = State.INITIALIZING;
 
-                Iterator<MediaMetadataCompat> tracks = mSource.iterator();
-                while (tracks.hasNext()) {
-                    MediaMetadataCompat item = tracks.next();
+                LinkedHashSet<MediaMetadataCompat> tracks = mSource.getMusicList();
+                for(MediaMetadataCompat item: tracks){
                     String musicId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
                     mMusicListById.put(musicId, new MutableMediaMetadata(musicId, item));
                 }
