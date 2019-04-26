@@ -23,7 +23,7 @@ import com.example.android.uamp.R;
  * Placeholder activity for features that are not implemented in this sample, but
  * are in the navigation drawer.
  */
-public class PlaceholderActivity extends BaseActivity {
+public class AboutActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

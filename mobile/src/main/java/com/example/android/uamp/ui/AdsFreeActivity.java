@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.example.android.uamp.ui;
 
-package com.example.android.uamp.model;
+import android.os.Bundle;
 
-import android.support.v4.media.MediaMetadataCompat;
+import com.example.android.uamp.R;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
+/**
+ * Placeholder activity for features that are not implemented in this sample, but
+ * are in the navigation drawer.
+ */
+public class AdsFreeActivity extends BaseActivity {
 
-public interface MusicProviderSource {
-    String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
-    Iterator<MediaMetadataCompat> iterator();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_placeholder);
+        initializeToolbar();
+    }
+
 }

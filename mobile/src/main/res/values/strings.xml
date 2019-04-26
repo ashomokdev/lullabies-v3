@@ -52,6 +52,11 @@
     <string name="loading">Loading…</string>
     <string name="media_route_menu_title">Play on…</string>
     <string name="nav_header_username">Username</string>
+    <string name="animals_lullabies_collection">Animals lullabies collection</string>
+    <string name="other_lullabies_collection">Other lullabies collection</string>
+    <string name="get_no_ads_forever">Get no ads forever</string>
+    <string name="about_app">About app</string>
+
 
     <!-- Notificaiton Channel -->
     <string name="notification_channel">UAMP_Channel_ID</string>

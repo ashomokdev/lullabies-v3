@@ -17,13 +17,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/navigation_allmusic"
+            android:id="@+id/navigation_animals_lullabies"
             android:checked="true"
             android:icon="@drawable/ic_allmusic_black_24dp"
-            android:title="@string/drawer_allmusic_title"/>
+            android:title="@string/animals_lullabies_collection"/>
+        <!--<item-->
+            <!--android:id="@+id/navigation_playlists"-->
+            <!--android:icon="@drawable/ic_playlist_music_black_24dp"-->
+            <!--android:title="@string/other_lullabies_collection"/>-->
         <item
-            android:id="@+id/navigation_playlists"
+            android:id="@+id/navigation_no_ads"
             android:icon="@drawable/ic_playlist_music_black_24dp"
-            android:title="@string/drawer_playlists_title"/>
+            android:title="@string/get_no_ads_forever"/>
+        <item
+            android:id="@+id/navigation_about"
+            android:icon="@drawable/ic_playlist_music_black_24dp"
+            android:title="@string/about_app"/>
     </group>
 </menu>

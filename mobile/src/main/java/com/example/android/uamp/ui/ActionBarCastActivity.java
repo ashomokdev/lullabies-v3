@@ -48,7 +48,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 /**
  * Abstract activity with toolbar, navigation drawer and cast support. Needs to be extended by
  * any activity that wants to be shown as a top level activity.
- *
+ * <p>
  * The requirements for a subclass is to call {@link #initializeToolbar()} on onCreate, after
  * setContentView() is called and have three mandatory layout elements:
  * a {@link android.support.v7.widget.Toolbar} with id 'toolbar',
@@ -94,15 +94,18 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
             if (mDrawerToggle != null) mDrawerToggle.onDrawerClosed(drawerView);
             if (mItemToOpenWhenDrawerCloses >= 0) {
                 Bundle extras = ActivityOptions.makeCustomAnimation(
-                    ActionBarCastActivity.this, R.anim.fade_in, R.anim.fade_out).toBundle();
+                        ActionBarCastActivity.this, R.anim.fade_in, R.anim.fade_out).toBundle();
 
                 Class activityClass = null;
                 switch (mItemToOpenWhenDrawerCloses) {
-                    case R.id.navigation_allmusic:
+                    case R.id.navigation_animals_lullabies:
                         activityClass = MusicPlayerActivity.class;
                         break;
-                    case R.id.navigation_playlists:
-                        activityClass = PlaceholderActivity.class;
+                    case R.id.navigation_no_ads:
+                        activityClass = AdsFreeActivity.class;
+                        break;
+                    case R.id.navigation_about:
+                        activityClass = AboutActivity.class;
                         break;
                 }
                 if (activityClass != null) {
@@ -131,12 +134,12 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     };
 
     private final FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
-        new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                updateDrawerToggle();
-            }
-        };
+            new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    updateDrawerToggle();
+                }
+            };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,7 +159,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         super.onStart();
         if (!mToolbarInitialized) {
             throw new IllegalStateException("You must run super.initializeToolbar at " +
-                "the end of your onCreate method");
+                    "the end of your onCreate method");
         }
     }
 
@@ -258,7 +261,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar == null) {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
-                "'toolbar'");
+                    "'toolbar'");
         }
         mToolbar.inflateMenu(R.menu.main);
 
@@ -272,7 +275,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
 
             // Create an ActionBarDrawerToggle that will handle opening/closing of the drawer:
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                mToolbar, R.string.open_content_drawer, R.string.close_content_drawer);
+                    mToolbar, R.string.open_content_drawer, R.string.close_content_drawer);
             mDrawerLayout.setDrawerListener(mDrawerListener);
             populateDrawerItems(navigationView);
             setSupportActionBar(mToolbar);
@@ -296,9 +299,13 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                     }
                 });
         if (MusicPlayerActivity.class.isAssignableFrom(getClass())) {
-            navigationView.setCheckedItem(R.id.navigation_allmusic);
-        } else if (PlaceholderActivity.class.isAssignableFrom(getClass())) {
-            navigationView.setCheckedItem(R.id.navigation_playlists);
+            navigationView.setCheckedItem(R.id.navigation_animals_lullabies);
+        }
+        else if (AdsFreeActivity.class.isAssignableFrom(getClass())) {
+            navigationView.setCheckedItem(R.id.navigation_no_ads);
+        }
+        else if (AboutActivity.class.isAssignableFrom(getClass())) {
+            navigationView.setCheckedItem(R.id.navigation_about);
         }
     }
 

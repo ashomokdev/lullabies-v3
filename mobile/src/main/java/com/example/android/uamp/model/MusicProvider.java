@@ -268,8 +268,9 @@ public class MusicProvider {
             if (mCurrentState == State.NON_INITIALIZED) {
                 mCurrentState = State.INITIALIZING;
 
-                LinkedHashSet<MediaMetadataCompat> tracks = mSource.getMusicList();
-                for(MediaMetadataCompat item: tracks){
+                Iterator<MediaMetadataCompat> tracks = mSource.iterator();
+                while (tracks.hasNext()) {
+                    MediaMetadataCompat item = tracks.next();
                     String musicId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
                     mMusicListById.put(musicId, new MutableMediaMetadata(musicId, item));
                 }
@@ -284,7 +285,6 @@ public class MusicProvider {
             }
         }
     }
-
 
     public List<MediaBrowserCompat.MediaItem> getChildren(String mediaId, Resources resources) {
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();

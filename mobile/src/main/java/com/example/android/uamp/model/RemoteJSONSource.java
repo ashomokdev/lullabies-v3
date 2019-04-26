@@ -58,10 +58,10 @@ public class RemoteJSONSource implements MusicProviderSource {
     private static final String JSON_ID = "id";
 
     @Override
-    public LinkedHashSet<MediaMetadataCompat> getMusicList() {
+    public Iterator<MediaMetadataCompat> iterator() {
         try {
             JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
-            LinkedHashSet<MediaMetadataCompat> tracks = new LinkedHashSet<>();
+            ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
             if (jsonObj != null) {
                 JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
 
@@ -71,7 +71,7 @@ public class RemoteJSONSource implements MusicProviderSource {
                     }
                 }
             }
-            return tracks;
+            return tracks.iterator();
         } catch (JSONException e) {
             LogHelper.e(TAG, e, "Could not retrieve music list");
             throw new RuntimeException("Could not retrieve music list", e);
