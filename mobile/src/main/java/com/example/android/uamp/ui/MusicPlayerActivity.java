@@ -40,6 +40,7 @@ public class MusicPlayerActivity extends BaseActivity
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
     private static final String SAVED_MEDIA_ID="com.example.android.uamp.MEDIA_ID";
     private static final String FRAGMENT_TAG = "uamp_list_container";
+    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__/Free";
 
     public static final String EXTRA_START_FULLSCREEN =
             "com.example.android.uamp.EXTRA_START_FULLSCREEN";
@@ -122,7 +123,8 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
-        String mediaId = null;
+
+        String mediaId = INIT_MEDIA_ID_VALUE;
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
         // (which contain the query details) in a parameter, so we can reuse it later, when the
         // MediaSession is connected.
