@@ -40,11 +40,32 @@
             android:textColor="@android:color/white"
             android:textStyle="bold"/>
     </android.support.v7.widget.CardView>
-    <ListView
-        android:id="@+id/list_view"
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/playback_error">
-    </ListView>
+
+        <com.example.android.uamp.tools.ClickableViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.example.android.uamp.tools.CircleView
+            android:id="@+id/circle_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="200dp"
+            android:layout_centerHorizontal="true"/>
+
+        <com.example.android.uamp.tools.TapMeAnimatedImageView
+            android:id="@+id/tap_me_btn"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:padding="20dp"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
 </RelativeLayout>

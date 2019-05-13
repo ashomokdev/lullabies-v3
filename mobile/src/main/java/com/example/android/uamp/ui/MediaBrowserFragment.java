@@ -16,7 +16,8 @@
 package com.example.android.uamp.ui;
 
 import android.app.Activity;
-import android.app.Fragment;
+
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,10 +25,17 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.uamp.R;
+import com.example.android.uamp.tools.ClickableViewPager;
 import com.example.android.uamp.utils.LogHelper;
 import com.example.android.uamp.utils.MediaIDHelper;
 import com.example.android.uamp.utils.NetworkHelper;
@@ -59,7 +68,7 @@ public class MediaBrowserFragment extends Fragment {
 
     private static final String ARG_MEDIA_ID = "media_id";
 
-    private BrowseAdapter mBrowserAdapter;
+    private LullabiesPagerAdapter mBrowserAdapter;
     private String mMediaId;
     private MediaFragmentListener mMediaFragmentListener;
     private View mErrorView;
@@ -118,7 +127,7 @@ public class MediaBrowserFragment extends Fragment {
                     checkForUserVisibleErrors(children.isEmpty());
                     mBrowserAdapter.clear();
                     for (MediaBrowserCompat.MediaItem item : children) {
-                        mBrowserAdapter.add(item);
+                        mBrowserAdapter.addFragment(item); //todo what if already added
                     }
                     mBrowserAdapter.notifyDataSetChanged();
                 } catch (Throwable t) {
@@ -151,19 +160,24 @@ public class MediaBrowserFragment extends Fragment {
         mErrorView = rootView.findViewById(R.id.playback_error);
         mErrorMessage = (TextView) mErrorView.findViewById(R.id.error_message);
 
-        mBrowserAdapter = new BrowseAdapter(getActivity());
+        //todo add and set up tapMeView
 
-        ListView listView = (ListView) rootView.findViewById(R.id.list_view);
-        listView.setAdapter(mBrowserAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                checkForUserVisibleErrors(false);
-                MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
-                mMediaFragmentListener.onMediaItemSelected(item);
-            }
+        //init pager
+        ClickableViewPager mPager = rootView.findViewById(R.id.pager);
+        mBrowserAdapter = new LullabiesPagerAdapter(getActivity().getSupportFragmentManager()); //todo check for null error here or use solurtion https://stackoverflow.com/questions/20237531/how-can-i-access-getsupportfragmentmanager-in-a-fragment
+        mPager.setAdapter(mBrowserAdapter);
+
+        mPager.setOnItemClickListener(position -> {
+            Log.d(TAG, "onPageClicked, position " + position);
+            checkForUserVisibleErrors(false);
+
+//            tapMeImage.setVisibility(View.GONE); //todo
+
+            MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position).getMediaItem();
+            mMediaFragmentListener.onMediaItemSelected(item);
         });
 
+        //todo init circleview here
         return rootView;
     }
 
@@ -298,20 +312,68 @@ public class MediaBrowserFragment extends Fragment {
     }
 
     // An adapter for showing the list of browsed MediaItem's
-    private static class BrowseAdapter extends ArrayAdapter<MediaBrowserCompat.MediaItem> {
+    private static class LullabiesPagerAdapter extends FragmentStatePagerAdapter {
 
-        public BrowseAdapter(Activity context) {
-            super(context, R.layout.media_list_item, new ArrayList<MediaBrowserCompat.MediaItem>());
+        private List<MusicFragment> myFragments = new ArrayList<>();
+
+        public final String TAG = LogHelper.makeLogTag(FragmentPagerAdapter.class);
+
+        public LullabiesPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        @Override
+        public int getCount() {
+            return myFragments.size();
+        }
+
+        @Override
+        public MusicFragment getItem(int position) {
+
+            return myFragments.get(position);
+        }
+
+        public void addFragment(MediaBrowserCompat.MediaItem item) {
+            if (item != null) {
+                myFragments.add(FragmentFactory.newInstance(item));
+                Log.d(TAG, "fragment added with mediaitem: "+ item.getMediaId()
+                        + " total count:" + myFragments.size());
+            } else {
+                Log.d(TAG, "mediaitem == null");
+            }
+        }
+
+        public void clear() {
+            myFragments.clear();
+            Log.d(TAG, "clear fragments called");
         }
 
         @NonNull
         @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-            MediaBrowserCompat.MediaItem item = getItem(position);
-            return MediaItemViewHolder.setupListView((Activity) getContext(), convertView, parent,
-                    item);
+        public Object instantiateItem(ViewGroup container, int position) {
+            Object ret = super.instantiateItem(container, position);
+            myFragments.set(position, (MusicFragment) ret);
+            return ret;
         }
     }
+
+
+
+//    // An adapter for showing the list of browsed MediaItem's
+//    private static class BrowseAdapter extends ArrayAdapter<MediaBrowserCompat.MediaItem> {
+//
+//        public BrowseAdapter(Activity context) {
+//            super(context, R.layout.media_list_item, new ArrayList<MediaBrowserCompat.MediaItem>());
+//        }
+//
+//        @NonNull
+//        @Override
+//        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+//            MediaBrowserCompat.MediaItem item = getItem(position);
+//            return MediaItemViewHolder.setupListView((Activity) getContext(), convertView, parent,
+//                    item);
+//        }
+//    }
 
     public interface MediaFragmentListener extends MediaBrowserProvider {
         void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
