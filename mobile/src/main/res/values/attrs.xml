@@ -1,6 +1,0 @@
-<resources>
-    <declare-styleable name="CircleView">
-        <attr name="base_color" format="color" />
-        <attr name="accent_color" format="color" />
-    </declare-styleable>
-</resources>

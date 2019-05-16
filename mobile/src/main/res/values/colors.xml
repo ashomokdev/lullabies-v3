@@ -17,8 +17,6 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="white80">#CCffffff</color>
-    <color name="white30">#4Dffffff</color>
     <color name="tv_branding">#ffff5722</color>
     <color name="tv_branding_dark">#ffbf360c</color>
     <color name="tv_branding_accent">#00B8D4</color>

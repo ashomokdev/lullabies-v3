@@ -3,6 +3,7 @@ package com.example.android.uamp.tools;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,17 +37,9 @@ public class CircleView extends View {
     public CircleView(Context context, AttributeSet attrs) throws Exception {
         super(context, attrs);
 
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.CircleView,
-                0, 0);
-        try {
-            colorBase = a.getColor(R.styleable.CircleView_base_color, getResources().getColor(R.color.white30));
-            colorAccent = a.getColor(R.styleable.CircleView_accent_color, getResources().getColor(R.color.white80));
+        colorBase = Color.GRAY;
+        colorAccent = Color.WHITE;
 
-        } finally {
-            a.recycle();
-        }
 
         init();
     }
