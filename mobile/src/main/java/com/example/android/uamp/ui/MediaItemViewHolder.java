@@ -35,7 +35,7 @@ import android.widget.TextView;
 import com.example.android.uamp.R;
 import com.example.android.uamp.utils.MediaIDHelper;
 
-//todo remove class. Use MusicFragmernt instead
+//todo remove class. Use MyViewPagerAdapter instead
 public class MediaItemViewHolder {
 
     public static final int STATE_INVALID = -1;

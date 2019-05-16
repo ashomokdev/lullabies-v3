@@ -18,29 +18,26 @@ package com.example.android.uamp.ui;
 import android.app.Activity;
 
 
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,13 +65,14 @@ public class MediaBrowserFragment extends Fragment {
 
     private static final String ARG_MEDIA_ID = "media_id";
 
-    private LullabiesPagerAdapter mBrowserAdapter;
+    private MyViewPagerAdapter mBrowserAdapter;
     private String mMediaId;
     private MediaFragmentListener mMediaFragmentListener;
     private View mErrorView;
     private TextView mErrorMessage;
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
+
         @Override
         public void onReceive(Context context, Intent intent) {
             // We don't care about network changes while this fragment is not associated
@@ -96,52 +94,52 @@ public class MediaBrowserFragment extends Fragment {
     // is being shown, the current title and description and the PlaybackState.
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
-        @Override
-        public void onMetadataChanged(MediaMetadataCompat metadata) {
-            super.onMetadataChanged(metadata);
-            if (metadata == null) {
-                return;
-            }
-            LogHelper.d(TAG, "Received metadata change to media ",
-                    metadata.getDescription().getMediaId());
-            mBrowserAdapter.notifyDataSetChanged();
-        }
+                @Override
+                public void onMetadataChanged(MediaMetadataCompat metadata) {
+                    super.onMetadataChanged(metadata);
+                    if (metadata == null) {
+                        return;
+                    }
+                    LogHelper.d(TAG, "Received metadata change to media ",
+                            metadata.getDescription().getMediaId());
+                    mBrowserAdapter.notifyDataSetChanged();
+                }
 
-        @Override
-        public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-            super.onPlaybackStateChanged(state);
-            LogHelper.d(TAG, "Received state change: ", state);
-            checkForUserVisibleErrors(false);
-            mBrowserAdapter.notifyDataSetChanged();
-        }
-    };
+                @Override
+                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+                    super.onPlaybackStateChanged(state);
+                    LogHelper.d(TAG, "Received state change: ", state);
+                    checkForUserVisibleErrors(false);
+                    mBrowserAdapter.notifyDataSetChanged();
+                }
+            };
 
     private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
-        new MediaBrowserCompat.SubscriptionCallback() {
-            @Override
-            public void onChildrenLoaded(@NonNull String parentId,
-                                         @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                try {
-                    LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
-                        "  count=" + children.size());
-                    checkForUserVisibleErrors(children.isEmpty());
-                    mBrowserAdapter.clear();
-                    for (MediaBrowserCompat.MediaItem item : children) {
-                        mBrowserAdapter.addFragment(item); //todo what if already added
+            new MediaBrowserCompat.SubscriptionCallback() {
+                @Override
+                public void onChildrenLoaded(@NonNull String parentId,
+                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                    try {
+                        LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                "  count=" + children.size());
+                        checkForUserVisibleErrors(children.isEmpty());
+                        mBrowserAdapter.clear();
+                        for (MediaBrowserCompat.MediaItem item : children) {
+                            mBrowserAdapter.add(item);
+                        }
+                        mBrowserAdapter.notifyDataSetChanged();
+                    } catch (Throwable t) {
+                        LogHelper.e(TAG, "Error on childrenloaded", t);
                     }
-                    mBrowserAdapter.notifyDataSetChanged();
-                } catch (Throwable t) {
-                    LogHelper.e(TAG, "Error on childrenloaded", t);
                 }
-            }
 
-            @Override
-            public void onError(@NonNull String id) {
-                LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
-                Toast.makeText(getActivity(), R.string.error_loading_media, Toast.LENGTH_LONG).show();
-                checkForUserVisibleErrors(true);
-            }
-        };
+                @Override
+                public void onError(@NonNull String id) {
+                    LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
+                    Toast.makeText(getActivity(), R.string.error_loading_media, Toast.LENGTH_LONG).show();
+                    checkForUserVisibleErrors(true);
+                }
+            };
 
     @Override
     public void onAttach(Activity activity) {
@@ -163,8 +161,8 @@ public class MediaBrowserFragment extends Fragment {
         //todo add and set up tapMeView
 
         //init pager
+        mBrowserAdapter = new MyViewPagerAdapter(getActivity());
         ClickableViewPager mPager = rootView.findViewById(R.id.pager);
-        mBrowserAdapter = new LullabiesPagerAdapter(getActivity().getSupportFragmentManager()); //todo check for null error here or use solurtion https://stackoverflow.com/questions/20237531/how-can-i-access-getsupportfragmentmanager-in-a-fragment
         mPager.setAdapter(mBrowserAdapter);
 
         mPager.setOnItemClickListener(position -> {
@@ -173,7 +171,7 @@ public class MediaBrowserFragment extends Fragment {
 
 //            tapMeImage.setVisibility(View.GONE); //todo
 
-            MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position).getMediaItem();
+            MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
             mMediaFragmentListener.onMediaItemSelected(item);
         });
 
@@ -197,7 +195,7 @@ public class MediaBrowserFragment extends Fragment {
 
         // Registers BroadcastReceiver to track network connection changes.
         this.getActivity().registerReceiver(mConnectivityChangeReceiver,
-            new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
@@ -277,10 +275,10 @@ public class MediaBrowserFragment extends Fragment {
             // otherwise, if state is ERROR and metadata!=null, use playback state error message:
             MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
             if (controller != null
-                && controller.getMetadata() != null
-                && controller.getPlaybackState() != null
-                && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
-                && controller.getPlaybackState().getErrorMessage() != null) {
+                    && controller.getMetadata() != null
+                    && controller.getPlaybackState() != null
+                    && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
+                    && controller.getPlaybackState().getErrorMessage() != null) {
                 mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
                 showError = true;
             } else if (forceError) {
@@ -291,8 +289,8 @@ public class MediaBrowserFragment extends Fragment {
         }
         mErrorView.setVisibility(showError ? View.VISIBLE : View.GONE);
         LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
-            " showError=", showError,
-            " isOnline=", NetworkHelper.isOnline(getActivity()));
+                " showError=", showError,
+                " isOnline=", NetworkHelper.isOnline(getActivity()));
     }
 
     private void updateTitle() {
@@ -311,52 +309,51 @@ public class MediaBrowserFragment extends Fragment {
         });
     }
 
-    // An adapter for showing the list of browsed MediaItem's
-    private static class LullabiesPagerAdapter extends FragmentStatePagerAdapter {
-
-        private List<MusicFragment> myFragments = new ArrayList<>();
-
-        public final String TAG = LogHelper.makeLogTag(FragmentPagerAdapter.class);
-
-        public LullabiesPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
-
-        @Override
-        public int getCount() {
-            return myFragments.size();
-        }
-
-        @Override
-        public MusicFragment getItem(int position) {
-
-            return myFragments.get(position);
-        }
-
-        public void addFragment(MediaBrowserCompat.MediaItem item) {
-            if (item != null) {
-                myFragments.add(FragmentFactory.newInstance(item));
-                Log.d(TAG, "fragment added with mediaitem: "+ item.getMediaId()
-                        + " total count:" + myFragments.size());
-            } else {
-                Log.d(TAG, "mediaitem == null");
-            }
-        }
-
-        public void clear() {
-            myFragments.clear();
-            Log.d(TAG, "clear fragments called");
-        }
-
-        @NonNull
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            Object ret = super.instantiateItem(container, position);
-            myFragments.set(position, (MusicFragment) ret);
-            return ret;
-        }
-    }
-
+//    // An adapter for showing the list of browsed MediaItem's
+//    private static class LullabiesPagerAdapter extends FragmentStatePagerAdapter {
+//
+//        private List<MusicFragment> myFragments = new ArrayList<>();
+//
+//        public final String TAG = LogHelper.makeLogTag(FragmentPagerAdapter.class);
+//
+//        public LullabiesPagerAdapter(FragmentManager fragmentManager) {
+//            super(fragmentManager);
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return myFragments.size();
+//        }
+//
+//        @Override
+//        public MusicFragment getItem(int position) {
+//
+//            return myFragments.get(position);
+//        }
+//
+//        public void addFragment(MediaBrowserCompat.MediaItem item) {
+//            if (item != null) {
+//                myFragments.add(FragmentFactory.newInstance(item));
+//                Log.d(TAG, "fragment added with mediaitem: "+ item.getMediaId()
+//                        + " total count:" + myFragments.size());
+//            } else {
+//                Log.d(TAG, "mediaitem == null");
+//            }
+//        }
+//
+//        public void clear() {
+//            myFragments.clear();
+//            Log.d(TAG, "clear fragments called");
+//        }
+//
+//        @NonNull
+//        @Override
+//        public Object instantiateItem(ViewGroup container, int position) {
+//            Object ret = super.instantiateItem(container, position);
+//            myFragments.set(position, (MusicFragment) ret);
+//            return ret;
+//        }
+//    }
 
 
 //    // An adapter for showing the list of browsed MediaItem's
@@ -377,6 +374,7 @@ public class MediaBrowserFragment extends Fragment {
 
     public interface MediaFragmentListener extends MediaBrowserProvider {
         void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
+
         void setToolbarTitle(CharSequence title);
     }
 
