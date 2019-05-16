@@ -43,6 +43,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.uamp.R;
+
+import com.example.android.uamp.tools.CircleView;
 import com.example.android.uamp.tools.ClickableViewPager;
 import com.example.android.uamp.utils.LogHelper;
 import com.example.android.uamp.utils.MediaIDHelper;
@@ -70,6 +72,8 @@ public class MediaBrowserFragment extends Fragment {
     private MediaFragmentListener mMediaFragmentListener;
     private View mErrorView;
     private TextView mErrorMessage;
+    private CircleView circleView;
+
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
 
@@ -162,10 +166,10 @@ public class MediaBrowserFragment extends Fragment {
 
         //init pager
         mBrowserAdapter = new MyViewPagerAdapter(getActivity());
-        ClickableViewPager mPager = rootView.findViewById(R.id.pager);
-        mPager.setAdapter(mBrowserAdapter);
+        ClickableViewPager viewPager = rootView.findViewById(R.id.pager);
+        viewPager.setAdapter(mBrowserAdapter);
 
-        mPager.setOnItemClickListener(position -> {
+        viewPager.setOnItemClickListener(position -> {
             Log.d(TAG, "onPageClicked, position " + position);
             checkForUserVisibleErrors(false);
 
@@ -175,7 +179,10 @@ public class MediaBrowserFragment extends Fragment {
             mMediaFragmentListener.onMediaItemSelected(item);
         });
 
-        //todo init circleview here
+        circleView = rootView.findViewById(R.id.circle_view);
+        circleView.setColorAccent(getResources().getColor(R.color.colorAccent));
+        circleView.setColorBase(getResources().getColor(R.color.colorPrimary));
+        circleView.setViewPager(viewPager);
         return rootView;
     }
 

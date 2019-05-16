@@ -15,7 +15,6 @@ import android.view.WindowManager;
 
 import com.example.android.uamp.R;
 
-
 /**
  * Created by iuliia on 16.05.16.
  */
@@ -28,6 +27,7 @@ public class CircleView extends View {
     private Paint paintAccent;
     private int circleDistance;
     private static final int circleRadius = 10;
+    private int mOldItem = 0; //default value
     private int mCurrentItem = 0; //default value
     private int mItemCount = 0; //default value
     private int colorBase;
@@ -51,30 +51,13 @@ public class CircleView extends View {
         init();
     }
 
-    @SuppressWarnings("deprecation")
     public void setViewPager(ViewPager viewPager) {
 
-        viewPager.addOnAdapterChangeListener(new ViewPager.OnAdapterChangeListener() {
-            @Override
-            public void onAdapterChanged(@NonNull ViewPager viewPager,
-                                         @Nullable PagerAdapter oldAdapter,
-                                         @Nullable PagerAdapter newAdapter) {
-                updateView(viewPager);
-            }
-        });
-
-        updateView(viewPager);
-    }
-
-    private void updateView(ViewPager viewPager) {
-        mCurrentItem = viewPager.getCurrentItem();
-
-        mItemCount = viewPager.getAdapter().getCount();
+        viewPager.addOnAdapterChangeListener((viewPager1, oldAdapter, newAdapter) -> updateView(viewPager1));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
@@ -84,13 +67,42 @@ public class CircleView extends View {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
+
+        viewPager.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
+                        updateView(viewPager));
+
+        updateView(viewPager);
+    }
+
+    private void updateView(ViewPager viewPager) {
+        int mNewCount = viewPager.getAdapter().getCount();
+        mCurrentItem = viewPager.getCurrentItem();
+
+        if (mOldItem != mCurrentItem || mItemCount != mNewCount) {
+            mItemCount = viewPager.getAdapter().getCount();
+            mOldItem = mCurrentItem;
+            invalidate();
+            requestLayout();
+        }
+    }
+
+
+    /**
+     * Set the current item by index. Optionally, scroll the current item into view. This version
+     * is for internal use--the scrollIntoView option is always true for external callers.
+     *
+     * @param currentItem The index of the current item.
+     */
+    private void setCurrentItem(int currentItem) {
+        mCurrentItem = currentItem;
 
         invalidate();
         requestLayout();
     }
+
 
     /**
      * Setting color of all circles except accent one {@link #setColorAccent(int)}. )
@@ -120,20 +132,6 @@ public class CircleView extends View {
     }
 
 
-    /**
-     * Set the current item by index. Optionally, scroll the current item into view. This version
-     * is for internal use--the scrollIntoView option is always true for external callers.
-     *
-     * @param currentItem The index of the current item.
-     */
-    private void setCurrentItem(int currentItem) {
-        mCurrentItem = currentItem;
-
-        invalidate();
-        requestLayout();
-    }
-
-
     private void init() throws Exception {
         circleDistance = generateCircleDistance();
 
@@ -150,7 +148,6 @@ public class CircleView extends View {
      * Generate distance between circles. Return value depends on screen width.
      *
      * @return distance between circles.
-     * @throws Exception
      */
     private int generateCircleDistance() throws Exception {
 
