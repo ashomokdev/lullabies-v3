@@ -2,34 +2,35 @@ package com.example.android.uamp.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.PagerAdapter;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.example.android.uamp.AlbumArtCache;
 import com.example.android.uamp.R;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.example.android.uamp.utils.MediaItemStateHelper.*;
 
 /**
  * taked here https://medium.com/@cdmunoz/the-easiest-way-to-work-with-viewpager-and-without-fragments-c62ec3e8b9f3
  */
- public class MyViewPagerAdapter extends PagerAdapter {
+public class MyViewPagerAdapter extends PagerAdapter {
     private Context context;
+
+    //pager views by position
+    private SparseArray<View> views = new SparseArray<>();
+
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
@@ -58,10 +59,10 @@ import static com.example.android.uamp.utils.MediaItemStateHelper.*;
         if (sColorStateNotPlaying == null || sColorStatePlaying == null) {
             initializeColorStateLists(context);
         }
-        Integer cachedState = STATE_INVALID;
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        ViewGroup convertView = (ViewGroup) inflater.inflate(R.layout.music_fragment, collection, false);
+        ViewGroup convertView =
+                (ViewGroup) inflater.inflate(R.layout.media_pager_item, collection, false);
 
         ImageView mBackgroundImage = convertView.findViewById(R.id.image);
         TextView textViewName = convertView.findViewById(R.id.name);
@@ -76,28 +77,16 @@ import static com.example.android.uamp.utils.MediaItemStateHelper.*;
         textViewName.setText(name);
         textViewGenre.setText(category);
 
-        // If the state of convertView is different, we need to adapt the view to the
-        // new state.
-        int state = getMediaItemState((Activity) context, mediaItem); //todo if boxing works wrong - take activity
-        if (cachedState == null || cachedState != state) {
-            //next code is an example - don't remove
-//            Drawable drawable = getDrawableByState(container.getContext(), state);
-//            if (drawable != null) {
-//                //ignore result here, this code is just a placeholder
-//                //set visibility to View.VISIBLE and use drawable
-//            } else {
-//                //set visibility to View.GONE and use drawable
-//            }
-            convertView.setTag(R.id.tag_mediaitem_state_cache, state);
-        }
-
         collection.addView(convertView);
+        views.put(position, convertView);
         return convertView;
     }
+
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object view) {
         container.removeView((View) view);
+        views.remove(position);
     }
 
     @Override
@@ -108,6 +97,27 @@ import static com.example.android.uamp.utils.MediaItemStateHelper.*;
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        int key;
+        for (int i = 0; i < views.size(); i++) {
+            key = views.keyAt(i);
+            View view = views.get(key);
+
+            MediaBrowserCompat.MediaItem mediaItem = mObjects.get(key);
+
+            // If the state of convertView is different, we need to adapt the view to the new state.
+            int state = getMediaItemState((Activity) context, mediaItem);
+            final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
+            if (state != STATE_PLAYING) {
+                tapMeImage.setVisibility(View.VISIBLE);
+            } else {
+                tapMeImage.setVisibility(View.INVISIBLE);
+            }
+        }
+        super.notifyDataSetChanged();
     }
 
     public void add(MediaBrowserCompat.MediaItem item) {

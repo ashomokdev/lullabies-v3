@@ -162,8 +162,6 @@ public class MediaBrowserFragment extends Fragment {
         mErrorView = rootView.findViewById(R.id.playback_error);
         mErrorMessage = (TextView) mErrorView.findViewById(R.id.error_message);
 
-        //todo add and set up tapMeView
-
         //init pager
         mBrowserAdapter = new MyViewPagerAdapter(getActivity());
         ClickableViewPager viewPager = rootView.findViewById(R.id.pager);
@@ -172,8 +170,6 @@ public class MediaBrowserFragment extends Fragment {
         viewPager.setOnItemClickListener(position -> {
             Log.d(TAG, "onPageClicked, position " + position);
             checkForUserVisibleErrors(false);
-
-//            tapMeImage.setVisibility(View.GONE); //todo
 
             MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
             mMediaFragmentListener.onMediaItemSelected(item);

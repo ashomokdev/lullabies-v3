@@ -1,7 +1,10 @@
 package com.example.android.uamp.tools;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 
@@ -14,7 +17,8 @@ public class TapMeAnimatedImageView extends android.support.v7.widget.AppCompatI
         setImageDrawable(ContextCompat.getDrawable(
                 context, R.drawable.ic_tap_animated));
 
-        setBackground(ContextCompat.getDrawable(context, R.drawable.circle));
+        Drawable circle = ContextCompat.getDrawable(context, R.drawable.circle);
+        setBackground(circle);
     }
 
     @Override
