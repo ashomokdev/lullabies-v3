@@ -6,7 +6,9 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,32 +18,25 @@ import android.widget.TextView;
 
 import com.example.android.uamp.AlbumArtCache;
 import com.example.android.uamp.R;
+import com.example.android.uamp.utils.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.android.uamp.utils.MediaItemStateHelper.*;
 
-/**
- * taked here https://medium.com/@cdmunoz/the-easiest-way-to-work-with-viewpager-and-without-fragments-c62ec3e8b9f3
- */
 public class MyViewPagerAdapter extends PagerAdapter {
+    private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
     private Context context;
 
     //pager views by position
-    private SparseArray<View> views = new SparseArray<>();
+    private SparseArray<View> views;
 
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
      */
     private List<MediaBrowserCompat.MediaItem> mObjects;
-
-    /**
-     * Indicates whether or not {@link #notifyDataSetChanged()} must be called whenever
-     * {@link #mObjects} is modified.
-     */
-    private boolean mNotifyOnChange = true;
 
     /**
      * Lock used to modify the content of {@link #mObjects}. Any write operation
@@ -51,6 +46,7 @@ public class MyViewPagerAdapter extends PagerAdapter {
 
     public MyViewPagerAdapter(Context context) {
         this.context = context;
+        views = new SparseArray<>();
         mObjects = new ArrayList<>();
     }
 
@@ -101,21 +97,25 @@ public class MyViewPagerAdapter extends PagerAdapter {
 
     @Override
     public void notifyDataSetChanged() {
-        int key;
-        for (int i = 0; i < views.size(); i++) {
-            key = views.keyAt(i);
-            View view = views.get(key);
+        try {
+            int key;
+            for (int i = 0; i < views.size(); i++) {
+                key = views.keyAt(i);
+                View view = views.get(key);
 
-            MediaBrowserCompat.MediaItem mediaItem = mObjects.get(key);
+                MediaBrowserCompat.MediaItem mediaItem = mObjects.get(key);
+                // If the state of convertView is different, we need to adapt the view to the new state.
 
-            // If the state of convertView is different, we need to adapt the view to the new state.
-            int state = getMediaItemState((Activity) context, mediaItem);
-            final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
-            if (state != STATE_PLAYING) {
-                tapMeImage.setVisibility(View.VISIBLE);
-            } else {
-                tapMeImage.setVisibility(View.INVISIBLE);
+                int state = getMediaItemState((Activity) context, mediaItem);
+                final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
+                if (state != STATE_PLAYING) {
+                    tapMeImage.setVisibility(View.VISIBLE);
+                } else {
+                    tapMeImage.setVisibility(View.INVISIBLE);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         super.notifyDataSetChanged();
     }
@@ -124,7 +124,7 @@ public class MyViewPagerAdapter extends PagerAdapter {
         synchronized (mLock) {
             mObjects.add(item);
         }
-        if (mNotifyOnChange) notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 
     /**
@@ -133,8 +133,9 @@ public class MyViewPagerAdapter extends PagerAdapter {
     public void clear() {
         synchronized (mLock) {
             mObjects.clear();
+            views.clear();
         }
-        if (mNotifyOnChange) notifyDataSetChanged();
+        notifyDataSetChanged();
     }
 
     public MediaBrowserCompat.MediaItem getItem(int position) {

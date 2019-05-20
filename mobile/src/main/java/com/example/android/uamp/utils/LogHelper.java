@@ -76,22 +76,20 @@ public class LogHelper {
     }
 
     public static void log(String tag, int level, Throwable t, Object... messages) {
-        if (Log.isLoggable(tag, level)) {
-            String message;
-            if (t == null && messages != null && messages.length == 1) {
-                // handle this common case without the extra cost of creating a stringbuffer:
-                message = messages[0].toString();
-            } else {
-                StringBuilder sb = new StringBuilder();
-                if (messages != null) for (Object m : messages) {
-                    sb.append(m);
-                }
-                if (t != null) {
-                    sb.append("\n").append(Log.getStackTraceString(t));
-                }
-                message = sb.toString();
+        String message;
+        if (t == null && messages != null && messages.length == 1) {
+            // handle this common case without the extra cost of creating a stringbuffer:
+            message = messages[0].toString();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            if (messages != null) for (Object m : messages) {
+                sb.append(m);
             }
-            Log.println(level, tag, message);
+            if (t != null) {
+                sb.append("\n").append(Log.getStackTraceString(t));
+            }
+            message = sb.toString();
         }
+        Log.println(level, tag, message);
     }
 }
