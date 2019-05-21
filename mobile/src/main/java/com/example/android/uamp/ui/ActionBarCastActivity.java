@@ -36,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.android.uamp.R;
+import com.example.android.uamp.ui.music_player_activity.MusicPlayerActivity;
 import com.example.android.uamp.utils.LogHelper;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;

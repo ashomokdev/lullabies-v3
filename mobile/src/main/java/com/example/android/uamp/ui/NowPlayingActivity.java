@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import com.example.android.uamp.ui.music_player_activity.MusicPlayerActivity;
 import com.example.android.uamp.ui.tv.TvPlaybackActivity;
 import com.example.android.uamp.utils.LogHelper;
 

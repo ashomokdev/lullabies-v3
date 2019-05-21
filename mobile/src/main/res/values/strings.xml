@@ -17,6 +17,7 @@
 <resources>
 
     <string name="app_name">Lullabies</string>
+    <string name="appID" translatable="false">ca-app-pub-5221781428763224~4451105598</string>
     <string name="favorite">Favorite</string>
     <string name="error_no_metadata">Unable to retrieve metadata.</string>
     <string name="browse_genres">Genres</string>
@@ -57,8 +58,13 @@
     <string name="get_no_ads_forever">Get no ads forever</string>
     <string name="about_app">About app</string>
 
-
     <!-- Notificaiton Channel -->
     <string name="notification_channel">UAMP_Channel_ID</string>
     <string name="notification_channel_description">Channel ID for UAMP</string>
+
+    <string name="main_activity_banner">ca-app-pub-5221781428763224/1358038399</string>
+    <string name="test_banner">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="error_no_skus">We didn\\\'t find any SKUs to display</string>
+    <string name="error_billing_unavailable">Billing unavailable</string>
+    <string name="unknown_error">An unknown error occurred</string>
 </resources>

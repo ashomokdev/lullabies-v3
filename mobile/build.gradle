@@ -25,6 +25,7 @@ android {
         versionCode 2
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -58,6 +59,27 @@ dependencies {
     implementation 'com.android.support:leanback-v17:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:percent:27.1.1'
+    implementation 'com.google.firebase:firebase-ads:17.2.0'
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.billingclient:billing:1.0'
+
+    // Dagger
+    def daggerVer = 2.12 // or latest version
+    implementation "com.google.dagger:dagger:$daggerVer"
+    implementation "com.google.dagger:dagger-android-support:$daggerVer"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVer"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVer"
+
+
+//    implementation 'com.google.dagger:dagger:2.15'
+//    annotationProcessor 'com.google.dagger:dagger-compiler:2.13'
+//    androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:2.13'
+//    implementation 'com.google.dagger:dagger-android:2.15'
+//    implementation 'com.google.dagger:dagger-android-support:2.13'
+//    annotationProcessor 'com.google.dagger:dagger-android-processor:2.13'
+
+
+    implementation 'com.annimon:stream:1.1.8'
 
     implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.uamp.ui;
+package com.example.android.uamp.ui.music_player_activity;
 
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
@@ -26,7 +26,15 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 
 import com.example.android.uamp.R;
+import com.example.android.uamp.billing.model.SkuRowData;
+import com.example.android.uamp.ui.BaseActivity;
+import com.example.android.uamp.ui.FullScreenPlayerActivity;
+import com.example.android.uamp.ui.MediaBrowserFragment;
 import com.example.android.uamp.utils.LogHelper;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 /**
  * Main activity for the music player.
@@ -35,7 +43,7 @@ import com.example.android.uamp.utils.LogHelper;
  * connected while this activity is running.
  */
 public class MusicPlayerActivity extends BaseActivity
-        implements MediaBrowserFragment.MediaFragmentListener {
+        implements MediaBrowserFragment.MediaFragmentListener, MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
     private static final String SAVED_MEDIA_ID="com.example.android.uamp.MEDIA_ID";
@@ -55,8 +63,12 @@ public class MusicPlayerActivity extends BaseActivity
 
     private Bundle mVoiceSearchParams;
 
+    @Inject
+    MusicPlayerPresenter mPresenter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
 
@@ -187,5 +199,15 @@ public class MusicPlayerActivity extends BaseActivity
             mVoiceSearchParams = null;
         }
         getBrowseFragment().onConnected();
+    }
+
+    @Override
+    public void showRemoveAdDialog(SkuRowData data) {
+
+    }
+
+    @Override
+    public void updateView(boolean isAdsActive) {
+
     }
 }
