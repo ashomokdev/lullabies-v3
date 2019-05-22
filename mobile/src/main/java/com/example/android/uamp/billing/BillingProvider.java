@@ -15,6 +15,8 @@
  */
 package com.example.android.uamp.billing;
 
+import android.support.annotation.Nullable;
+
 import com.example.android.uamp.billing.model.SkuRowData;
 
 import java.util.List;
@@ -25,6 +27,10 @@ import java.util.List;
 public interface BillingProvider {
     BillingManager getBillingManager();
     boolean isAdsFreeForever();
+
+    void setCallback(@Nullable BillingProviderCallback callback);
+
     List<SkuRowData> getSkuRowDataListForInAppPurchases();
+    void destroy();
 }
 

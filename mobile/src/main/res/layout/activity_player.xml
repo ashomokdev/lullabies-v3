@@ -26,39 +26,50 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <FrameLayout
-            android:id="@+id/container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/controls_container" />
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/controls_container"
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            app:cardElevation="8dp">
+            android:layout_above="@id/ads_container">
 
-            <fragment
-                android:id="@+id/fragment_playback_controls"
-                android:name="com.example.android.uamp.ui.PlaybackControlsFragment"
+            <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/controls_container" />
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/controls_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                tools:layout="@layout/fragment_playback_controls" />
+                app:cardElevation="8dp">
 
-        </android.support.v7.widget.CardView>
+                <fragment
+                    android:id="@+id/fragment_playback_controls"
+                    android:name="com.example.android.uamp.ui.PlaybackControlsFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    tools:layout="@layout/fragment_playback_controls" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@drawable/fullscreen_toolbar_bg_gradient"
+                android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_scrollFlags="scroll|enterAlways" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/ads_container"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/fullscreen_toolbar_bg_gradient"
-            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways" />
-
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView

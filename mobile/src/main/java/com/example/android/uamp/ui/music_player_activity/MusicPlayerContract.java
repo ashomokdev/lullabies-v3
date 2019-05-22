@@ -12,10 +12,15 @@ public class MusicPlayerContract {
 
     interface View {
 
+        void showError(@StringRes int errorMessageRes);
+
+        void showInfo (@StringRes int infoMessageRes);
+
+        void showInfo(String message);
+
         void showRemoveAdDialog(SkuRowData data);
 
         void updateView(boolean isAdsActive);
-
     }
 
     interface Presenter extends BasePresenter<View> {

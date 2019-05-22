@@ -64,7 +64,7 @@ public class MediaBrowserFragment extends Fragment {
     private MyViewPagerAdapter mBrowserAdapter;
     private String mMediaId;
     private MediaFragmentListener mMediaFragmentListener;
-    private View mErrorView;
+    private View mErrorView;     //!--todo use one styled error - see InfoSnackbarUtil class
     private TextView mErrorMessage;
     private CircleView circleView;
     private ClickableViewPager viewPager;

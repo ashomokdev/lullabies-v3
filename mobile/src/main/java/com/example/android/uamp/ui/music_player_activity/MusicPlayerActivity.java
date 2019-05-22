@@ -24,12 +24,19 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.example.android.uamp.R;
+import com.example.android.uamp.Settings;
+import com.example.android.uamp.ad.AdMobMobContainerImpl;
 import com.example.android.uamp.billing.model.SkuRowData;
 import com.example.android.uamp.ui.BaseActivity;
 import com.example.android.uamp.ui.FullScreenPlayerActivity;
 import com.example.android.uamp.ui.MediaBrowserFragment;
+import com.example.android.uamp.utils.InfoSnackbarUtil;
 import com.example.android.uamp.utils.LogHelper;
 
 import javax.inject.Inject;
@@ -66,13 +73,22 @@ public class MusicPlayerActivity extends BaseActivity
     @Inject
     MusicPlayerPresenter mPresenter;
 
+    @Inject
+    AdMobMobContainerImpl adMobContainer; //todo inject interface not class
+
+    private View mRootView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
-
         setContentView(R.layout.activity_player);
+
+        mRootView = findViewById(android.R.id.content);
+        if (mRootView == null) {
+            mRootView = getWindow().getDecorView().findViewById(android.R.id.content);
+        }
 
         initializeToolbar();
         initializeFromParams(savedInstanceState, getIntent());
@@ -81,6 +97,29 @@ public class MusicPlayerActivity extends BaseActivity
         if (savedInstanceState == null) {
             startFullScreenActivityIfNeeded(getIntent());
         }
+
+        showBannerAd();
+        mPresenter.takeView(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.remove_ads:
+                mPresenter.proposeRemoveAds();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -201,13 +240,36 @@ public class MusicPlayerActivity extends BaseActivity
         getBrowseFragment().onConnected();
     }
 
+    private void showBannerAd() {
+        adMobContainer.initBottomBannerAd(findViewById(R.id.ads_container));
+    }
+
+    @Override
+    public void showError(int errorMessageRes) {
+        InfoSnackbarUtil.showError(errorMessageRes, mRootView);
+    }
+
+    @Override
+    public void showInfo(int infoMessageRes) {
+        InfoSnackbarUtil.showInfo(infoMessageRes, mRootView);
+    }
+
+    @Override
+    public void showInfo(String message) {
+        InfoSnackbarUtil.showInfo(message, mRootView);
+    }
+
     @Override
     public void showRemoveAdDialog(SkuRowData data) {
 
+        RemoveAdDialogFragment removeAdDialogFragment =
+                RemoveAdDialogFragment.newInstance(data.getPrice());
+
+        removeAdDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     @Override
     public void updateView(boolean isAdsActive) {
-
+        adMobContainer.showAd(isAdsActive);
     }
 }

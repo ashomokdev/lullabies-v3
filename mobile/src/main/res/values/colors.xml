@@ -33,4 +33,7 @@
     <color name="background_gradient_start">#000000</color>
     <color name="background_gradient_end">#DDDDDD</color>
     <color name="default_background">#0096a6</color>
+    <color name="red_500">#e51c23</color>
+    <color name="green_500">#259b24</color>
+    <color name="orange_500">#ff9800</color>
 </resources>

@@ -48,6 +48,7 @@ public class BillingProviderImpl implements BillingProvider {
         mBillingManager = new BillingManager(activity, new UpdateListener());
     }
 
+    @Override
     public void setCallback(@Nullable BillingProviderCallback callback) {
         this.callback = callback;
     }
@@ -102,6 +103,7 @@ public class BillingProviderImpl implements BillingProvider {
                 });
     }
 
+    @Override
     public void destroy() {
         if (mBillingManager != null) {
             mBillingManager.destroy();
