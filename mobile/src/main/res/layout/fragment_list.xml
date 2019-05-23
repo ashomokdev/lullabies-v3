@@ -48,12 +48,12 @@
         android:layout_alignParentBottom="true"
         android:layout_below="@id/playback_error">
 
-        <com.example.android.uamp.tools.ClickableViewPager
+        <com.ashomok.lullabies.tools.ClickableViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <com.example.android.uamp.tools.CircleView
+        <com.ashomok.lullabies.tools.CircleView
             android:id="@+id/circle_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

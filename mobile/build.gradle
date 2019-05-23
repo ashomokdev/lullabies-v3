@@ -19,7 +19,7 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        applicationId "com.example.android.uamp"
+        applicationId "com.ashomok.lullabies"
         minSdkVersion 17
         targetSdkVersion 27
         versionCode 2
