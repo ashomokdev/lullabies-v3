@@ -39,6 +39,7 @@ import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.RateAppUtils;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
@@ -104,8 +105,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                         activityClass = MusicPlayerActivity.class;
                         break;
                     case R.id.navigation_rate_app:
-                        //todo
-                        activityClass = AdsFreeActivity.class;
+                        rateApp();
                         break;
                     case R.id.navigation_about:
                         activityClass = AboutActivity.class;
@@ -133,6 +133,11 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
             if (mDrawerToggle != null) mDrawerToggle.onDrawerOpened(drawerView);
             if (getSupportActionBar() != null) getSupportActionBar()
                     .setTitle(R.string.app_name);
+        }
+
+        private void rateApp() {
+            RateAppUtils rateAppUtils = new RateAppUtils();
+            rateAppUtils.rate(ActionBarCastActivity.this);
         }
     };
 
@@ -304,10 +309,6 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         if (MusicPlayerActivity.class.isAssignableFrom(getClass())) {
             navigationView.setCheckedItem(R.id.navigation_animals_lullabies);
         }
-        //todo
-//        else if (AdsFreeActivity.class.isAssignableFrom(getClass())) {
-//            navigationView.setCheckedItem(R.id.navigation_no_ads);
-//        }
         else if (AboutActivity.class.isAssignableFrom(getClass())) {
             navigationView.setCheckedItem(R.id.navigation_about);
         }
