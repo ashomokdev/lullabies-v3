@@ -4,12 +4,17 @@ package com.ashomok.lullabies;
  * Created by iuliia on 12/12/16.
  */
 
+//todo use from injected dagger instead. See example @Provides
+//    static @StringRes
+//    int provideAdBannerId()
 
 public class Settings {
 
     public static boolean isTestMode = false; //todo undo in prod
 
     public static boolean isAdsActive = true; //will be set in MainActivity
+
+    public static final String PRIVACY_POLICY_LINK = "https://sites.google.com/view/lullaby-privacy-policy/home";
 
     /* BASE_64_ENCODED_PUBLIC_KEY should be YOUR APPLICATION'S PUBLIC KEY
      * (that you got from the Google Play developer console). This is not your

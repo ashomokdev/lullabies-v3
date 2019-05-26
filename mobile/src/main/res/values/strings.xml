@@ -17,6 +17,7 @@
 <resources>
 
     <string name="app_name">Lullabies</string>
+    <string name="author" translatable="false">by AshomokDev</string>
     <string name="appID" translatable="false">ca-app-pub-5221781428763224~4451105598</string>
     <string name="favorite">Favorite</string>
     <string name="error_no_metadata">Unable to retrieve metadata.</string>
@@ -37,7 +38,7 @@
     <string name="touch_to_cast">Touch to connect to a Google Cast device</string>
     <!-- Use the default receiver. To customize a styled media receiver, you can use
          the css and images under <project-root>/docs/cast_styled_receiver -->
-    <string name="cast_application_id">CC1AD845</string>
+    <string name="cast_application_id" translatable="false">CC1AD845</string>
     <string name="home_title">Home</string>
     <string name="related_content_header">You may also like</string>
     <string name="action_listen">Listen</string>
@@ -62,9 +63,9 @@
     <string name="notification_channel">UAMP_Channel_ID</string>
     <string name="notification_channel_description">Channel ID for UAMP</string>
 
-    <string name="main_activity_banner">ca-app-pub-5221781428763224/1358038399</string>
-    <string name="test_banner">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="error_no_skus">We didn\\\'t find any SKUs to display</string>
+    <string name="main_activity_banner" translatable="false">ca-app-pub-5221781428763224/1358038399</string>
+    <string name="test_banner" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="error_no_skus">We didn\'t find any SKUs to display</string>
     <string name="error_billing_unavailable">Billing unavailable</string>
     <string name="unknown_error">An unknown error occurred</string>
     <string name="cancel">Cancel</string>
@@ -72,4 +73,18 @@
     <string name="ads_free_forever">Ads free forever</string>
     <string name="remove_ads">Remove ads</string>
     <string name="no_internet_connection">No internet connection</string>
+    <string name="rate_app">Rate app</string>
+    <string name="home">Home</string>
+    <string name="contact_me">Contact me:</string>
+    <string name="this_is_free_version">This is a free version with ads</string>
+    <string name="ads_free_explanation">Hate ads? We too. \nIf you like this app, please support a developer.</string>
+    <string name="privacy_policy_agreement">Privacy Policy agreement</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_explanation">Using this app you agreed with our Privacy Policy.</string>
+    <string name="my_email" translatable="false">ashomokdev@gmail.com</string>
+    <string name="version">version</string>
+    <string name="copied">Copied</string>
+    <string name="buy_paid">Buy ads-free version.</string>
+
+
 </resources>

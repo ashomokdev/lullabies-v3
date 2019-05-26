@@ -19,19 +19,15 @@
         <item
             android:id="@+id/navigation_animals_lullabies"
             android:checked="true"
-            android:icon="@drawable/ic_allmusic_black_24dp"
-            android:title="@string/animals_lullabies_collection"/>
-        <!--<item-->
-            <!--android:id="@+id/navigation_playlists"-->
-            <!--android:icon="@drawable/ic_playlist_music_black_24dp"-->
-            <!--android:title="@string/other_lullabies_collection"/>-->
+            android:icon="@drawable/ic_library_music_black_24dp"
+            android:title="@string/home"/>
         <item
-            android:id="@+id/navigation_no_ads"
-            android:icon="@drawable/ic_playlist_music_black_24dp"
-            android:title="@string/get_no_ads_forever"/>
+            android:id="@+id/navigation_rate_app"
+            android:icon="@drawable/ic_sentiment_satisfied_black_24dp"
+            android:title="@string/rate_app"/>
         <item
             android:id="@+id/navigation_about"
-            android:icon="@drawable/ic_playlist_music_black_24dp"
+            android:icon="@drawable/ic_info_outline_black_24dp"
             android:title="@string/about_app"/>
     </group>
 </menu>

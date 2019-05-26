@@ -1,6 +1,8 @@
 package com.ashomok.lullabies.di_dagger;
 
 
+import com.ashomok.lullabies.ui.about_activity.AboutActivity;
+import com.ashomok.lullabies.ui.about_activity.AboutModule;
 import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerModule;
 
@@ -20,4 +22,7 @@ public abstract class ActivityBindingModule {
 
     @ContributesAndroidInjector(modules = MusicPlayerModule.class)
     abstract MusicPlayerActivity musicPlayerActivity();
+
+    @ContributesAndroidInjector(modules = AboutModule.class)
+    abstract AboutActivity aboutActivity();
 }

@@ -108,7 +108,6 @@ public class MusicPlayerActivity extends BaseActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
-
         return true;
     }
 

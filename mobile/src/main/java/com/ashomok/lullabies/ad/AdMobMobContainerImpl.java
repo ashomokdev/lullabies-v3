@@ -26,9 +26,9 @@ public class AdMobMobContainerImpl implements AdMobContainer {
     private ViewGroup bannerParent;
 
     @Inject
-    public AdMobMobContainerImpl(Context context, @StringRes int adid) {
+    public AdMobMobContainerImpl(Context context, @StringRes int adId) {
         this.context = context;
-        this.adid = adid;
+        this.adid = adId;
         String appId = context.getResources().getString(R.string.appID);
         MobileAds.initialize(context, appId);
     }

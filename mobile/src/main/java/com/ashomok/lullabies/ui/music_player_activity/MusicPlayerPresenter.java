@@ -56,6 +56,16 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     };
 
     /**
+     * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
+     * with {@code @Nullable} values.
+     */
+    @Inject
+    MusicPlayerPresenter(Context context, BillingProviderImpl billingProvider) {
+        this.context = context;
+        this.billingProvider = billingProvider;
+    }
+
+    /**
      * update sku rows
      *
      * @param skuRowData
@@ -72,16 +82,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                 }
             }
         }
-    }
-
-    /**
-     * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
-     * with {@code @Nullable} values.
-     */
-    @Inject
-    MusicPlayerPresenter(Context context, BillingProviderImpl billingProvider) {
-        this.context = context;
-        this.billingProvider = billingProvider;
     }
 
     @Override

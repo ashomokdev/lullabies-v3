@@ -18,6 +18,7 @@
     package="com.ashomok.lullabies">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -73,8 +74,14 @@
 
         <!-- About activity for phone UI -->
         <activity
-            android:name="com.ashomok.lullabies.ui.AboutActivity"
-            android:label="@string/about_app"></activity>
+            android:name="com.ashomok.lullabies.ui.about_activity.AboutActivity"
+            android:label="@string/about_app"
+            android:parentActivityName=".ui.music_player_activity.MusicPlayerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.music_player_activity.MusicPlayerActivity" />
+
+        </activity>
 
         <!-- Proxy activity that opens either the NowPlaying TV or the mobile UI, depending on
         the current environment -->
