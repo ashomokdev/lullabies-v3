@@ -18,35 +18,38 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-
-    <!--todo use one styled error - see InfoSnackbarUtil class-->
-    <android.support.v7.widget.CardView
-        android:id="@+id/playback_error"
+    <RelativeLayout
+        android:id="@+id/empty_result_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:animateLayoutChanges="true"
+        android:layout_height="match_parent"
         android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/image_empty"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/cat_hungry" />
+
         <TextView
             android:id="@+id/error_message"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingRight="@dimen/error_horizontal_padding"
-            android:paddingLeft="@dimen/error_horizontal_padding"
-            android:paddingTop="@dimen/error_vertical_padding"
-            android:paddingBottom="@dimen/error_vertical_padding"
-            android:background="@color/error_message_background"
+            android:layout_below="@+id/image_empty"
+            android:layout_centerInParent="true"
+            android:clickable="false"
             android:gravity="center"
-            tools:text="Connectivity error!"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"/>
-    </android.support.v7.widget.CardView>
+            android:maxWidth="300dp"
+            android:text="@string/connectivity_error"
+            android:textColor="@color/grey_600"
+            android:textSize="18sp" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/playback_error">
+        android:layout_alignParentBottom="true">
 
         <com.ashomok.lullabies.tools.ClickableViewPager
             android:id="@+id/pager"

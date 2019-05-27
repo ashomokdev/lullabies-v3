@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ashomok.lullabies.ui;
+package com.ashomok.lullabies.ui.full_screen_player_activity;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -41,6 +41,9 @@ import android.widget.TextView;
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.Settings;
+import com.ashomok.lullabies.ad.AdMobMobContainerImpl;
+import com.ashomok.lullabies.ui.ActionBarCastActivity;
 import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 
@@ -49,6 +52,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -56,7 +63,8 @@ import static android.view.View.VISIBLE;
  * A full screen player that shows the current playing music with a background image
  * depicting the album art. The activity also has controls to seek/pause/play the audio.
  */
-public class FullScreenPlayerActivity extends ActionBarCastActivity {
+public class FullScreenPlayerActivity extends ActionBarCastActivity
+        implements FullScreenPlayerContract.View  {
     private static final String TAG = LogHelper.makeLogTag(FullScreenPlayerActivity.class);
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
@@ -79,6 +87,12 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
     private String mCurrentArtUrl;
     private final Handler mHandler = new Handler();
     private MediaBrowserCompat mMediaBrowser;
+
+    @Inject
+    FullScreenPlayerPresenter mPresenter;
+
+    @Inject
+    AdMobMobContainerImpl adMobContainer;
 
     private final Runnable mUpdateProgressTask = new Runnable() {
         @Override
@@ -124,6 +138,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_player);
         initializeToolbar();
@@ -212,6 +227,9 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
 
         mMediaBrowser = new MediaBrowserCompat(this,
             new ComponentName(this, MusicService.class), mConnectionCallback, null);
+
+        initBannerAd();
+        mPresenter.takeView(this);
     }
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
@@ -411,5 +429,11 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity {
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
         mSeekbar.setProgress((int) currentPosition);
+    }
+
+    private void initBannerAd() {
+        if (Settings.isAdsActive) {
+            adMobContainer.initBottomBannerAd(findViewById(R.id.ads_container));
+        }
     }
 }

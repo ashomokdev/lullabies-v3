@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
 import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 

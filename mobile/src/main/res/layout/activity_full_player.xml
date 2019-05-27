@@ -30,8 +30,7 @@ limitations under the License.
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/ads_container"
         android:background="@drawable/fullscreen_bg_gradient">
 
         <TextView
@@ -173,5 +172,12 @@ limitations under the License.
         android:background="@drawable/fullscreen_toolbar_bg_gradient"
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <RelativeLayout
+        android:id="@+id/ads_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

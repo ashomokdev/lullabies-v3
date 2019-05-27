@@ -34,8 +34,7 @@ import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.ad.AdMobMobContainerImpl;
 import com.ashomok.lullabies.billing.model.SkuRowData;
 import com.ashomok.lullabies.ui.BaseActivity;
-import com.ashomok.lullabies.ui.FullScreenPlayerActivity;
-import com.ashomok.lullabies.ui.MediaBrowserFragment;
+import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 

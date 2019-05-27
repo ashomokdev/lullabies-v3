@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ashomok.lullabies.ui;
+package com.ashomok.lullabies.ui.music_player_activity;
 
 import android.app.Activity;
 
@@ -41,6 +41,8 @@ import com.ashomok.lullabies.R;
 
 import com.ashomok.lullabies.tools.CircleView;
 import com.ashomok.lullabies.tools.ClickableViewPager;
+import com.ashomok.lullabies.ui.MediaBrowserProvider;
+import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
@@ -64,8 +66,10 @@ public class MediaBrowserFragment extends Fragment {
     private MyViewPagerAdapter mBrowserAdapter;
     private String mMediaId;
     private MediaFragmentListener mMediaFragmentListener;
-    private View mErrorView;     //!--todo use one styled error - see InfoSnackbarUtil class
+
+    private View emptyResultView;
     private TextView mErrorMessage;
+
     private CircleView circleView;
     private ClickableViewPager viewPager;
 
@@ -155,8 +159,8 @@ public class MediaBrowserFragment extends Fragment {
         LogHelper.d(TAG, "fragment.onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
 
-        mErrorView = rootView.findViewById(R.id.playback_error);
-        mErrorMessage = (TextView) mErrorView.findViewById(R.id.error_message);
+        emptyResultView = rootView.findViewById(R.id.empty_result_layout);
+        mErrorMessage = (TextView) emptyResultView.findViewById(R.id.error_message);
 
         //init pager
         mBrowserAdapter = new MyViewPagerAdapter(getActivity());
@@ -286,7 +290,7 @@ public class MediaBrowserFragment extends Fragment {
                 showError = true;
             }
         }
-        mErrorView.setVisibility(showError ? View.VISIBLE : View.GONE);
+        emptyResultView.setVisibility(showError ? View.VISIBLE : View.GONE);
         LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
                 " showError=", showError,
                 " isOnline=", NetworkHelper.isOnline(getActivity()));
