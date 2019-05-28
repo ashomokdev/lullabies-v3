@@ -131,6 +131,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
     // A value of a CMD_NAME key in the extras of the incoming Intent that
     // indicates that the music playback should be paused (see {@link #onStartCommand})
     public static final String CMD_PAUSE = "CMD_PAUSE";
+    // A value of a CMD_NAME key in the extras of the incoming Intent that
+    // indicates that the music playback should be stopped (see {@link #onStartCommand})
+    public static final String CMD_STOP = "CMD_STOP";
     // A value of a CMD_NAME key that indicates that the music playback should switch
     // to local playback from cast playback.
     public static final String CMD_STOP_CASTING = "CMD_STOP_CASTING";
@@ -256,6 +259,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
                     mPlaybackManager.handlePauseRequest();
                 } else if (CMD_STOP_CASTING.equals(command)) {
                     CastContext.getSharedInstance(this).getSessionManager().endCurrentSession(true);
+                } else if(CMD_STOP.equals(command)){
+                    mPlaybackManager.handleStopRequest(null);
                 }
             } else {
                 // Try to handle the intent as a media button event wrapped by MediaButtonReceiver

@@ -15,7 +15,8 @@
   limitations under the License.
   -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:id="@+id/menu_items">
         <item
             android:id="@+id/navigation_animals_lullabies"
             android:checked="true"
@@ -29,5 +30,14 @@
             android:id="@+id/navigation_about"
             android:icon="@drawable/ic_info_outline_black_24dp"
             android:title="@string/about_app"/>
+    </group>
+
+    <group
+        android:id="@+id/exit_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_exit"
+            android:icon="@drawable/ic_arrow_back_black_24dp"
+            android:title="@string/exit" />
     </group>
 </menu>

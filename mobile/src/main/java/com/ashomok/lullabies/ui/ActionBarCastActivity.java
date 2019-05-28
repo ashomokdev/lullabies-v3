@@ -110,6 +110,9 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                     case R.id.navigation_about:
                         activityClass = AboutActivity.class;
                         break;
+                    case R.id.navigation_exit:
+                        exit();
+                        break;
                 }
                 if (activityClass != null) {
                     startActivity(new Intent(ActionBarCastActivity.this, activityClass), extras);
@@ -140,6 +143,13 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
             rateAppUtils.rate(ActionBarCastActivity.this);
         }
     };
+
+    private void exit() {
+        ExitDialogFragment exitDialogFragment = ExitDialogFragment.newInstance(
+                R.string.exit_dialog_title);
+
+        exitDialogFragment.show(getFragmentManager(), "dialog");
+    }
 
     private final FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
             new FragmentManager.OnBackStackChangedListener() {
@@ -225,6 +235,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        LogHelper.d(TAG, "onOptionsItemSelected called with " + item.toString());
         if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
