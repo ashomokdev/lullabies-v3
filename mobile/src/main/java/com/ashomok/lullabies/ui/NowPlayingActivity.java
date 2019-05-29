@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
-import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
+import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.ui.tv.TvPlaybackActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 

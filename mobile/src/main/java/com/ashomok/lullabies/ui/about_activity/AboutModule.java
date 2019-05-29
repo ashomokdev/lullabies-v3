@@ -2,8 +2,6 @@ package com.ashomok.lullabies.ui.about_activity;
 
 import android.app.Activity;
 
-import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerPresenter;
-
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;

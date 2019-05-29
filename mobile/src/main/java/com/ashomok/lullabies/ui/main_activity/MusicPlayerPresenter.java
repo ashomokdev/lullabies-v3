@@ -1,4 +1,4 @@
-package com.ashomok.lullabies.ui.music_player_activity;
+package com.ashomok.lullabies.ui.main_activity;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

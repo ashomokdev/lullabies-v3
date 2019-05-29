@@ -1,10 +1,10 @@
-package com.ashomok.lullabies.ui.main_activity;
+package com.ashomok.lullabies.ui.splash_activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
+import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 
 /**
  * Created by iuliia on 3/2/18.

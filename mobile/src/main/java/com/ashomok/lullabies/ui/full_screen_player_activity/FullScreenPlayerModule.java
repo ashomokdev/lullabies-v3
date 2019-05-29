@@ -5,9 +5,6 @@ import android.support.annotation.StringRes;
 
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerActivity;
-import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerContract;
-import com.ashomok.lullabies.ui.music_player_activity.MusicPlayerPresenter;
 
 import dagger.Binds;
 import dagger.Module;

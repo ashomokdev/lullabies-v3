@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ashomok.lullabies.ui.music_player_activity;
+package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.Activity;
 
