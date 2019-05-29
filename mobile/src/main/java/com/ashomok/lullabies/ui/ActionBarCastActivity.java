@@ -38,7 +38,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 /**
- * Abstract activity with toolbar, navigation drawer and cast support. Needs to be extended by
+ * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
  * any activity that wants to be shown as a top level activity.
  * <p>
  * The requirements for a subclass is to call {@link #initializeToolbar()} on onCreate, after
@@ -119,7 +119,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.cast, menu);
 
         if (mCastContext != null) {
             mMediaRouteMenuItem = CastButtonFactory.setUpMediaRouteButton(getApplicationContext(),

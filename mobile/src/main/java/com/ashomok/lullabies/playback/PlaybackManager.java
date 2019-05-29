@@ -354,7 +354,7 @@ public class PlaybackManager implements Playback.Callback {
          * Threads and async handling:
          * Search, as a potentially slow operation, should run in another thread.
          * <p/>
-         * Since this method runs on the main thread, most apps with non-trivial metadata
+         * Since this method runs on the cast thread, most apps with non-trivial metadata
          * should defer the actual search to another thread (for example, by using
          * an {@link AsyncTask} as we do here).
          **/

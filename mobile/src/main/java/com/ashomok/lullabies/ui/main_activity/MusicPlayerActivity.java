@@ -124,7 +124,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     private void initializeNavigationDrawer() {
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        // Set up the navigation drawer.
+        // Set up the navigation drawer_actions.
         navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         setupDrawerContent(navigationView);
@@ -157,7 +157,7 @@ public class MusicPlayerActivity extends BaseActivity
                     if (activityClass != null) {
                         startActivity(new Intent(this, activityClass), extras);
                     }
-                    // Close the navigation drawer when an item is selected.
+                    // Close the navigation drawer_actions when an item is selected.
                     menuItem.setChecked(true);
                     mDrawerLayout.closeDrawers();
                     return true;
@@ -179,7 +179,7 @@ public class MusicPlayerActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.remove_ads, menu);
         menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
         return true;
     }
@@ -188,7 +188,7 @@ public class MusicPlayerActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Open the navigation drawer when the home icon is selected from the toolbar.
+                // Open the navigation drawer_actions when the home icon is selected from the toolbar.
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.remove_ads:

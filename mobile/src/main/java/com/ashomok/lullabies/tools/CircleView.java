@@ -1,14 +1,18 @@
 package com.ashomok.lullabies.tools;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.ashomok.lullabies.utils.LogHelper;
 
 /**
  * Created by iuliia on 16.05.16.
@@ -40,7 +44,21 @@ public class CircleView extends View {
 
     public void setViewPager(ViewPager viewPager) {
 
-        viewPager.addOnAdapterChangeListener((viewPager1, oldAdapter, newAdapter) -> updateView(viewPager1));
+        DataSetObserver dataSetObserver = new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                updateView(viewPager);
+            }
+        };
+
+        viewPager.addOnAdapterChangeListener((viewPager1, oldAdapter, newAdapter) -> {
+            updateView(viewPager1);
+
+            if (newAdapter != null){
+                newAdapter.registerDataSetObserver( dataSetObserver);
+            }
+        });
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -57,9 +75,10 @@ public class CircleView extends View {
             }
         });
 
-        viewPager.addOnLayoutChangeListener(
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) ->
-                        updateView(viewPager));
+        PagerAdapter adapter = viewPager.getAdapter();
+        if (adapter != null){
+            adapter.registerDataSetObserver( dataSetObserver);
+        }
 
         updateView(viewPager);
     }
