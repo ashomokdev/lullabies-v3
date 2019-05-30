@@ -18,15 +18,15 @@ import com.google.android.gms.ads.MobileAds;
 import javax.inject.Inject;
 
 
-public class AdMobMobContainerImpl implements AdMobContainer {
+public class AdMobContainerImpl implements AdMobContainer {
 
-    private static final String TAG = LogHelper.makeLogTag(AdMobMobContainerImpl.class);
+    private static final String TAG = LogHelper.makeLogTag(AdMobContainerImpl.class);
     private final Context context;
     private final int adid;
     private ViewGroup bannerParent;
 
     @Inject
-    public AdMobMobContainerImpl(Context context, @StringRes int adId) {
+    public AdMobContainerImpl(Context context, @StringRes int adId) {
         this.context = context;
         this.adid = adId;
         String appId = context.getResources().getString(R.string.appID);

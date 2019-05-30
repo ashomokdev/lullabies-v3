@@ -46,6 +46,7 @@ import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 

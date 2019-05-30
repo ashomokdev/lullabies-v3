@@ -25,7 +25,8 @@ limitations under the License.
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:contentDescription="@string/background_image_str"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:layout_above="@id/ads_container"/>
 
     <RelativeLayout
         android:layout_width="fill_parent"

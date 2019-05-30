@@ -36,6 +36,7 @@ import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
  * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
@@ -56,8 +57,13 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     private CastContext mCastContext;
     private MenuItem mMediaRouteMenuItem;
     private Toolbar mToolbar;
-
     private boolean mToolbarInitialized;
+
+    public FirebaseAnalytics getmFirebaseAnalytics() {
+        return mFirebaseAnalytics;
+    }
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private CastStateListener mCastStateListener = new CastStateListener() {
         @Override
@@ -79,6 +85,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         LogHelper.d(TAG, "Activity onCreate");
 
         int playServicesAvailable =

@@ -36,7 +36,7 @@ import android.view.View;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
-import com.ashomok.lullabies.ad.AdMobMobContainerImpl;
+import com.ashomok.lullabies.ad.AdMobContainer;
 import com.ashomok.lullabies.billing.model.SkuRowData;
 import com.ashomok.lullabies.ui.BaseActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
@@ -45,6 +45,7 @@ import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActi
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.RateAppUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Inject;
 
@@ -81,7 +82,7 @@ public class MusicPlayerActivity extends BaseActivity
     MusicPlayerPresenter mPresenter;
 
     @Inject
-    AdMobMobContainerImpl adMobContainer; //todo inject interface not class
+    AdMobContainer adMobContainer;
 
     private View mRootView;
 
@@ -90,6 +91,8 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.UAmpAppTheme);
+
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
@@ -219,6 +222,14 @@ public class MusicPlayerActivity extends BaseActivity
             LogHelper.w(TAG, "Ignoring MediaItem that is neither browsable nor playable: ",
                     "mediaId=", item.getMediaId());
         }
+
+
+        //todo track events on special firebaseanalytics util
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.getMediaId());
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.getDescription().getTitle().toString());
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "MediaItem");
+        getmFirebaseAnalytics().logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Override
