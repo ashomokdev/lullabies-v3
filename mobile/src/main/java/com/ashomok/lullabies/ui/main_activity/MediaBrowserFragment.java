@@ -46,7 +46,6 @@ import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 
@@ -87,12 +86,25 @@ public class MediaBrowserFragment extends Fragment {
                     oldOnline = isOnline;
                     checkForUserVisibleErrors(false);
                     if (isOnline) {
+                        reloadMedia();
                         mBrowserAdapter.notifyDataSetChanged();
                     }
                 }
             }
         }
+
+
     };
+
+    private void reloadMedia() {
+        LogHelper.d(TAG, "on reloadMedia");
+        boolean isOnline = NetworkHelper.isOnline(getActivity());
+        if (isOnline) {
+            if (mBrowserAdapter.getCount() == 0) {
+                onConnected();
+            }
+        }
+    }
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -291,7 +303,7 @@ public class MediaBrowserFragment extends Fragment {
                 showError = true;
             }
         }
-        emptyResultView.setVisibility(showError ? View.VISIBLE : View.GONE);
+        emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
         LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
                 " showError=", showError,
                 " isOnline=", NetworkHelper.isOnline(getActivity()));
