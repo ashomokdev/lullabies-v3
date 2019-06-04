@@ -27,10 +27,8 @@ import java.util.List;
 public interface BillingProvider {
     BillingManager getBillingManager();
     boolean isAdsFreeForever();
-
-    void setCallback(@Nullable BillingProviderCallback callback);
-
     List<SkuRowData> getSkuRowDataListForInAppPurchases();
     void destroy();
+    void init(BillingProviderCallback billingProviderCallback);
 }
 

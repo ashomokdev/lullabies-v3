@@ -77,4 +77,17 @@ public class SkuRowData {
     String getSkuType() {
         return billingType;
     }
+
+    @Override
+    public String toString() {
+        return "SkuRowData{" +
+                "sku='" + sku + '\'' +
+                ", title='" + title + '\'' +
+                ", price='" + price + '\'' +
+                ", description='" + description + '\'' +
+                ", priceCurrencyCode='" + priceCurrencyCode + '\'' +
+                ", priceAmountMicros=" + priceAmountMicros +
+                ", billingType='" + billingType + '\'' +
+                '}';
+    }
 }

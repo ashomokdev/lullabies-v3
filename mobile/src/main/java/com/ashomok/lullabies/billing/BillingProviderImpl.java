@@ -43,15 +43,13 @@ public class BillingProviderImpl implements BillingProvider {
         this.activity = activity;
     }
 
-    public void init() {
+    @Override
+    public void init(BillingProviderCallback billingProviderCallback) {
+        callback = billingProviderCallback;
         // Create and initialize BillingManager which talks to BillingLibrary
-        mBillingManager = new BillingManager(activity, new UpdateListener());
+        mBillingManager = new BillingManager(activity, new UpdateListener()); //todo inject billingmanager
     }
 
-    @Override
-    public void setCallback(@Nullable BillingProviderCallback callback) {
-        this.callback = callback;
-    }
 
     public List<SkuRowData> getSkuRowDataList() {
         return skuRowDataList;
@@ -168,7 +166,7 @@ public class BillingProviderImpl implements BillingProvider {
             mAdsFreeForever = false;
 
             for (Purchase purchase : purchaseList) {
-                switch (purchase.getSku()) {
+                switch (purchase.getSku()) { //Purchase. Json: {"orderId":"GPA.3368-7040-6290-82217","packageName":"com.ashomok.lullabies","productId":"ads_free_forever","purchaseTime":1526992092770,"purchaseState":0,"purchaseToken":"pflocgbnmidofnoofdhbebel.AO-J1Ox9wlS-MxGkF1LTHQP5RQxpwdU0IjW61EpXovxsHptglRQUhJZuKXoQWAXnGdAhJcNiNbajribeK5G7NM3vVhzm8GUjISkpTNuqzi_SoH03DIp4u4b3Zem83rld39N5rhwb3NQR"}
                     case ADS_FREE_FOREVER_SKU_ID:
                         mAdsFreeForever = true;
                         break;

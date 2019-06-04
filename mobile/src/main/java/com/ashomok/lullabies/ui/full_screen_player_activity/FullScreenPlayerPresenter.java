@@ -22,7 +22,7 @@ public class FullScreenPlayerPresenter implements FullScreenPlayerContract.Prese
      * with {@code @Nullable} values.
      */
     @Inject
-    FullScreenPlayerPresenter(Context context, BillingProviderImpl billingProvider) {
+    FullScreenPlayerPresenter(Context context) {
         this.context = context;
     }
 

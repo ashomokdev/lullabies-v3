@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
+import com.ashomok.lullabies.billing.BillingProvider;
 import com.ashomok.lullabies.billing.BillingProviderCallback;
 import com.ashomok.lullabies.billing.BillingProviderImpl;
 import com.ashomok.lullabies.billing.model.SkuRowData;
@@ -24,7 +25,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     public MusicPlayerContract.View view;
 
     private Context context;
-    private BillingProviderImpl billingProvider;
+    private BillingProvider billingProvider;
     private SkuRowData removeAdsSkuRow;
     private BillingProviderCallback billingProviderCallback = new BillingProviderCallback() {
         @Override
@@ -60,7 +61,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
      * with {@code @Nullable} values.
      */
     @Inject
-    MusicPlayerPresenter(Context context, BillingProviderImpl billingProvider) {
+    MusicPlayerPresenter(Context context, BillingProvider billingProvider) {
         this.context = context;
         this.billingProvider = billingProvider;
     }
@@ -73,6 +74,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     private void initSkuRows(List<SkuRowData> skuRowData) {
         if (view != null) {
             for (SkuRowData item : skuRowData) {
+                LogHelper.d(TAG, "init sku row " + item.toString());
                 switch (item.getSku()) {
                     case ADS_FREE_FOREVER_SKU_ID:
                         removeAdsSkuRow = item;
@@ -119,8 +121,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     private void init() {
-        billingProvider.setCallback(billingProviderCallback);
-        billingProvider.init();
+        billingProvider.init(billingProviderCallback);
 
         if (view != null) {
             checkConnection();

@@ -91,6 +91,7 @@
     <string name="exit">Exit</string>
     <string name="exit_dialog_title">Do you want to exit?</string>
     <string name="ok">OK</string>
+    <string name="ads_container" translatable="false">ads_container</string>
 
 
 </resources>

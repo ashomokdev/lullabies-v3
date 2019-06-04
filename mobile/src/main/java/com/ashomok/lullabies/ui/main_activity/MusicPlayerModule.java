@@ -8,6 +8,8 @@ import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ad.AdMobContainer;
 import com.ashomok.lullabies.ad.AdMobContainerImpl;
+import com.ashomok.lullabies.billing.BillingProvider;
+import com.ashomok.lullabies.billing.BillingProviderImpl;
 
 import dagger.Binds;
 import dagger.Module;
@@ -18,6 +20,11 @@ public abstract class MusicPlayerModule {
     @Provides
     static Activity provideActivity(MusicPlayerActivity activity) {
         return activity;
+    }
+
+    @Provides
+    static BillingProvider provideBillingProvider(MusicPlayerActivity activity) {
+        return new BillingProviderImpl(activity);
     }
 
     @Provides

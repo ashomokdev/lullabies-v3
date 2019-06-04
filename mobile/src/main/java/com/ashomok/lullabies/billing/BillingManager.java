@@ -39,6 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import static com.ashomok.lullabies.Settings.BASE_64_ENCODED_PUBLIC_KEY;
 
 /**
@@ -65,6 +67,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     private int mBillingClientResponseCode = BILLING_MANAGER_NOT_INITIALIZED;
 
+    @Inject
     public BillingManager(Activity activity, final BillingUpdatesListener updatesListener) {
         Log.d(TAG, "Creating Billing client.");
         mActivity = activity;
@@ -88,6 +91,13 @@ public class BillingManager implements PurchasesUpdatedListener {
     /**
      * Handle a callback that purchases were updated from the Billing library
      */
+
+    // I/uamp_BillingManager: Got a purchase: Purchase. Json: {"packageName":"com.ashomok.lullabies"
+    // ,"acknowledged":false,"orderId":"transactionId.android.test.purchased",
+    // "productId":"android.test.purchased","developerPayload":"","purchaseTime":0,
+    // "purchaseState":0,"purchaseToken":"inapp:com.ashomok.lullabies:android.test.purchased"};
+    // but signature is bad. Skipping...
+
     @Override
     public void onPurchasesUpdated(int resultCode, List<Purchase> purchases) {
         if (resultCode == BillingResponse.OK) {
@@ -96,7 +106,7 @@ public class BillingManager implements PurchasesUpdatedListener {
             }
             mBillingUpdatesListener.onPurchasesUpdated(mPurchases);
         } else if (resultCode == BillingResponse.USER_CANCELED) {
-            Log.i(TAG, "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
+            Log.d(TAG, "onPurchasesUpdated() - user cancelled the purchase flow - skipping");
         } else {
             Log.w(TAG, "onPurchasesUpdated() got unknown resultCode: " + resultCode);
         }
@@ -214,7 +224,7 @@ public class BillingManager implements PurchasesUpdatedListener {
      */
     private void handlePurchase(Purchase purchase) {
         if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
-            Log.i(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
+            Log.w(TAG, "Got a purchase: " + purchase + "; but signature is bad. Skipping...");
             return;
         }
 
@@ -337,13 +347,6 @@ public class BillingManager implements PurchasesUpdatedListener {
      * </p>
      */
     private boolean verifyValidSignature(String signedData, String signature) {
-        // Some sanity checks to see if the developer (that's you!) really followed the
-        // instructions to run this sample (don't put these checks on your app!)
-        if (BASE_64_ENCODED_PUBLIC_KEY.contains("CONSTRUCT_YOUR")) {
-            throw new RuntimeException("Please update your app's public key at: "
-                    + "BASE_64_ENCODED_PUBLIC_KEY");
-        }
-
         try {
             return Security.verifyPurchase(BASE_64_ENCODED_PUBLIC_KEY, signedData, signature);
         } catch (IOException e) {
