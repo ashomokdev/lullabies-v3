@@ -379,6 +379,8 @@ public class PlaybackManager implements Playback.Callback {
                     }
                 }
             });
+
+            LogHelper.d(TAG, "retrieveMediaAsync called ");
         }
     }
 

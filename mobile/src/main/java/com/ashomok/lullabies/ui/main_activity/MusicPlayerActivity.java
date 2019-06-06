@@ -324,7 +324,7 @@ public class MusicPlayerActivity extends BaseActivity
                     .playFromSearch(query, mVoiceSearchParams);
             mVoiceSearchParams = null;
         }
-        getBrowseFragment().onConnected();
+        getBrowseFragment().onConnected(); //todo eerror here null
     }
 
     private void showBannerAd() {

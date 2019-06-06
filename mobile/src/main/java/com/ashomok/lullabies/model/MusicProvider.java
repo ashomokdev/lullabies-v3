@@ -276,12 +276,17 @@ public class MusicProvider {
                 buildListsByGenre();
                 mCurrentState = State.INITIALIZED;
             }
-        } finally {
+        }
+        catch (Exception e){
+            LogHelper.e(TAG, "Failed to retrieve media", e);
+        }
+        finally {
             if (mCurrentState != State.INITIALIZED) {
                 // Something bad happened, so we reset state to NON_INITIALIZED to allow
                 // retries (eg if the network connection is temporary unavailable)
                 mCurrentState = State.NON_INITIALIZED;
             }
+            LogHelper.d(TAG, "retrieveMedia finished with state " + mCurrentState.name());
         }
     }
 

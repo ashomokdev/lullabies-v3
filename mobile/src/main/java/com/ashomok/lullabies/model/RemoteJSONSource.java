@@ -69,13 +69,43 @@ public class RemoteJSONSource implements MusicProviderSource {
                         tracks.add(buildFromJSON(jsonTracks.getJSONObject(j)));
                     }
                 }
+                return tracks.iterator();
+            } else {
+                throw new RuntimeException("Could not retrieve music list");
             }
-            return tracks.iterator();
+
         } catch (JSONException e) {
             LogHelper.e(TAG, e, "Could not retrieve music list");
             throw new RuntimeException("Could not retrieve music list", e);
         }
     }
+
+
+//    @Override
+//    public Iterator<MediaMetadataCompat> iterator() {
+//        try {
+//            JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
+//            ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
+//            if (jsonObj != null) {
+//                JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
+//
+//                if (jsonTracks != null) {
+//                    for (int j = 0; j < jsonTracks.length(); j++) {
+//                        tracks.add(buildFromJSON(jsonTracks.getJSONObject(j)));
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                return null;
+//            }
+//            return tracks.iterator();
+//        } catch (JSONException e) {
+//            LogHelper.e(TAG, e, "Could not retrieve music list");
+//            throw new RuntimeException("Could not retrieve music list", e);
+//        }
+//    }
+
 
     private MediaMetadataCompat buildFromJSON(JSONObject json) throws JSONException {
         String title = json.getString(JSON_TITLE);
@@ -117,6 +147,7 @@ public class RemoteJSONSource implements MusicProviderSource {
      * @return result JSONObject containing the parsed representation.
      */
     private JSONObject fetchJSONFromUrl(String urlString) throws JSONException {
+        LogHelper.d(TAG, "on fetchJSONFromUrl with url " + urlString);
         BufferedReader reader = null;
         try {
             URLConnection urlConnection = new URL(urlString).openConnection();
