@@ -89,6 +89,11 @@ public class AboutActivity extends BaseActivity {
         privacy_policy_link.setOnClickListener(view -> openPrivacyPolicy());
     }
 
+    @Override
+    protected void onMediaControllerConnected() {
+        //nothing
+    }
+
     private void copyTextToClipboard(CharSequence text) {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(getString(R.string.my_email), text);

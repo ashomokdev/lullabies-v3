@@ -32,4 +32,9 @@ public class AdsFreeActivity extends BaseActivity {
         initializeToolbar();
     }
 
+    @Override
+    protected void onMediaControllerConnected() {
+//nothing
+    }
+
 }
