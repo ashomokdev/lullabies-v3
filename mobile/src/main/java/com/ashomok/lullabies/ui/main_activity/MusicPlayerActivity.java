@@ -223,7 +223,6 @@ public class MusicPlayerActivity extends BaseActivity
                     "mediaId=", item.getMediaId());
         }
 
-
         //todo track events on special firebaseanalytics util
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.getMediaId());
@@ -298,6 +297,7 @@ public class MusicPlayerActivity extends BaseActivity
                 transaction.addToBackStack(null);
             }
             transaction.commit();
+            LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG + " commited");
         }
     }
 
@@ -315,6 +315,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Override
     protected void onMediaControllerConnected() {
+        LogHelper.d(TAG, "onMediaControllerConnected");
         if (mVoiceSearchParams != null) {
             // If there is a bootstrap parameter to start from a search query, we
             // send it to the media session and set it to null, so it won't play again

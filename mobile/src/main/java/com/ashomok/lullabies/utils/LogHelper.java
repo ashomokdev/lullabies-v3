@@ -17,8 +17,6 @@ package com.ashomok.lullabies.utils;
 
 import android.util.Log;
 
-import com.ashomok.lullabies.BuildConfig;
-
 public class LogHelper {
 
     private static final String LOG_PREFIX = "uamp_";
@@ -42,17 +40,11 @@ public class LogHelper {
 
 
     public static void v(String tag, Object... messages) {
-        // Only log VERBOSE if build type is DEBUG
-        if (BuildConfig.DEBUG) {
-            log(tag, Log.VERBOSE, null, messages);
-        }
+        log(tag, Log.VERBOSE, null, messages);
     }
 
     public static void d(String tag, Object... messages) {
-        // Only log DEBUG if build type is DEBUG
-        if (BuildConfig.DEBUG) {
-            log(tag, Log.DEBUG, null, messages);
-        }
+        log(tag, Log.DEBUG, null, messages);
     }
 
     public static void i(String tag, Object... messages) {

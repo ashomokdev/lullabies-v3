@@ -82,6 +82,7 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         hidePlaybackControls();
 
         mMediaBrowser.connect();
+
     }
 
     @Override
@@ -100,9 +101,7 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         return mMediaBrowser;
     }
 
-    protected void onMediaControllerConnected() {
-        // empty implementation, can be overridden by clients.
-    }
+    protected abstract void onMediaControllerConnected();
 
     protected void showPlaybackControls() {
         LogHelper.d(TAG, "showPlaybackControls");
@@ -130,23 +129,38 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
      * @return true if the MediaSession's state requires playback controls to be visible.
      */
     protected boolean shouldShowControls() {
+        boolean shouldShowControls;
+
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
         if (mediaController == null ||
             mediaController.getMetadata() == null ||
             mediaController.getPlaybackState() == null) {
-            return false;
+            shouldShowControls = false;
         }
-        switch (mediaController.getPlaybackState().getState()) {
-            case PlaybackStateCompat.STATE_ERROR:
-            case PlaybackStateCompat.STATE_NONE:
-            case PlaybackStateCompat.STATE_STOPPED:
-                return false;
-            default:
-                return true;
+        else {
+            int state = mediaController.getPlaybackState().getState();
+            LogHelper.d(TAG, "Current playback state is " + state);
+            switch (state) {
+                case PlaybackStateCompat.STATE_ERROR:
+                    shouldShowControls = false;
+                    break;
+                case PlaybackStateCompat.STATE_NONE:
+                    shouldShowControls = false;
+                    break;
+                case PlaybackStateCompat.STATE_STOPPED:
+                    shouldShowControls = false;
+                    break;
+                default:
+                    shouldShowControls = true;
+                    break;
+            }
         }
+        LogHelper.d(TAG, "shouldShowControls returns " + shouldShowControls);
+        return shouldShowControls;
     }
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
+        LogHelper.d(TAG, "on connectToSession ");
         MediaControllerCompat mediaController = getSupportMediaController();
         if(mediaController == null) {
             mediaController = new MediaControllerCompat(this, token);
