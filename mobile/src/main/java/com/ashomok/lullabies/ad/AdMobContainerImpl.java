@@ -48,20 +48,35 @@ public class AdMobContainerImpl implements AdMobContainer {
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
                 lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 adView.setLayoutParams(lp);
+
             } else {
-                adView.setLayoutParams(
-                        new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f));
-
+                LinearLayout.LayoutParams lp =  new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f);
+                adView.setLayoutParams(lp);
             }
-
             adView.setAdSize(AdSize.SMART_BANNER);
             adView.setAdUnitId(context.getResources().getString(adid));
             adView.setId(R.id.ad_banner);
             AdRequest adRequest = new AdRequest.Builder().build();
             adView.loadAd(adRequest);
             parent.addView(adView);
+
+
+            int heightInPixels = AdSize.SMART_BANNER.getHeightInPixels(parent.getContext());
+            if (parent instanceof RelativeLayout ){
+
+                RelativeLayout.LayoutParams layoutParams =
+                        (RelativeLayout.LayoutParams) parent.getLayoutParams();
+                layoutParams.height = heightInPixels;
+            }
+            else
+            {
+                LinearLayout.LayoutParams layoutParams=
+                        (LinearLayout.LayoutParams) parent.getLayoutParams();
+                layoutParams.height = heightInPixels;
+            }
+
         } else {
             Log.e(TAG, "Ads can not been loaded programmaticaly. " +
                     "RelativeLayout and LinearLayout are supported as parent.");

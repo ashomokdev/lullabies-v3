@@ -28,6 +28,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     private BillingProvider billingProvider;
     private SkuRowData removeAdsSkuRow;
     private BillingProviderCallback billingProviderCallback = new BillingProviderCallback() {
+
         @Override
         public void onPurchasesUpdated() {
             if (view != null) {
