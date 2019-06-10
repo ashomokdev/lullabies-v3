@@ -26,6 +26,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
@@ -355,5 +356,27 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public void updateView(boolean isAdsActive) {
         adMobContainer.showAd(isAdsActive);
+    }
+
+    @Override
+    public void onBackPressed() {
+        LogHelper.d(TAG, "onBackPressed()" + getFragmentManager().getBackStackEntryCount());
+
+        MediaBrowserFragment fragment = getBrowseFragment();
+        if (fragment != null
+                && fragment.getViewPager() != null
+                && fragment.getViewPager().getCurrentItem() != 0) {
+            ViewPager viewPager = fragment.getViewPager();
+            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
+        } else {
+            if (getFragmentManager().getBackStackEntryCount() > 0) {
+                super.onBackPressed();
+            } else {
+                ExitDialogFragment exitDialogFragment = ExitDialogFragment.newInstance(
+                        R.string.exit_dialog_title);
+
+                exitDialogFragment.show(getFragmentManager(), "dialog");
+            }
+        }
     }
 }

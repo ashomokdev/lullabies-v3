@@ -41,6 +41,7 @@ import com.ashomok.lullabies.R;
 
 import com.ashomok.lullabies.tools.CircleView;
 import com.ashomok.lullabies.tools.ClickableViewPager;
+import com.ashomok.lullabies.ui.ExitDialogFragment;
 import com.ashomok.lullabies.ui.MediaBrowserProvider;
 import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
@@ -71,6 +72,7 @@ public class MediaBrowserFragment extends Fragment {
     private TextView mErrorMessage;
 
     private CircleView circleView;
+
     private ClickableViewPager viewPager;
 
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
@@ -92,8 +94,6 @@ public class MediaBrowserFragment extends Fragment {
                 }
             }
         }
-
-
     };
 
     private void reloadMedia() {
@@ -330,4 +330,7 @@ public class MediaBrowserFragment extends Fragment {
         void setToolbarTitle(CharSequence title);
     }
 
+    public ClickableViewPager getViewPager() {
+        return viewPager;
+    }
 }

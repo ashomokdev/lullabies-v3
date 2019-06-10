@@ -48,6 +48,7 @@ public class MyViewPagerAdapter extends PagerAdapter {
         mObjects = new ArrayList<>();
     }
 
+    @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup collection, int position) {
         if (sColorStateNotPlaying == null || sColorStatePlaying == null) {
