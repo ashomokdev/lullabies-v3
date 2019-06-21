@@ -1,7 +1,6 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import static com.ashomok.lullabies.utils.MediaItemStateHelper.*;
 
 public class MyViewPagerAdapter extends PagerAdapter {
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
-    private Context context;
+    private Activity activity;
 
     //pager views by position
     private SparseArray<View> views;
@@ -42,8 +42,8 @@ public class MyViewPagerAdapter extends PagerAdapter {
      */
     private final Object mLock = new Object();
 
-    public MyViewPagerAdapter(Context context) {
-        this.context = context;
+    public MyViewPagerAdapter(Activity activity) {
+        this.activity = activity;
         views = new SparseArray<>();
         mObjects = new ArrayList<>();
     }
@@ -52,10 +52,10 @@ public class MyViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup collection, int position) {
         if (sColorStateNotPlaying == null || sColorStatePlaying == null) {
-            initializeColorStateLists(context);
+            initializeColorStateLists(activity);
         }
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(activity);
         ViewGroup convertView =
                 (ViewGroup) inflater.inflate(R.layout.media_pager_item, collection, false);
 
@@ -74,6 +74,9 @@ public class MyViewPagerAdapter extends PagerAdapter {
 
         collection.addView(convertView);
         views.put(position, convertView);
+
+        RateAppAsker.init(activity);
+
         return convertView;
     }
 
@@ -105,7 +108,7 @@ public class MyViewPagerAdapter extends PagerAdapter {
                 MediaBrowserCompat.MediaItem mediaItem = mObjects.get(key);
                 // If the state of convertView is different, we need to adapt the view to the new state.
 
-                int state = getMediaItemState((Activity) context, mediaItem);
+                int state = getMediaItemState((Activity) activity, mediaItem);
                 final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
                 if (state != STATE_PLAYING) {
                     tapMeImage.setVisibility(View.VISIBLE);

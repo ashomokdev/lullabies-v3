@@ -45,7 +45,7 @@ import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.RateAppUtils;
+import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Inject;
@@ -175,8 +175,7 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     private void rateApp() {
-        RateAppUtils rateAppUtils = new RateAppUtils();
-        rateAppUtils.rate(this);
+        RateAppUtil.rate(this);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.ashomok.lullabies.utils;
+package com.ashomok.lullabies.utils.rate_app;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
-import com.ashomok.lullabies.R;
-
+import com.ashomok.ocrme.R;
 
 public class RateAppUtils {
     public void rate(Activity activity) {

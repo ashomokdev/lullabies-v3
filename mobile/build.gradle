@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.android.billingclient:billing:1.0'
 
-    // Dagger
+    // Dagger docs https://dagger.dev/
     implementation "com.google.dagger:dagger:2.16"
     implementation "com.google.dagger:dagger-android-support:2.16"
     annotationProcessor "com.google.dagger:dagger-android-processor:2.16"

@@ -80,33 +80,6 @@ public class RemoteJSONSource implements MusicProviderSource {
         }
     }
 
-
-//    @Override
-//    public Iterator<MediaMetadataCompat> iterator() {
-//        try {
-//            JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
-//            ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
-//            if (jsonObj != null) {
-//                JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
-//
-//                if (jsonTracks != null) {
-//                    for (int j = 0; j < jsonTracks.length(); j++) {
-//                        tracks.add(buildFromJSON(jsonTracks.getJSONObject(j)));
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                return null;
-//            }
-//            return tracks.iterator();
-//        } catch (JSONException e) {
-//            LogHelper.e(TAG, e, "Could not retrieve music list");
-//            throw new RuntimeException("Could not retrieve music list", e);
-//        }
-//    }
-
-
     private MediaMetadataCompat buildFromJSON(JSONObject json) throws JSONException {
         String title = json.getString(JSON_TITLE);
         String album = json.getString(JSON_ALBUM);
