@@ -20,7 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:activity=".ui.main_activity.MusicPlayerActivity">
+    tools:context=".ui.main_activity.MusicPlayerActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

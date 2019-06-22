@@ -23,7 +23,7 @@
         android:id="@+id/main_browse_fragment"
         android:name="com.ashomok.lullabies.ui.tv.TvBrowseFragment"
         android:layout_width="match_parent" android:layout_height="match_parent"
-        tools:activity=".MusicPlayerActivity" tools:deviceIds="tv"
+        tools:context=".MusicPlayerActivity" tools:deviceIds="tv"
         tools:ignore="MergeRootFrame"/>
     
 </LinearLayout>

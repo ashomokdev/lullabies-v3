@@ -1,10 +1,10 @@
-package com.ashomok.ocrme.rate_app;
+package com.ashomok.lullabies.utils.rate_app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
 
-import com.ashomok.ocrme.R;
+import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.utils.LogHelper;
 
 import javax.inject.Inject;
 
@@ -18,20 +18,22 @@ public class RateAppAsker implements OnNeverAskReachedListener {
     /**
      * Ask to rate app if the app was used RATE_APP_COUNT times
      */
-    public static final int RATE_APP_COUNT = 10;
+    public static final int RATE_APP_COUNT = 100;
     public static final int NEVER_ASK = -1;
     private final Context context;
     private SharedPreferences sharedPreferences;
+    private static final String TAG = LogHelper.makeLogTag(RateAppAsker.class);
 
 
     @Inject
-    public RateAppAsker(SharedPreferences sharedPreferences, Context context){
+    public RateAppAsker(SharedPreferences sharedPreferences, Context context) {
         this.sharedPreferences = sharedPreferences;
         this.context = context;
     }
 
     public void init(RateAppAskerCallback callback) {
         int timesAppWasUsed = sharedPreferences.getInt(context.getString(R.string.times_app_was_used), 0);
+        LogHelper.d(TAG, "adapter shows views count: " + timesAppWasUsed);
 
         if (timesAppWasUsed != NEVER_ASK) {
             SharedPreferences.Editor editor = sharedPreferences.edit();

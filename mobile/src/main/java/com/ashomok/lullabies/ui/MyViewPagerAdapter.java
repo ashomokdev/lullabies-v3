@@ -1,6 +1,7 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
@@ -17,14 +18,18 @@ import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.*;
 
-public class MyViewPagerAdapter extends PagerAdapter {
+public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCallback {
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
+    private final RateAppAsker rateAppAsker;
     private Activity activity;
 
     //pager views by position
@@ -42,8 +47,10 @@ public class MyViewPagerAdapter extends PagerAdapter {
      */
     private final Object mLock = new Object();
 
-    public MyViewPagerAdapter(Activity activity) {
+    @Inject
+    public MyViewPagerAdapter(Activity activity, RateAppAsker rateAppAsker) {
         this.activity = activity;
+        this.rateAppAsker = rateAppAsker;
         views = new SparseArray<>();
         mObjects = new ArrayList<>();
     }
@@ -75,7 +82,7 @@ public class MyViewPagerAdapter extends PagerAdapter {
         collection.addView(convertView);
         views.put(position, convertView);
 
-        RateAppAsker.init(activity);
+        rateAppAsker.init(this);
 
         return convertView;
     }
@@ -166,6 +173,13 @@ public class MyViewPagerAdapter extends PagerAdapter {
                     mBackgroundImage.setImageBitmap(bitmap);
                 }
             });
+        }
+    }
+
+    @Override
+    public void showRateAppDialog(DialogFragment rateAppDialogFragment) {
+        if (activity != null) {
+            rateAppDialogFragment.show(activity.getFragmentManager(), "rate_app_dialog");
         }
     }
 }

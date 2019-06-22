@@ -1,4 +1,4 @@
-package com.ashomok.ocrme.rate_app;
+package com.ashomok.lullabies.utils.rate_app;
 
 import android.app.DialogFragment;
 

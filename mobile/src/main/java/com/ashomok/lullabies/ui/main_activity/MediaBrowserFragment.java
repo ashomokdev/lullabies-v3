@@ -50,6 +50,10 @@ import com.ashomok.lullabies.utils.NetworkHelper;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.android.DaggerFragment;
+
 /**
  * A Fragment that lists all the various browsable queues available
  * from a {@link android.service.media.MediaBrowserService}.
@@ -58,13 +62,12 @@ import java.util.List;
  * Once connected, the fragment subscribes to get all the children.
  * All {@link MediaBrowserCompat.MediaItem}'s that can be browsed are shown in a ListView.
  */
-public class MediaBrowserFragment extends Fragment {
+public class MediaBrowserFragment extends DaggerFragment {
 
     private static final String TAG = LogHelper.makeLogTag(MediaBrowserFragment.class);
 
     private static final String ARG_MEDIA_ID = "media_id";
 
-    private MyViewPagerAdapter mBrowserAdapter;
     private String mMediaId;
     private MediaFragmentListener mMediaFragmentListener;
 
@@ -74,6 +77,9 @@ public class MediaBrowserFragment extends Fragment {
     private CircleView circleView;
 
     private ClickableViewPager viewPager;
+
+    @Inject
+    MyViewPagerAdapter mBrowserAdapter;
 
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
@@ -176,7 +182,6 @@ public class MediaBrowserFragment extends Fragment {
         mErrorMessage = (TextView) emptyResultView.findViewById(R.id.error_message);
 
         //init pager
-        mBrowserAdapter = new MyViewPagerAdapter(getActivity());
         viewPager = rootView.findViewById(R.id.pager);
         viewPager.setAdapter(mBrowserAdapter);
 

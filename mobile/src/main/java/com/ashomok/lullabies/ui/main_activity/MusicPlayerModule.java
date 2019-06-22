@@ -14,6 +14,7 @@ import com.ashomok.lullabies.billing.BillingProviderImpl;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import dagger.android.ContributesAndroidInjector;
 
 @Module
 public abstract class MusicPlayerModule {
@@ -44,4 +45,7 @@ public abstract class MusicPlayerModule {
 
     @Binds
     abstract MusicPlayerContract.Presenter mainPresenter(MusicPlayerPresenter presenter);
+
+    @ContributesAndroidInjector
+    abstract MediaBrowserFragment mediaBrowserFragment();
 }

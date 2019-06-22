@@ -38,6 +38,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import dagger.android.support.DaggerAppCompatActivity;
+
 /**
  * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
  * any activity that wants to be shown as a top level activity.
@@ -48,7 +50,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  * a {@link android.support.v4.widget.DrawerLayout} with id 'drawerLayout' and
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
-public abstract class ActionBarCastActivity extends AppCompatActivity {
+public abstract class ActionBarCastActivity extends DaggerAppCompatActivity {
 
     private static final String TAG = LogHelper.makeLogTag(ActionBarCastActivity.class);
 

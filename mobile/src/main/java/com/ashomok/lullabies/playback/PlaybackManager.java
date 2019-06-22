@@ -159,7 +159,7 @@ public class PlaybackManager implements Playback.Callback {
         }
         String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
         int favoriteIcon = mMusicProvider.isFavorite(musicId) ?
-                R.drawable.ic_star_on : R.drawable.ic_star_off;
+                R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp;
         LogHelper.d(TAG, "updatePlaybackState, setting Favorite custom action of music ",
                 musicId, " current favorite=", mMusicProvider.isFavorite(musicId));
         Bundle customActionExtras = new Bundle();

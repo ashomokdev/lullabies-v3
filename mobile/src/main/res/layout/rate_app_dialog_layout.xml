@@ -17,7 +17,7 @@
             android:layout_marginTop="27dp"
             android:text="@string/support_us"
             android:gravity="center"
-            android:textSize="@dimen/base_text_size"
+            android:textSize="16sp"
             />
 
         <LinearLayout
@@ -76,7 +76,7 @@
         <android.support.v7.widget.AppCompatImageView
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@drawable/circle"
+            android:src="@drawable/circle_solid"
             android:tint="@color/colorAccent" />
 
         <android.support.v7.widget.AppCompatImageView

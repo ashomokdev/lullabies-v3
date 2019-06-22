@@ -6,9 +6,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
-import com.ashomok.ocrme.R;
+import com.ashomok.lullabies.R;
 
-public class RateAppUtils {
+
+public class RateAppUtil {
     public void rate(Activity activity) {
         Toast.makeText(activity, R.string.thank_you_for_your_support, Toast.LENGTH_SHORT).show();
         String appPackageName = activity.getPackageName();

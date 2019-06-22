@@ -1,21 +1,16 @@
-package com.ashomok.ocrme.rate_app;
+package com.ashomok.lullabies.utils.rate_app;
 
 import android.app.DialogFragment;
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.ashomok.ocrme.R;
-import com.ashomok.ocrme.utils.RateAppUtils;
+import com.ashomok.lullabies.R;
 
 /**
  * Created by iuliia on 10/5/16.
@@ -78,7 +73,7 @@ public class RateAppDialogFragment extends DialogFragment {
     }
 
     private void rate() {
-        RateAppUtils rateAppUtils = new RateAppUtils();
-        rateAppUtils.rate(getActivity());
+        RateAppUtil rateAppUtil = new RateAppUtil();
+        rateAppUtil.rate(getActivity());
     }
 }

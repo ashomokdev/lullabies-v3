@@ -122,7 +122,7 @@ public class MusicPlayerActivity extends BaseActivity
         super.initializeToolbar();
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         }
     }
 
@@ -175,7 +175,8 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     private void rateApp() {
-        RateAppUtil.rate(this);
+        RateAppUtil rateAppUtil = new RateAppUtil();
+        rateAppUtil.rate(this);
     }
 
     @Override
