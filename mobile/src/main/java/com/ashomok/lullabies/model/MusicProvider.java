@@ -234,7 +234,7 @@ public class MusicProvider {
         new AsyncTask<Void, Void, State>() {
             @Override
             protected State doInBackground(Void... params) {
-                retrieveMedia();
+                retrieveMedia(); //todo show loading view while loading
                 return mCurrentState;
             }
 

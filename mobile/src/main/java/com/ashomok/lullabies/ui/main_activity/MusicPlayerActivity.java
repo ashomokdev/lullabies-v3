@@ -16,6 +16,7 @@
 package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.ActivityOptions;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -51,6 +53,9 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasFragmentInjector;
 
 /**
  * Main activity for the music player.
@@ -59,7 +64,8 @@ import dagger.android.AndroidInjection;
  * connected while this activity is running.
  */
 public class MusicPlayerActivity extends BaseActivity
-        implements MediaBrowserFragment.MediaFragmentListener, MusicPlayerContract.View {
+        implements MediaBrowserFragment.MediaFragmentListener,
+        MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
     private static final String SAVED_MEDIA_ID = "com.example.uamp.MEDIA_ID";
@@ -93,8 +99,6 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.UAmpAppTheme);
-
-        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
         setContentView(R.layout.activity_player);

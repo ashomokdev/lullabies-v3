@@ -66,7 +66,6 @@ public class MediaItemStateHelper {
                 state = getStateFromController(context);
             }
         }
-
         return state;
     }
 

@@ -16,6 +16,7 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -37,7 +38,14 @@ import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasFragmentInjector;
 import dagger.android.support.DaggerAppCompatActivity;
 
 /**
@@ -50,7 +58,8 @@ import dagger.android.support.DaggerAppCompatActivity;
  * a {@link android.support.v4.widget.DrawerLayout} with id 'drawerLayout' and
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
-public abstract class ActionBarCastActivity extends DaggerAppCompatActivity {
+public abstract class ActionBarCastActivity extends RxAppCompatActivity
+        implements HasFragmentInjector {
 
     private static final String TAG = LogHelper.makeLogTag(ActionBarCastActivity.class);
 
@@ -84,8 +93,12 @@ public abstract class ActionBarCastActivity extends DaggerAppCompatActivity {
         }
     };
 
+    @Inject
+    DispatchingAndroidInjector<Fragment> fragmentInjector;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         LogHelper.d(TAG, "Activity onCreate");
@@ -192,5 +205,10 @@ public abstract class ActionBarCastActivity extends DaggerAppCompatActivity {
                     .build();
             overlay.show();
         }
+    }
+
+    @Override
+    public AndroidInjector<Fragment> fragmentInjector() {
+        return fragmentInjector;
     }
 }

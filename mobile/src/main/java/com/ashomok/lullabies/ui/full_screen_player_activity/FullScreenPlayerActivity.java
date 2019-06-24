@@ -95,12 +95,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     @Inject
     AdMobContainer adMobContainer;
 
-    private final Runnable mUpdateProgressTask = new Runnable() {
-        @Override
-        public void run() {
-            updateProgress();
-        }
-    };
+    private final Runnable mUpdateProgressTask = () -> updateProgress();
 
     private final ScheduledExecutorService mExecutorService =
             Executors.newSingleThreadScheduledExecutor();
@@ -139,7 +134,6 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_player);
         initializeToolbar();
@@ -148,57 +142,58 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
             getSupportActionBar().setTitle("");
         }
 
-        mBackgroundImage = (ImageView) findViewById(R.id.background_image);
-        mPauseDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
-        mPlayDrawable = ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
-        mPlayPause = (ImageView) findViewById(R.id.play_pause);
-        mSkipNext = (ImageView) findViewById(R.id.next);
-        mSkipPrev = (ImageView) findViewById(R.id.prev);
-        mStart = (TextView) findViewById(R.id.startText);
-        mEnd = (TextView) findViewById(R.id.endText);
-        mSeekbar = (SeekBar) findViewById(R.id.seekBar1);
-        mLine1 = (TextView) findViewById(R.id.line1);
-        mLine2 = (TextView) findViewById(R.id.line2);
-        mLine3 = (TextView) findViewById(R.id.line3);
-        mLoading = (ProgressBar) findViewById(R.id.progressBar1);
+        mBackgroundImage = findViewById(R.id.background_image);
+        mPauseDrawable =
+                ContextCompat.getDrawable(this, R.drawable.uamp_ic_pause_white_48dp);
+        mPlayDrawable =
+                ContextCompat.getDrawable(this, R.drawable.uamp_ic_play_arrow_white_48dp);
+        mPlayPause = findViewById(R.id.play_pause);
+        mSkipNext = findViewById(R.id.next);
+        mSkipPrev = findViewById(R.id.prev);
+        mStart = findViewById(R.id.startText);
+        mEnd = findViewById(R.id.endText);
+        mSeekbar = findViewById(R.id.seekBar1);
+        mLine1 = findViewById(R.id.line1);
+        mLine2 = findViewById(R.id.line2);
+        mLine3 = findViewById(R.id.line3);
+        mLoading = findViewById(R.id.progressBar1);
         mControllers = findViewById(R.id.controllers);
 
-        mSkipNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this).getTransportControls();
-                controls.skipToNext();
-            }
+        mSkipNext.setOnClickListener(v -> {
+            MediaControllerCompat.TransportControls controls =
+                    MediaControllerCompat.getMediaController(
+                            FullScreenPlayerActivity.this).getTransportControls();
+            controls.skipToNext();
         });
 
-        mSkipPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this).getTransportControls();
-                controls.skipToPrevious();
-            }
+        mSkipPrev.setOnClickListener(v -> {
+            MediaControllerCompat.TransportControls controls =
+                    MediaControllerCompat.getMediaController(
+                            FullScreenPlayerActivity.this).getTransportControls();
+            controls.skipToPrevious();
         });
 
-        mPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PlaybackStateCompat state = MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this).getPlaybackState();
-                if (state != null) {
-                    MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this).getTransportControls();
-                    switch (state.getState()) {
-                        case PlaybackStateCompat.STATE_PLAYING: // fall through
-                        case PlaybackStateCompat.STATE_BUFFERING:
-                            controls.pause();
-                            stopSeekbarUpdate();
-                            break;
-                        case PlaybackStateCompat.STATE_PAUSED:
-                        case PlaybackStateCompat.STATE_STOPPED:
-                            controls.play();
-                            scheduleSeekbarUpdate();
-                            break;
-                        default:
-                            LogHelper.d(TAG, "onClick with state ", state.getState());
-                    }
+        mPlayPause.setOnClickListener(v -> {
+            PlaybackStateCompat state =
+                    MediaControllerCompat.getMediaController(
+                            FullScreenPlayerActivity.this).getPlaybackState();
+            if (state != null) {
+                MediaControllerCompat.TransportControls controls =
+                        MediaControllerCompat.getMediaController(
+                                FullScreenPlayerActivity.this).getTransportControls();
+                switch (state.getState()) {
+                    case PlaybackStateCompat.STATE_PLAYING: // fall through
+                    case PlaybackStateCompat.STATE_BUFFERING:
+                        controls.pause();
+                        stopSeekbarUpdate();
+                        break;
+                    case PlaybackStateCompat.STATE_PAUSED:
+                    case PlaybackStateCompat.STATE_STOPPED:
+                        controls.play();
+                        scheduleSeekbarUpdate();
+                        break;
+                    default:
+                        LogHelper.d(TAG, "onClick with state ", state.getState());
                 }
             }
         });
@@ -216,7 +211,8 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this).getTransportControls().seekTo(seekBar.getProgress());
+                MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this)
+                        .getTransportControls().seekTo(seekBar.getProgress());
                 scheduleSeekbarUpdate();
             }
         });
@@ -302,7 +298,8 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         if (mMediaBrowser != null) {
             mMediaBrowser.disconnect();
         }
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this);
+        MediaControllerCompat controllerCompat =
+                MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this);
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mCallback);
         }
@@ -369,7 +366,8 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
             return;
         }
         mLastPlaybackState = state;
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this);
+        MediaControllerCompat controllerCompat =
+                MediaControllerCompat.getMediaController(FullScreenPlayerActivity.this);
         if (controllerCompat != null && controllerCompat.getExtras() != null) {
             String castName = controllerCompat.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
             String line3Text = castName == null ? "" : getResources()
