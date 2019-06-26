@@ -1,9 +1,8 @@
 package com.ashomok.lullabies.ui.full_screen_player_activity;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
-import com.ashomok.lullabies.billing.BillingProviderImpl;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerPresenter;
 import com.ashomok.lullabies.utils.LogHelper;
 

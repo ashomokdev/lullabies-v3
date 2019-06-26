@@ -5,10 +5,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.utils.StartServiceUtil;
 
 /**
  * Created by iuliia on 7/10/16.
@@ -37,7 +38,7 @@ public class ExitDialogFragment extends DialogFragment {
                             Intent i = new Intent(getActivity(), MusicService.class);
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP);
-                            getActivity().startService(i);
+                            StartServiceUtil.startService(getActivity(), i);
                         }
                 )
                 .setNegativeButton(R.string.cancel,

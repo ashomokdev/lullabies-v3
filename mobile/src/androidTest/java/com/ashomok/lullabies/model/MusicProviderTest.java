@@ -17,8 +17,8 @@
 package com.ashomok.lullabies.model;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.annotation.NonNull;
+import androidx.test.runner.AndroidJUnit4;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.test.mock.MockResources;

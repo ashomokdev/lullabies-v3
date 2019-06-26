@@ -3,18 +3,17 @@ package com.ashomok.lullabies.ui;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
@@ -123,12 +122,11 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
                 int state = getMediaItemState(activity, mediaItem);
 
                 final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
-                if (state == STATE_PLAYING ) {
+                if (state == STATE_PLAYING) {
                     tapMeImage.setVisibility(View.GONE);
                 } else {
                     tapMeImage.setVisibility(View.VISIBLE);
                 }
-                LogHelper.d(TAG, "for view with index " + i + "state is " + state);
             }
         } catch (Exception e) {
             e.printStackTrace();

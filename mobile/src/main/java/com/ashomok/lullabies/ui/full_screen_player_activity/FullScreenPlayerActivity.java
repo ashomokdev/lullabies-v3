@@ -23,8 +23,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -43,7 +43,6 @@ import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.ad.AdMobContainer;
-import com.ashomok.lullabies.ad.AdMobContainerImpl;
 import com.ashomok.lullabies.ui.ActionBarCastActivity;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
@@ -54,8 +53,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-
-import dagger.android.AndroidInjection;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;

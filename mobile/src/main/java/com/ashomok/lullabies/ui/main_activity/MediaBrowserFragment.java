@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -52,7 +52,6 @@ import dagger.android.DaggerFragment;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
 
-import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 /**

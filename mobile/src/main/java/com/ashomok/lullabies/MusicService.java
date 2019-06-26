@@ -16,23 +16,25 @@
 
 package com.ashomok.lullabies;
 
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
-import android.support.v4.media.MediaBrowserServiceCompat;
+import androidx.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
+import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.media.MediaRouter;
+import androidx.mediarouter.media.MediaRouter;
 
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.playback.CastPlayback;
@@ -43,6 +45,7 @@ import com.ashomok.lullabies.playback.QueueManager;
 import com.ashomok.lullabies.ui.NowPlayingActivity;
 import com.ashomok.lullabies.utils.CarHelper;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.StartServiceUtil;
 import com.ashomok.lullabies.utils.TvHelper;
 import com.ashomok.lullabies.utils.WearHelper;
 import com.google.android.gms.cast.framework.CastContext;
@@ -88,7 +91,6 @@ import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_ROOT;
  * <li> Update playbackState, "now playing" metadata and queue, using MediaSession proper methods
  *      {@link android.media.session.MediaSession#setPlaybackState(android.media.session.PlaybackState)}
  *      {@link android.media.session.MediaSession#setMetadata(android.media.MediaMetadata)} and
- *      {@link android.media.session.MediaSession#setQueue(java.util.List)})
  *
  * <li> Declare and export the service in AndroidManifest with an intent receiver for the action
  *      android.media.browse.MediaBrowserService
@@ -252,6 +254,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
+
         if (startIntent != null) {
             String action = startIntent.getAction();
             String command = startIntent.getStringExtra(CMD_NAME);
@@ -375,9 +378,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // The service needs to continue running even after the bound client (usually a
         // MediaController) disconnects, otherwise the music playback will stop.
         // Calling startService(Intent) will keep the service running until it is explicitly killed.
-        startService(new Intent(getApplicationContext(), MusicService.class));
-    }
 
+        Intent i = new Intent(getApplicationContext(), MusicService.class);
+        StartServiceUtil.startService(this, i);
+    }
 
     /**
      * Callback method called from PlaybackManager whenever the music stops playing.

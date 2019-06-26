@@ -1,7 +1,7 @@
 package com.ashomok.lullabies.ui.about_activity;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.ashomok.lullabies.utils.LogHelper;
 

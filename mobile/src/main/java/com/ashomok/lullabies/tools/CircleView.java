@@ -5,14 +5,12 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-
-import com.ashomok.lullabies.utils.LogHelper;
 
 /**
  * Created by iuliia on 16.05.16.

@@ -20,10 +20,11 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.MediaRouteButton;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.mediarouter.app.MediaRouteButton;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,6 @@ import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasFragmentInjector;
-import dagger.android.support.DaggerAppCompatActivity;
 
 /**
  * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
@@ -54,8 +54,8 @@ import dagger.android.support.DaggerAppCompatActivity;
  * <p>
  * The requirements for a subclass is to call {@link #initializeToolbar()} on onCreate, after
  * setContentView() is called and have three mandatory layout elements:
- * a {@link android.support.v7.widget.Toolbar} with id 'toolbar',
- * a {@link android.support.v4.widget.DrawerLayout} with id 'drawerLayout' and
+ * a {@link androidx.appcompat.widget.Toolbar} with id 'toolbar',
+ * a {@link DrawerLayout} with id 'drawerLayout' and
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
 public abstract class ActionBarCastActivity extends RxAppCompatActivity

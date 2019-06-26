@@ -21,18 +21,21 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.widget.Toast;
 
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;
+
+import static android.widget.Toast.LENGTH_LONG;
 
 /**
  * Base activity for activities that need to show a playback control fragment when media is playing.
@@ -140,7 +143,7 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         else {
             int state = mediaController.getPlaybackState().getState();
             LogHelper.d(TAG, "Current playback state is " + state);
-            switch (state) {
+           switch (state) {
                 case PlaybackStateCompat.STATE_ERROR:
                     shouldShowControls = false;
                     break;
@@ -154,6 +157,11 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                     shouldShowControls = true;
                     break;
             }
+
+            //todo remove in prod
+            Toast.makeText(this, "playback state is " + state + ", show controls: " +
+                    shouldShowControls, LENGTH_LONG).show();
+
         }
         LogHelper.d(TAG, "shouldShowControls returns " + shouldShowControls);
         return shouldShowControls;

@@ -1,13 +1,12 @@
 package com.ashomok.lullabies.ui.main_activity;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.billing.BillingProvider;
 import com.ashomok.lullabies.billing.BillingProviderCallback;
-import com.ashomok.lullabies.billing.BillingProviderImpl;
 import com.ashomok.lullabies.billing.model.SkuRowData;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
