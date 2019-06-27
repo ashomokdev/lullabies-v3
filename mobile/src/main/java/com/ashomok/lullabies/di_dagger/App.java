@@ -2,7 +2,7 @@ package com.ashomok.lullabies.di_dagger;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
+import androidx.multidex.MultiDex;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;

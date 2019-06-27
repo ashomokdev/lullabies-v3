@@ -1,12 +1,10 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.DialogFragment;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,18 +12,30 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ashomok.lullabies.utils.MediaItemStateHelper.*;
+import javax.inject.Inject;
 
-public class MyViewPagerAdapter extends PagerAdapter {
+import static com.ashomok.lullabies.utils.MediaItemStateHelper.STATE_PLAYING;
+import static com.ashomok.lullabies.utils.MediaItemStateHelper.getMediaItemState;
+import static com.ashomok.lullabies.utils.MediaItemStateHelper.initializeColorStateLists;
+import static com.ashomok.lullabies.utils.MediaItemStateHelper.sColorStateNotPlaying;
+import static com.ashomok.lullabies.utils.MediaItemStateHelper.sColorStatePlaying;
+
+public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCallback {
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
-    private Context context;
+    private final RateAppAsker rateAppAsker;
+    private Activity activity;
 
     //pager views by position
     private SparseArray<View> views;
@@ -42,8 +52,10 @@ public class MyViewPagerAdapter extends PagerAdapter {
      */
     private final Object mLock = new Object();
 
-    public MyViewPagerAdapter(Context context) {
-        this.context = context;
+    @Inject
+    public MyViewPagerAdapter(Activity activity, RateAppAsker rateAppAsker) {
+        this.activity = activity;
+        this.rateAppAsker = rateAppAsker;
         views = new SparseArray<>();
         mObjects = new ArrayList<>();
     }
@@ -52,10 +64,10 @@ public class MyViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(@NonNull ViewGroup collection, int position) {
         if (sColorStateNotPlaying == null || sColorStatePlaying == null) {
-            initializeColorStateLists(context);
+            initializeColorStateLists(activity);
         }
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(activity);
         ViewGroup convertView =
                 (ViewGroup) inflater.inflate(R.layout.media_pager_item, collection, false);
 
@@ -74,6 +86,9 @@ public class MyViewPagerAdapter extends PagerAdapter {
 
         collection.addView(convertView);
         views.put(position, convertView);
+
+        rateAppAsker.init(this);
+
         return convertView;
     }
 
@@ -104,13 +119,13 @@ public class MyViewPagerAdapter extends PagerAdapter {
 
                 MediaBrowserCompat.MediaItem mediaItem = mObjects.get(key);
                 // If the state of convertView is different, we need to adapt the view to the new state.
+                int state = getMediaItemState(activity, mediaItem);
 
-                int state = getMediaItemState((Activity) context, mediaItem);
                 final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
-                if (state != STATE_PLAYING) {
-                    tapMeImage.setVisibility(View.VISIBLE);
+                if (state == STATE_PLAYING) {
+                    tapMeImage.setVisibility(View.GONE);
                 } else {
-                    tapMeImage.setVisibility(View.INVISIBLE);
+                    tapMeImage.setVisibility(View.VISIBLE);
                 }
             }
         } catch (Exception e) {
@@ -157,12 +172,23 @@ public class MyViewPagerAdapter extends PagerAdapter {
             mBackgroundImage.setImageBitmap(art);
         } else {
             // otherwise, fetch a high res version and update:
+
+            //set placeholder
+            mBackgroundImage.setImageDrawable(
+                    activity.getResources().getDrawable(R.drawable.placeholder));
             cache.fetch(artUrl, new AlbumArtCache.FetchListener() {
                 @Override
                 public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                     mBackgroundImage.setImageBitmap(bitmap);
                 }
             });
+        }
+    }
+
+    @Override
+    public void showRateAppDialog(DialogFragment rateAppDialogFragment) {
+        if (activity != null) {
+            rateAppDialogFragment.show(activity.getFragmentManager(), "rate_app_dialog");
         }
     }
 }

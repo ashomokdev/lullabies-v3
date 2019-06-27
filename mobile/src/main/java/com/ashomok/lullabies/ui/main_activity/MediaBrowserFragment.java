@@ -16,16 +16,13 @@
 package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.Activity;
-
-
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -34,21 +31,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ashomok.lullabies.R;
-
 import com.ashomok.lullabies.tools.CircleView;
 import com.ashomok.lullabies.tools.ClickableViewPager;
-import com.ashomok.lullabies.ui.ExitDialogFragment;
 import com.ashomok.lullabies.ui.MediaBrowserProvider;
 import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.android.DaggerFragment;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
+
+import static android.view.View.VISIBLE;
 
 /**
  * A Fragment that lists all the various browsable queues available
@@ -58,22 +62,23 @@ import java.util.List;
  * Once connected, the fragment subscribes to get all the children.
  * All {@link MediaBrowserCompat.MediaItem}'s that can be browsed are shown in a ListView.
  */
-public class MediaBrowserFragment extends Fragment {
+public class MediaBrowserFragment extends DaggerFragment {
 
     private static final String TAG = LogHelper.makeLogTag(MediaBrowserFragment.class);
 
     private static final String ARG_MEDIA_ID = "media_id";
 
-    private MyViewPagerAdapter mBrowserAdapter;
     private String mMediaId;
     private MediaFragmentListener mMediaFragmentListener;
 
     private View emptyResultView;
     private TextView mErrorMessage;
-
     private CircleView circleView;
-
     private ClickableViewPager viewPager;
+    private ProgressBar progressBar;
+
+    @Inject
+    MyViewPagerAdapter mBrowserAdapter;
 
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
@@ -96,16 +101,6 @@ public class MediaBrowserFragment extends Fragment {
         }
     };
 
-    private void reloadMedia() {
-        LogHelper.d(TAG, "on reloadMedia");
-        boolean isOnline = NetworkHelper.isOnline(getActivity());
-        if (isOnline) {
-            if (mBrowserAdapter.getCount() == 0) {
-                onConnected();
-            }
-        }
-    }
-
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
     private final MediaControllerCompat.Callback mMediaControllerCallback =
@@ -127,36 +122,41 @@ public class MediaBrowserFragment extends Fragment {
                     LogHelper.d(TAG, "Received state change: ", state);
                     checkForUserVisibleErrors(false);
                     mBrowserAdapter.notifyDataSetChanged();
+                    updateLoadingView(state);
                 }
             };
 
-    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback =
-            new MediaBrowserCompat.SubscriptionCallback() {
-                @Override
-                public void onChildrenLoaded(@NonNull String parentId,
-                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    try {
-                        LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
-                                "  count=" + children.size());
-                        checkForUserVisibleErrors(children.isEmpty());
-                        mBrowserAdapter.clear();
-                        for (MediaBrowserCompat.MediaItem item : children) {
-                            mBrowserAdapter.add(item);
+    Completable loadMediaComplatable = Completable.create(emitter -> {
+
+        mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId,
+                new MediaBrowserCompat.SubscriptionCallback() {
+                    @Override
+                    public void onChildrenLoaded(@NonNull String parentId,
+                                                 @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                        try {
+                            LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                    "  count=" + children.size());
+                            checkForUserVisibleErrors(children.isEmpty());
+                            mBrowserAdapter.clear();
+                            for (MediaBrowserCompat.MediaItem item : children) {
+                                mBrowserAdapter.add(item);
+                            }
+                            mBrowserAdapter.notifyDataSetChanged();
+
+                            emitter.onComplete();
+                        } catch (Throwable t) {
+                            LogHelper.e(TAG, "Error on childrenloaded", t);
+                            emitter.onError(t);
                         }
-                        mBrowserAdapter.notifyDataSetChanged();
-                    } catch (Throwable t) {
-                        LogHelper.e(TAG, "Error on childrenloaded", t);
-                        throw t;
                     }
-                }
 
-                @Override
-                public void onError(@NonNull String id) {
-                    LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
-                    Toast.makeText(getActivity(), R.string.error_loading_media, Toast.LENGTH_LONG).show();
-                    checkForUserVisibleErrors(true);
-                }
-            };
+                    @Override
+                    public void onError(@NonNull String id) {
+                        LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
+                        emitter.onError(new Exception(id));
+                    }
+                });
+    });
 
     @Override
     public void onAttach(Activity activity) {
@@ -170,13 +170,15 @@ public class MediaBrowserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         LogHelper.d(TAG, "fragment.onCreateView");
-        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        View rootView = inflater.inflate(R.layout.media_browser_fragment, container, false);
+
+        progressBar = rootView.findViewById(R.id.progress);
+        progressBar.setVisibility(View.VISIBLE);
 
         emptyResultView = rootView.findViewById(R.id.empty_result_layout);
-        mErrorMessage = (TextView) emptyResultView.findViewById(R.id.error_message);
+        mErrorMessage = emptyResultView.findViewById(R.id.error_message);
 
         //init pager
-        mBrowserAdapter = new MyViewPagerAdapter(getActivity());
         viewPager = rootView.findViewById(R.id.pager);
         viewPager.setAdapter(mBrowserAdapter);
 
@@ -252,6 +254,8 @@ public class MediaBrowserFragment extends Fragment {
     // fragment.onStart() or explicitly by the activity in the case where the connection
     // completes after the onStart()
     public void onConnected() {
+        LogHelper.d(TAG, "onConnected");
+
         if (isDetached()) {
             return;
         }
@@ -261,23 +265,36 @@ public class MediaBrowserFragment extends Fragment {
         }
         updateTitle();
 
-        // Unsubscribing before subscribing is required if this mediaId already has a subscriber
-        // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
-        // the callback, but won't trigger the initial callback.onChildrenLoaded.
-        //
-        // This is temporary: A bug is being fixed that will make subscribe
-        // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
-        // subscriber or not. Currently this only happens if the mediaID has no previous
-        // subscriber or if the media content changes on the service side, so we need to
-        // unsubscribe first.
-        mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
+        loadMediaComplatable
+                .doOnSubscribe(disposable -> {
+                    // Unsubscribing before subscribing is required if this mediaId already has a subscriber
+                    // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
+                    // the callback, but won't trigger the initial callback.onChildrenLoaded.
+                    //
+                    // This is temporary: A bug is being fixed that will make subscribe
+                    // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
+                    // subscriber or not. Currently this only happens if the mediaID has no previous
+                    // subscriber or if the media content changes on the service side, so we need to
+                    // unsubscribe first.
+                    mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
+                })
+                .compose(((RxAppCompatActivity) getActivity()).bindToLifecycle())
+                .subscribeOn(Schedulers.io())
+                .subscribe(() -> {
+                    LogHelper.d(TAG, "complatable finished");
+                    progressBar.setVisibility(View.GONE);
+                }, throwable -> {
+                    LogHelper.e(TAG, throwable.getMessage());
+                    progressBar.setVisibility(View.GONE);
+                    checkForUserVisibleErrors(true);
+                });
 
-        mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId, mSubscriptionCallback);
-
-        // Add MediaController callback so we can redraw the list when metadata changes:
+        // Add MediaController callback so we can redraw the view when metadata changes:
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
             controller.registerCallback(mMediaControllerCallback);
+            PlaybackStateCompat state = controller.getPlaybackState();
+            updateLoadingView(state);
         }
     }
 
@@ -327,10 +344,34 @@ public class MediaBrowserFragment extends Fragment {
 
     public interface MediaFragmentListener extends MediaBrowserProvider {
         void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
+
         void setToolbarTitle(CharSequence title);
     }
 
     public ClickableViewPager getViewPager() {
         return viewPager;
     }
+
+    private void reloadMedia() {
+        LogHelper.d(TAG, "on reloadMedia");
+        boolean isOnline = NetworkHelper.isOnline(getActivity());
+        if (isOnline) {
+            if (mBrowserAdapter.getCount() == 0) {
+                onConnected();
+            }
+        }
+    }
+
+    private void updateLoadingView(PlaybackStateCompat state) {
+        LogHelper.d(TAG, "updateLoadingView with state " + state);
+        switch (state.getState()) {
+            case PlaybackStateCompat.STATE_BUFFERING:
+                progressBar.setVisibility(VISIBLE);
+                break;
+            default:
+                progressBar.setVisibility(View.GONE);
+                break;
+        }
+    }
+
 }

@@ -2,7 +2,7 @@ package com.ashomok.lullabies.ui.full_screen_player_activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;

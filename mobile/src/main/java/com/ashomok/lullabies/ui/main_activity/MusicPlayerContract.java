@@ -1,6 +1,6 @@
 package com.ashomok.lullabies.ui.main_activity;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import com.ashomok.lullabies.billing.model.SkuRowData;
 import com.ashomok.lullabies.di_dagger.BasePresenter;

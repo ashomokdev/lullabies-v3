@@ -29,12 +29,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.app.NotificationCompat.MediaStyle;
+import androidx.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -42,6 +42,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;
+import com.ashomok.lullabies.utils.StartServiceUtil;
 
 /**
  * Keeps track of a notification and updates it automatically for a given
@@ -137,6 +138,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 mService.registerReceiver(this, filter);
 
                 mService.startForeground(NOTIFICATION_ID, notification);
+                LogHelper.d(TAG, "startForeground(NOTIFICATION_ID, notification) called");
                 mStarted = true;
             }
         }
@@ -181,7 +183,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Intent i = new Intent(context, MusicService.class);
                 i.setAction(MusicService.ACTION_CMD);
                 i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP_CASTING);
-                mService.startService(i);
+                StartServiceUtil.startService(mService, i);
                 break;
             default:
                 LogHelper.w(TAG, "Unknown intent ignored. Action=", action);

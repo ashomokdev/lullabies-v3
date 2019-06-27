@@ -21,14 +21,15 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.NavigationView;
+import com.google.android.material.navigation.NavigationView;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
+
+import androidx.core.view.GravityCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,12 +46,10 @@ import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.RateAppUtils;
+import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Inject;
-
-import dagger.android.AndroidInjection;
 
 /**
  * Main activity for the music player.
@@ -59,7 +58,8 @@ import dagger.android.AndroidInjection;
  * connected while this activity is running.
  */
 public class MusicPlayerActivity extends BaseActivity
-        implements MediaBrowserFragment.MediaFragmentListener, MusicPlayerContract.View {
+        implements MediaBrowserFragment.MediaFragmentListener,
+        MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
     private static final String SAVED_MEDIA_ID = "com.example.uamp.MEDIA_ID";
@@ -93,8 +93,6 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.UAmpAppTheme);
-
-        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
         setContentView(R.layout.activity_player);
@@ -122,7 +120,7 @@ public class MusicPlayerActivity extends BaseActivity
         super.initializeToolbar();
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         }
     }
 
@@ -175,8 +173,8 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     private void rateApp() {
-        RateAppUtils rateAppUtils = new RateAppUtils();
-        rateAppUtils.rate(this);
+        RateAppUtil rateAppUtil = new RateAppUtil();
+        rateAppUtil.rate(this);
     }
 
     @Override

@@ -17,7 +17,7 @@ package com.ashomok.lullabies.utils;
 
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 

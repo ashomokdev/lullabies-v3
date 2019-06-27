@@ -3,13 +3,13 @@ package com.ashomok.lullabies.tools;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 
 import com.ashomok.lullabies.R;
 
 
-public class TapMeAnimatedImageView extends android.support.v7.widget.AppCompatImageView {
+public class TapMeAnimatedImageView extends androidx.appcompat.widget.AppCompatImageView {
     public TapMeAnimatedImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setImageDrawable(ContextCompat.getDrawable(

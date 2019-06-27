@@ -16,13 +16,15 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.MediaRouteButton;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.mediarouter.app.MediaRouteButton;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +39,14 @@ import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasFragmentInjector;
 
 /**
  * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
@@ -44,11 +54,12 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  * <p>
  * The requirements for a subclass is to call {@link #initializeToolbar()} on onCreate, after
  * setContentView() is called and have three mandatory layout elements:
- * a {@link android.support.v7.widget.Toolbar} with id 'toolbar',
- * a {@link android.support.v4.widget.DrawerLayout} with id 'drawerLayout' and
+ * a {@link androidx.appcompat.widget.Toolbar} with id 'toolbar',
+ * a {@link DrawerLayout} with id 'drawerLayout' and
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
-public abstract class ActionBarCastActivity extends AppCompatActivity {
+public abstract class ActionBarCastActivity extends RxAppCompatActivity
+        implements HasFragmentInjector {
 
     private static final String TAG = LogHelper.makeLogTag(ActionBarCastActivity.class);
 
@@ -82,8 +93,12 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
         }
     };
 
+    @Inject
+    DispatchingAndroidInjector<Fragment> fragmentInjector;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         LogHelper.d(TAG, "Activity onCreate");
@@ -190,5 +205,10 @@ public abstract class ActionBarCastActivity extends AppCompatActivity {
                     .build();
             overlay.show();
         }
+    }
+
+    @Override
+    public AndroidInjector<Fragment> fragmentInjector() {
+        return fragmentInjector;
     }
 }
