@@ -158,9 +158,9 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                     break;
             }
 
-            //todo remove in prod
-            Toast.makeText(this, "playback state is " + state + ", show controls: " +
-                    shouldShowControls, LENGTH_LONG).show();
+//            //todo remove in prod
+//            Toast.makeText(this, "playback state is " + state + ", show controls: " +
+//                    shouldShowControls, LENGTH_LONG).show();
 
         }
         LogHelper.d(TAG, "shouldShowControls returns " + shouldShowControls);

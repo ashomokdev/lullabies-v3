@@ -18,6 +18,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -39,17 +40,17 @@ public class BillingProviderImplTest {
     @Test
     public void testRemoveAdIcon() throws Exception {
         if (Settings.isAdsActive) {
-            onView(withContentDescription(R.string.remove_ads)).check(matches(isDisplayed()));
-            onView(withContentDescription(R.string.remove_ads)).perform(click());
-            onView(withContentDescription(R.string.ads_container)).check(matches(isDisplayed()));
+            onView(withId(R.id.remove_ads)).check(matches(isDisplayed()));
+            onView(withId(R.id.remove_ads)).perform(click());
+            onView(withId(R.id.ads_container)).check(matches(isDisplayed()));
 
             String expectedButtonText = InstrumentationRegistry.getTargetContext()
                     .getString(R.string.buy_ads_free);
             onView(withText(containsString(expectedButtonText))).check(matches(isDisplayed()));
             onView(withText(containsString(expectedButtonText))).perform(click());
         } else {
-            onView(withContentDescription(R.string.remove_ads)).check(matches(not(isDisplayed())));
-            onView(withContentDescription(R.string.ads_container)).check(matches(not(isDisplayed())));
+            onView(withId(R.id.remove_ads)).check(matches(not(isDisplayed())));
+            onView(withId(R.id.ads_container)).check(matches(not(isDisplayed())));
         }
     }
 }

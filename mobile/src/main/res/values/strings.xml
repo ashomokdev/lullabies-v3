@@ -91,7 +91,6 @@
     <string name="exit">Exit</string>
     <string name="exit_dialog_title">Do you want to exit?</string>
     <string name="ok">OK</string>
-    <string name="ads_container" translatable="false">ads_container</string>
     <string name="times_app_was_used" translatable="false">times_app_was_used</string>
     <string name="rate_app_dialog_title">Rate app</string>
     <string name="support_us">Do you like the music? \nIf yes, please support us with ★★★★★!</string>
