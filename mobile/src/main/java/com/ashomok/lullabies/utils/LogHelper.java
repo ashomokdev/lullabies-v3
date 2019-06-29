@@ -17,6 +17,8 @@ package com.ashomok.lullabies.utils;
 
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 public class LogHelper {
 
     private static final String LOG_PREFIX = "uamp_";
@@ -83,5 +85,6 @@ public class LogHelper {
             message = sb.toString();
         }
         Log.println(level, tag, message);
+        Crashlytics.log(level, tag, "log from loghelper " + message);
     }
 }
