@@ -284,7 +284,7 @@ public class MediaBrowserFragment extends DaggerFragment {
                     LogHelper.d(TAG, "complatable finished");
                     progressBar.setVisibility(View.GONE);
                 }, throwable -> {
-                    LogHelper.e(TAG, throwable.getMessage());
+                    LogHelper.e(TAG, throwable, "Error from loading media");
                     progressBar.setVisibility(View.GONE);
                     checkForUserVisibleErrors(true);
                 });
