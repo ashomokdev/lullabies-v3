@@ -121,6 +121,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
      * destroyed before {@link #stopNotification} is called.
      */
     public void startNotification() {
+        LogHelper.d(TAG, "on startNotification");
         if (!mStarted) {
             mMetadata = mController.getMetadata();
             mPlaybackState = mController.getPlaybackState();
@@ -128,7 +129,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // The notification must be updated after setting started to true
             Notification notification = createNotification();
             if (notification != null) {
-                mController.registerCallback(mCb);
+                mController.registerCallback(callback);
+                LogHelper.d(TAG, "register Callback");
                 IntentFilter filter = new IntentFilter();
                 filter.addAction(ACTION_NEXT);
                 filter.addAction(ACTION_PAUSE);
@@ -137,8 +139,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 filter.addAction(ACTION_STOP_CASTING);
                 mService.registerReceiver(this, filter);
 
-                mService.startForeground(NOTIFICATION_ID, notification);
-                LogHelper.d(TAG, "startForeground(NOTIFICATION_ID, notification) called");
+                mService.startForeground(NOTIFICATION_ID, notification); //error here
+                LogHelper.d(TAG, "startForeground called");
                 mStarted = true;
             }
         }
@@ -149,9 +151,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
      * was destroyed this has no effect.
      */
     public void stopNotification() {
+        LogHelper.d(TAG, "on stopNotification");
         if (mStarted) {
             mStarted = false;
-            mController.unregisterCallback(mCb);
+            mController.unregisterCallback(callback);
+            LogHelper.d(TAG, "unregister Callback");
             try {
                 mNotificationManager.cancel(NOTIFICATION_ID);
                 mService.unregisterReceiver(this);
@@ -200,14 +204,16 @@ public class MediaNotificationManager extends BroadcastReceiver {
         if (mSessionToken == null && freshToken != null ||
                 mSessionToken != null && !mSessionToken.equals(freshToken)) {
             if (mController != null) {
-                mController.unregisterCallback(mCb);
+                mController.unregisterCallback(callback);
+                LogHelper.d(TAG, "unregister Callback");
             }
             mSessionToken = freshToken;
             if (mSessionToken != null) {
                 mController = new MediaControllerCompat(mService, mSessionToken);
                 mTransportControls = mController.getTransportControls();
                 if (mStarted) {
-                    mController.registerCallback(mCb);
+                    mController.registerCallback(callback);
+                    LogHelper.d(TAG, "register Callback");
                 }
             }
         }
@@ -224,11 +230,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private final MediaControllerCompat.Callback mCb = new MediaControllerCompat.Callback() {
+    private final MediaControllerCompat.Callback callback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             mPlaybackState = state;
-            LogHelper.d(TAG, "Received new playback state", state);
             if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
@@ -243,7 +248,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             mMetadata = metadata;
-            LogHelper.d(TAG, "Received new metadata ", metadata);
             Notification notification = createNotification();
             if (notification != null) {
                 mNotificationManager.notify(NOTIFICATION_ID, notification);
@@ -255,6 +259,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             super.onSessionDestroyed();
             LogHelper.d(TAG, "Session was destroyed, resetting to the new session token");
             try {
+                mStarted = false;
                 updateSessionToken();
             } catch (RemoteException e) {
                 LogHelper.e(TAG, e, "could not connect media controller");
@@ -263,7 +268,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
     };
 
     private Notification createNotification() {
-        LogHelper.d(TAG, "updateNotificationMetadata. mMetadata=" + mMetadata);
         if (mMetadata == null || mPlaybackState == null) {
             return null;
         }
@@ -374,7 +378,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     private void setNotificationPlaybackState(NotificationCompat.Builder builder) {
         LogHelper.d(TAG, "updateNotificationPlaybackState. mPlaybackState=" + mPlaybackState);
         if (mPlaybackState == null || !mStarted) {
-            LogHelper.d(TAG, "updateNotificationPlaybackState. cancelling notification!");
+            LogHelper.d(TAG, "mService.stopForeground");
             mService.stopForeground(true);
             return;
         }

@@ -292,7 +292,6 @@ public final class LocalPlayback implements Playback {
     }
 
     private void tryToGetAudioFocus() {
-        LogHelper.d(TAG, "tryToGetAudioFocus");
         int result =
                 mAudioManager.requestAudioFocus(
                         mOnAudioFocusChangeListener,

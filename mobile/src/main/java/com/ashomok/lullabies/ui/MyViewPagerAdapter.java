@@ -3,6 +3,8 @@ package com.ashomok.lullabies.ui;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.util.SparseArray;
@@ -174,8 +176,9 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
             // otherwise, fetch a high res version and update:
 
             //set placeholder
-            mBackgroundImage.setImageDrawable(
-                    activity.getResources().getDrawable(R.drawable.placeholder));
+            ColorDrawable cd = new ColorDrawable(
+                    activity.getResources().getColor(R.color.colorPrimarySecond));
+            mBackgroundImage.setImageDrawable(cd);
             cache.fetch(artUrl, new AlbumArtCache.FetchListener() {
                 @Override
                 public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {

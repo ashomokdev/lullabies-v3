@@ -172,7 +172,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // This can help improve the response time in the method
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
         mMusicProvider.retrieveMediaAsync(null /* Callback */);
-        LogHelper.d(TAG, "retrieveMediaAsync called ");
 
         mPackageValidator = new PackageValidator(this);
 
@@ -312,7 +311,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
                                  Bundle rootHints) {
-        LogHelper.d(TAG, "OnGetRoot: clientPackageName=" + clientPackageName,
+        LogHelper.v(TAG, "OnGetRoot: clientPackageName=" + clientPackageName,
                 "; clientUid=" + clientUid + " ; rootHints=", rootHints);
         // To ensure you are not allowing any arbitrary app to browse your app's contents, you
         // need to check the origin:
@@ -361,8 +360,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
                     result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
                 }
             });
-
-            LogHelper.d(TAG, "retrieveMediaAsync called ");
         }
     }
 
@@ -371,6 +368,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onPlaybackStart() {
+        LogHelper.d(TAG, "onPlaybackStart");
         mSession.setActive(true);
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
@@ -440,10 +438,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
             if (service != null && service.mPlaybackManager.getPlayback() != null) {
                 if (service.mPlaybackManager.getPlayback().isPlaying()) {
                     LogHelper.d(TAG, "Ignoring delayed stop since the media player is in use.");
-                    return;
                 }
-                LogHelper.d(TAG, "Stopping service with delay handler.");
-                service.stopSelf();
+                else {
+                    LogHelper.d(TAG, "Stopping service with delay handler.");
+                    service.stopSelf();
+                }
             }
         }
     }

@@ -19,7 +19,7 @@
     <style name="UAmpAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#3F51B5</item>
         <item name="colorPrimaryDark">#3F51B5</item>
-        <item name="colorAccent">#FFC107</item>
+        <item name="colorAccent">#FFAB00</item>
         <item name="alertDialogTheme">@style/Theme.AppCompat.Dialog.Alert</item>
     </style>
 

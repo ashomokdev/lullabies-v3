@@ -40,9 +40,10 @@ public class RemoteJSONSource implements MusicProviderSource {
 
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);
 
+    //todo depends on flavour
     protected static final String CATALOG_URL =
-            "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/" +
-                    "json%2Fmisic.json?alt=media&token=65e98c89-a8d7-484c-99a9-5b45599a7865";
+            "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fcommon.json" +
+                    "?alt=media&token=14a55e22-da94-4055-a534-dfa8c4769e61";
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";

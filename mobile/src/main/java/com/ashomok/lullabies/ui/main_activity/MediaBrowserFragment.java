@@ -226,6 +226,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
             controller.unregisterCallback(mMediaControllerCallback);
+            LogHelper.d(TAG, "unregister Callback");
         }
         this.getActivity().unregisterReceiver(mConnectivityChangeReceiver);
     }
@@ -293,6 +294,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
             controller.registerCallback(mMediaControllerCallback);
+            LogHelper.d(TAG, "register Callback");
             PlaybackStateCompat state = controller.getPlaybackState();
             updateLoadingView(state);
         }

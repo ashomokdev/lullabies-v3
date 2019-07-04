@@ -16,11 +16,12 @@
   -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorAccent">#FFC107</color>
+    <color name="colorPrimarySecond">#98b3ed</color>
+    <color name="colorAccent">#FFAB00</color>
     <color name="tv_branding">#3F51B5</color>
     <color name="tv_branding_dark">#1A237E</color>
-    <color name="tv_branding_accent">#FFC107</color>
-    <color name="bt_accent">#FFC107</color>
+    <color name="tv_branding_accent">#FFAB00</color>
+    <color name="bt_accent">#FFAB00</color>
     <color name="media_item_icon_playing">@color/bt_accent</color>
     <color name="media_item_icon_not_playing">#ccc</color>
     <color name="drawer_header_background">@color/bt_accent</color>

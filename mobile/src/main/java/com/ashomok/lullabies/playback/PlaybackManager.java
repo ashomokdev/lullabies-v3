@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2014 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2014 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.ashomok.lullabies.playback;
 
@@ -20,9 +20,10 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import androidx.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+
+import androidx.annotation.NonNull;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.model.MusicProvider;
@@ -49,6 +50,8 @@ public class PlaybackManager implements Playback.Callback {
     public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
                            MusicProvider musicProvider, QueueManager queueManager,
                            Playback playback) {
+        LogHelper.d(TAG, "on constructor");
+
         mMusicProvider = musicProvider;
         mServiceCallback = serviceCallback;
         mResources = resources;
@@ -70,7 +73,7 @@ public class PlaybackManager implements Playback.Callback {
      * Handle a request to play music
      */
     public void handlePlayRequest() {
-        LogHelper.d(TAG, "handlePlayRequest: mState=" + mPlayback.getState());
+        LogHelper.d(TAG, "handlePlayRequest, curent state=" + mPlayback.getState());
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
             mServiceCallback.onPlaybackStart();
@@ -110,7 +113,7 @@ public class PlaybackManager implements Playback.Callback {
      * @param error if not null, error message to present to the user.
      */
     public void updatePlaybackState(String error) {
-        LogHelper.d(TAG, "updatePlaybackState, playback state=" + mPlayback.getState());
+        LogHelper.d(TAG, "updatePlaybackState with state=" + mPlayback.getState());
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         if (mPlayback != null && mPlayback.isConnected()) {
             position = mPlayback.getCurrentStreamPosition();
@@ -143,7 +146,10 @@ public class PlaybackManager implements Playback.Callback {
 
         if (state == PlaybackStateCompat.STATE_PLAYING ||
                 state == PlaybackStateCompat.STATE_PAUSED) {
+            LogHelper.d(TAG, "state is " + state + " notification required, onNotificationRequired");
             mServiceCallback.onNotificationRequired();
+        } else {
+            LogHelper.d(TAG, "state is " + state + " notification not required");
         }
     }
 
@@ -160,7 +166,7 @@ public class PlaybackManager implements Playback.Callback {
         String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
         int favoriteIcon = mMusicProvider.isFavorite(musicId) ?
                 R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp;
-        LogHelper.d(TAG, "updatePlaybackState, setting Favorite custom action of music ",
+        LogHelper.v(TAG, "updatePlaybackState, setting Favorite custom action of music ",
                 musicId, " current favorite=", mMusicProvider.isFavorite(musicId));
         Bundle customActionExtras = new Bundle();
         WearHelper.setShowCustomActionOnWear(customActionExtras, true);
@@ -173,10 +179,10 @@ public class PlaybackManager implements Playback.Callback {
     private long getAvailableActions() {
         long actions =
                 PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
-                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH |
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+                        PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID |
+                        PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
         if (mPlayback.isPlaying()) {
             actions |= PlaybackStateCompat.ACTION_PAUSE;
         } else {
@@ -379,8 +385,6 @@ public class PlaybackManager implements Playback.Callback {
                     }
                 }
             });
-
-            LogHelper.d(TAG, "retrieveMediaAsync called ");
         }
     }
 
