@@ -126,37 +126,36 @@ public class MediaBrowserFragment extends DaggerFragment {
                 }
             };
 
-    Completable loadMediaComplatable = Completable.create(emitter -> {
+    Completable loadMediaComplatable = Completable.create(emitter ->
+            mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId,
+            new MediaBrowserCompat.SubscriptionCallback() {
+                @Override
+                public void onChildrenLoaded(@NonNull String parentId,
+                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                    try {
+                        LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                "  count=" + children.size());
+                        checkForUserVisibleErrors(children.isEmpty());
 
-        mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId,
-                new MediaBrowserCompat.SubscriptionCallback() {
-                    @Override
-                    public void onChildrenLoaded(@NonNull String parentId,
-                                                 @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                        try {
-                            LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
-                                    "  count=" + children.size());
-                            checkForUserVisibleErrors(children.isEmpty());
-                            mBrowserAdapter.clear();
-                            for (MediaBrowserCompat.MediaItem item : children) {
-                                mBrowserAdapter.add(item);
-                            }
-                            mBrowserAdapter.notifyDataSetChanged();
-
-                            emitter.onComplete();
-                        } catch (Throwable t) {
-                            LogHelper.e(TAG, "Error on childrenloaded", t);
-                            emitter.onError(t);
+                        mBrowserAdapter.clear();
+                        for (MediaBrowserCompat.MediaItem item : children) {
+                            mBrowserAdapter.add(item);
                         }
-                    }
+                        mBrowserAdapter.notifyDataSetChanged();
 
-                    @Override
-                    public void onError(@NonNull String id) {
-                        LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
-                        emitter.onError(new Exception(id));
+                        emitter.onComplete();
+                    } catch (Throwable t) {
+                        LogHelper.e(TAG, "Error on childrenloaded", t);
+                        emitter.onError(t);
                     }
-                });
-    });
+                }
+
+                @Override
+                public void onError(@NonNull String id) {
+                    LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
+                    emitter.onError(new Exception(id));
+                }
+            }));
 
     @Override
     public void onAttach(Activity activity) {
@@ -229,6 +228,7 @@ public class MediaBrowserFragment extends DaggerFragment {
             LogHelper.d(TAG, "unregister Callback");
         }
         this.getActivity().unregisterReceiver(mConnectivityChangeReceiver);
+
     }
 
     @Override

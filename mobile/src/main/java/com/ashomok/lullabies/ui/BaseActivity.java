@@ -83,16 +83,13 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         hidePlaybackControls();
 
         mMediaBrowser.connect();
-
     }
 
-    //todo relise controller
-    // Current playback state is 1 - not OK
     @Override
     protected void onStop() {
         super.onStop();
         LogHelper.d(TAG, "Activity onStop");
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(this);
+        MediaControllerCompat controllerCompat = getSupportMediaController();
         if (controllerCompat != null) {
             controllerCompat.unregisterCallback(mMediaControllerCallback);
             LogHelper.d(TAG, "unregister Callback");
@@ -132,12 +129,10 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
      *
      * @return true if the MediaSession's state requires playback controls to be visible.
      */
-
-    //todo better to deside in another place
     protected boolean shouldShowControls() {
         boolean shouldShowControls;
 
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
+        MediaControllerCompat mediaController = getSupportMediaController();
         if (mediaController == null ||
                 mediaController.getMetadata() == null ||
                 mediaController.getPlaybackState() == null) {
@@ -159,29 +154,19 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                     shouldShowControls = true;
                     break;
             }
-
-//            //todo remove in prod
-//            Toast.makeText(this, "playback state is " + state + ", show controls: " +
-//                    shouldShowControls, LENGTH_LONG).show();
-
-            //BaseActivity|PlaybackManager|MusicService|PlayBackManager|MediaNotification|PlaybackManager|StartServ
-
         }
         LogHelper.d(TAG, "shouldShowControls returns " + shouldShowControls);
         return shouldShowControls;
     }
 
-    private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
-        LogHelper.d(TAG, "on connectToSession ");
-        MediaControllerCompat mediaController = getSupportMediaController();
-        if (mediaController == null) {
-            mediaController = new MediaControllerCompat(this, token);
-            setSupportMediaController(mediaController);
-            LogHelper.d(TAG, "new mediaController created with token = " + token.toString());
-        }
-        //todo controlle obtained in starnge way - check
-        mediaController.registerCallback(mMediaControllerCallback); //todo another contriller used here?
-        LogHelper.d(TAG, "register Callback");
+    private void connectToSession() throws RemoteException {
+        LogHelper.d(TAG, "on connectToSession");
+
+        MediaControllerCompat mMediaController =
+                new MediaControllerCompat(this, mMediaBrowser.getSessionToken());
+        mMediaController.registerCallback(mMediaControllerCallback);
+        setSupportMediaController(mMediaController);
+
 
         if (shouldShowControls()) {
             showPlaybackControls();
@@ -201,8 +186,6 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
     // Callback that ensures that we are showing the controls
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
-
-                //todo error not called no one method after restart
 
                 @Override
                 public void onSessionReady() {
@@ -245,7 +228,7 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                 public void onConnected() {
                     LogHelper.d(TAG, "onConnected");
                     try {
-                        connectToSession(mMediaBrowser.getSessionToken());
+                        connectToSession();
                     } catch (RemoteException e) {
                         LogHelper.e(TAG, e, "could not connect media controller");
                         hidePlaybackControls();

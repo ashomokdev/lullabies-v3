@@ -22,17 +22,17 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+
+import androidx.core.content.ContextCompat;
 
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.model.MusicProviderSource;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
-import com.ashomok.lullabies.utils.StartServiceUtil;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -108,8 +108,7 @@ public final class LocalPlayback implements Playback {
                             i.setAction(MusicService.ACTION_CMD);
                             i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
 
-                            StartServiceUtil.startService(mContext, i);
-
+                            ContextCompat.startForegroundService(mContext, i);
                         }
                     }
                 }

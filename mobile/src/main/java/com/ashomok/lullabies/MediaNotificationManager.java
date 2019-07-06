@@ -34,6 +34,8 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+
+import androidx.core.content.ContextCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -42,7 +44,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;
-import com.ashomok.lullabies.utils.StartServiceUtil;
 
 /**
  * Keeps track of a notification and updates it automatically for a given
@@ -122,6 +123,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
      */
     public void startNotification() {
         LogHelper.d(TAG, "on startNotification");
+
         if (!mStarted) {
             mMetadata = mController.getMetadata();
             mPlaybackState = mController.getPlaybackState();
@@ -187,7 +189,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Intent i = new Intent(context, MusicService.class);
                 i.setAction(MusicService.ACTION_CMD);
                 i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP_CASTING);
-                StartServiceUtil.startService(mService, i);
+                ContextCompat.startForegroundService(mService, i);
                 break;
             default:
                 LogHelper.w(TAG, "Unknown intent ignored. Action=", action);
@@ -254,6 +256,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             }
         }
 
+        // This might happen if the MusicService is killed while the Activity is in the
+        // foreground and onStart() has been called (but not onStop()).
         @Override
         public void onSessionDestroyed() {
             super.onSessionDestroyed();
