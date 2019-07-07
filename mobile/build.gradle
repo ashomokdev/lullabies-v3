@@ -22,7 +22,7 @@ android {
         applicationId "com.ashomok.lullabies"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 23
+        versionCode 24
         versionName "3.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

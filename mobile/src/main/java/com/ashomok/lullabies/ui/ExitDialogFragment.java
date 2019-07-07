@@ -36,9 +36,11 @@ public class ExitDialogFragment extends DialogFragment {
 
                             //stop music service
                             Intent i = new Intent(getActivity(), MusicService.class);
-                            i.setAction(MusicService.ACTION_CMD);
-                            i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP);
-                            ContextCompat.startForegroundService(getActivity(), i);
+                            getActivity().stopService(i);
+
+//                            i.setAction(MusicService.ACTION_CMD);
+//                            i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP);
+//                            ContextCompat.startForegroundService(getActivity(), i); //todo use handleStopRequest
                         }
                 )
                 .setNegativeButton(R.string.cancel,

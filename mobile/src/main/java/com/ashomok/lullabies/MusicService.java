@@ -379,7 +379,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // MediaController) disconnects, otherwise the music playback will stop.
         // Calling startService(Intent) will keep the service running until it is explicitly killed.
 
-        if (!isStarted) {
+        if (!isStarted) { //may be already started, just new song are playing
             Intent i = new Intent(this, MusicService.class);
             ContextCompat.startForegroundService(this, i);
             LogHelper.d(TAG, "startForegroundService called");

@@ -149,7 +149,6 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     public void clear() {
         synchronized (mLock) {
             mObjects.clear();
-//            views.clear(); //todo remove reduntant
         }
         notifyDataSetChanged();
     }
