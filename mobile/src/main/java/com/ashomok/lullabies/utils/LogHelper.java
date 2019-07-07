@@ -17,6 +17,8 @@ package com.ashomok.lullabies.utils;
 
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 public class LogHelper {
 
     private static final String LOG_PREFIX = "uamp_";
@@ -67,7 +69,7 @@ public class LogHelper {
         log(tag, Log.ERROR, t, messages);
     }
 
-    public static void log(String tag, int level, Throwable t, Object... messages) {
+    private static void log(String tag, int level, Throwable t, Object... messages) {
         String message;
         if (t == null && messages != null && messages.length == 1) {
             // handle this common case without the extra cost of creating a stringbuffer:
@@ -82,6 +84,6 @@ public class LogHelper {
             }
             message = sb.toString();
         }
-        Log.println(level, tag, message);
+        Crashlytics.log(level, tag, message);
     }
 }

@@ -12,10 +12,12 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.ui.main_activity.MediaBrowserFragment;
 
 public class MediaItemStateHelper {
     public static ColorStateList sColorStatePlaying;
     public static ColorStateList sColorStateNotPlaying;
+    private static final String TAG = LogHelper.makeLogTag(MediaItemStateHelper.class);
 
     public static final int STATE_INVALID = -1;
     public static final int STATE_NONE = 0;
@@ -70,7 +72,9 @@ public class MediaItemStateHelper {
     }
 
     public static int getStateFromController(Activity context) {
+
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(context);
+
         PlaybackStateCompat pbState = controller.getPlaybackState();
         if (pbState == null ||
                 pbState.getState() == PlaybackStateCompat.STATE_ERROR) {

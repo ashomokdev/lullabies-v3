@@ -21,6 +21,8 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
+import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -35,6 +37,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;

@@ -1,0 +1,124 @@
+{
+  "music": [
+    {
+      "title": "Lion",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic1.mp3?alt=media&token=467dcdcf-d19d-45a8-b107-88b7fc3ae433",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Flion.png?alt=media&token=6f73c913-4f04-4c07-b57f-cafefbcb6c14",
+      "trackNumber": 1,
+      "totalTrackCount": 10,
+      "duration": 205000,
+      "id": 1
+    },
+    {
+      "title": "Koala",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic2.mp3?alt=media&token=b4479f7a-758e-48ca-8ccf-7e34377fa43f",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fkoala.png?alt=media&token=06cba69c-a65e-450a-b619-d7e8b0735a6f",
+      "trackNumber": 2,
+      "totalTrackCount": 10,
+      "duration": 208400,
+      "id": 2
+    },
+    {
+      "title": "Giraffe",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic3.mp3?alt=media&token=7c53cf00-271f-4719-a5f1-4b4cc31eb4c6",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fgiraffe.png?alt=media&token=76129a05-2faf-4051-85cf-dfb86673a408",
+      "trackNumber": 3,
+      "totalTrackCount": 10,
+      "duration": 266173,
+      "id": 3
+    },
+    {
+      "title": "Elephant",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic4.mp3?alt=media&token=5a253b98-2e39-4ab2-a7f6-54a4657924cc",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Felephant.png?alt=media&token=15ac81b4-7106-4f59-8d4e-6d5b5849f04f",
+      "trackNumber": 4,
+      "totalTrackCount": 10,
+      "duration": 165000,
+      "id": 4
+    },
+    {
+      "title": "Crocodile",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic5.mp3?alt=media&token=43b4421c-4f39-4b25-b255-9c5d614024a8",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fcrocodile.png?alt=media&token=61afcc0a-97bb-4468-8895-7135c593f822",
+      "trackNumber": 5,
+      "totalTrackCount": 10,
+      "duration": 215000,
+      "id": 5
+    },
+    {
+      "title": "Whale",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic6.mp3?alt=media&token=3d30bf3a-d08c-42d0-a992-ace2e1e0cd28",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fwhale.png?alt=media&token=59d10c28-ca78-46c4-9fa4-c67f7dfe61d5",
+      "trackNumber": 6,
+      "totalTrackCount": 10,
+      "duration": 204000,
+      "id": 6
+    },
+    {
+      "title": "Chameleon",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic7.mp3?alt=media&token=b2e78cec-49f7-4319-b756-8d8af693d941",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fchameleon.png?alt=media&token=bbac7dab-c4f0-4e55-9a3d-579748b76246",
+      "trackNumber": 7,
+      "totalTrackCount": 10,
+      "duration": 241000,
+      "id": 7
+    },
+    {
+      "title": "Turtle",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic8.mp3?alt=media&token=68ee77f4-dbb9-4ec3-8937-0dc63e45ca63",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fturtle.png?alt=media&token=161a54b3-a5e4-4aa4-9886-eaa0d59ae7e9",
+      "trackNumber": 8,
+      "totalTrackCount": 10,
+      "duration": 260000,
+      "id": 8
+    },
+    {
+      "title": "Monkey",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic9.mp3?alt=media&token=43ec6c2d-0468-4347-87c7-c2908dce38e7",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fmonkey.png?alt=media&token=3fe267af-bc28-4b5a-a4bf-28e37bc17e78",
+      "trackNumber": 9,
+      "totalTrackCount": 10,
+      "duration": 190000,
+      "id": 9
+    },
+    {
+      "title": "Penguin",
+      "album": "Lullabies",
+      "artist": "Lullaby Songs",
+      "category": "Free",
+      "source": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/music%2Ffree%2Fmusic10.mp3?alt=media&token=8195fb78-17b5-4289-b0bf-4937a24ecc24",
+      "image": "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/images%2Ffree%2Fpenguin.png?alt=media&token=5787c87c-afee-4df8-8bcf-4157b574dfff",
+      "trackNumber": 10,
+      "totalTrackCount": 10,
+      "duration": 223000,
+      "id": 10
+    }
+  ]
+}

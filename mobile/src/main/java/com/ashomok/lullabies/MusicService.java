@@ -16,19 +16,19 @@
 
 package com.ashomok.lullabies;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
+
+import androidx.core.content.ContextCompat;
 import androidx.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import androidx.media.session.MediaButtonReceiver;
@@ -45,7 +45,7 @@ import com.ashomok.lullabies.playback.QueueManager;
 import com.ashomok.lullabies.ui.NowPlayingActivity;
 import com.ashomok.lullabies.utils.CarHelper;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.StartServiceUtil;
+import com.ashomok.lullabies.utils.MediaItemStateHelper;
 import com.ashomok.lullabies.utils.TvHelper;
 import com.ashomok.lullabies.utils.WearHelper;
 import com.google.android.gms.cast.framework.CastContext;
@@ -156,6 +156,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     private boolean mIsConnectedToCar;
     private BroadcastReceiver mCarConnectionReceiver;
+    private volatile boolean isStarted;
+
 
     /*
      * (non-Javadoc)
@@ -172,7 +174,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // This can help improve the response time in the method
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
         mMusicProvider.retrieveMediaAsync(null /* Callback */);
-        LogHelper.d(TAG, "retrieveMediaAsync called ");
 
         mPackageValidator = new PackageValidator(this);
 
@@ -312,7 +313,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
                                  Bundle rootHints) {
-        LogHelper.d(TAG, "OnGetRoot: clientPackageName=" + clientPackageName,
+        LogHelper.v(TAG, "OnGetRoot: clientPackageName=" + clientPackageName,
                 "; clientUid=" + clientUid + " ; rootHints=", rootHints);
         // To ensure you are not allowing any arbitrary app to browse your app's contents, you
         // need to check the origin:
@@ -361,8 +362,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
                     result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
                 }
             });
-
-            LogHelper.d(TAG, "retrieveMediaAsync called ");
         }
     }
 
@@ -371,6 +370,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     @Override
     public void onPlaybackStart() {
+        LogHelper.d(TAG, "onPlaybackStart");
         mSession.setActive(true);
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
@@ -379,8 +379,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // MediaController) disconnects, otherwise the music playback will stop.
         // Calling startService(Intent) will keep the service running until it is explicitly killed.
 
-        Intent i = new Intent(getApplicationContext(), MusicService.class);
-        StartServiceUtil.startService(this, i);
+        if (!isStarted) { //may be already started, just new song are playing
+            Intent i = new Intent(this, MusicService.class);
+            ContextCompat.startForegroundService(this, i);
+            LogHelper.d(TAG, "startForegroundService called");
+            isStarted = true;
+        }
     }
 
     /**
@@ -394,6 +398,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
         stopForeground(true);
+        isStarted = false;
     }
 
     @Override
@@ -440,10 +445,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
             if (service != null && service.mPlaybackManager.getPlayback() != null) {
                 if (service.mPlaybackManager.getPlayback().isPlaying()) {
                     LogHelper.d(TAG, "Ignoring delayed stop since the media player is in use.");
-                    return;
                 }
-                LogHelper.d(TAG, "Stopping service with delay handler.");
-                service.stopSelf();
+                else {
+                    LogHelper.d(TAG, "Stopping service with delay handler.");
+                    service.stopSelf();
+                }
             }
         }
     }
