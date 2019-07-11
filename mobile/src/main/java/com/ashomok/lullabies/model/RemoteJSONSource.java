@@ -18,6 +18,7 @@ package com.ashomok.lullabies.model;
 
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import org.json.JSONArray;
@@ -40,10 +41,7 @@ public class RemoteJSONSource implements MusicProviderSource {
 
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);
 
-    //todo depends on flavour
-    protected static final String CATALOG_URL =
-            "https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fcommon.json" +
-                    "?alt=media&token=14a55e22-da94-4055-a534-dfa8c4769e61";
+    private static final String CATALOG_URL = Settings.CATALOG_URL;
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";

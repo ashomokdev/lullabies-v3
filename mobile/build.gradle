@@ -19,7 +19,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId "com.ashomok.lullabies"
+        applicationId "com.ashomok"
         minSdkVersion 17
         targetSdkVersion 29
         versionCode 24
@@ -34,6 +34,44 @@ android {
     lintOptions {
         abortOnError true
     }
+
+    flavorDimensions "version"
+    productFlavors {
+        common {
+            dimension "version"
+            applicationIdSuffix ".lullabies"
+            buildConfigField "String", "PRIVACY_POLICY_LINK", "\"https://sites.google.com/view/lullaby-privacy-policy/home\""
+            buildConfigField "String", "BASE_64_ENCODED_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlrmor" +
+                    "76CFdZYovQsXFmMI6FFAQeVgp0m3sEqi0wlqR4W9imkc/JmHF1qgyxgHVMPj2EqNQR5BTZ7/pMJaEi99px6/+2xBQ0axWKAq9dQy" +
+                    "FWEDnRiDuzIhDVq0vWJvs99/MgJ4qipYAo/mgsbe1JdQTfwfX34rZoU7VyI+OnL1klZfhpDhBC5wMQI54cUjsRF0tjnIxzy8Hr+u" +
+                    "SbSU+JiumarDZ0iU/kZtSbr3uvP7ub+daZ1HIT6erJPUx2vJ3AFf1RDvkcgB/rQNTL7XXSiiL+ES3oX/YKs5+iVp/ULwrTwNN6Vo" +
+                    "bPwt6lnxuzM11aKKZy1avFJsAbP6KbiGrIQFwIDAQAB\""
+            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot." +
+                    "com/o/json%2Fcommon.json?alt=media&token=14a55e22-da94-4055-a534-dfa8c4769e61\""
+
+
+            //todo add app url to leafe feedback
+            //add url to our othe aps to download
+
+
+
+        }
+        classics {
+            dimension "version"
+            applicationIdSuffix ".lullabies_classics"
+            buildConfigField "String", "PRIVACY_POLICY_LINK", "\"https://sites.google.com/view/lullaby-privacy-policy/home\"" //todo update this and next one
+            buildConfigField "String", "BASE_64_ENCODED_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlrmor" +
+                    "76CFdZYovQsXFmMI6FFAQeVgp0m3sEqi0wlqR4W9imkc/JmHF1qgyxgHVMPj2EqNQR5BTZ7/pMJaEi99px6/+2xBQ0axWKAq9dQy" +
+                    "FWEDnRiDuzIhDVq0vWJvs99/MgJ4qipYAo/mgsbe1JdQTfwfX34rZoU7VyI+OnL1klZfhpDhBC5wMQI54cUjsRF0tjnIxzy8Hr+u" +
+                    "SbSU+JiumarDZ0iU/kZtSbr3uvP7ub+daZ1HIT6erJPUx2vJ3AFf1RDvkcgB/rQNTL7XXSiiL+ES3oX/YKs5+iVp/ULwrTwNN6Vo" +
+                    "bPwt6lnxuzM11aKKZy1avFJsAbP6KbiGrIQFwIDAQAB\""
+            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot" +
+                    ".com/o/json%2Fclassics.json?alt=media&token=df360e30-b4c1-4742-8311-ffb80f86b6c1\""
+
+
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
