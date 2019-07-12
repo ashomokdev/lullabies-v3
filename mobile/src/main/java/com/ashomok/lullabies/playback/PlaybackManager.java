@@ -20,10 +20,13 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.model.MusicProvider;
@@ -112,7 +115,7 @@ public class PlaybackManager implements Playback.Callback {
      *
      * @param error if not null, error message to present to the user.
      */
-    public void updatePlaybackState(String error) {
+    public void updatePlaybackState(@Nullable String error) {
         LogHelper.d(TAG, "updatePlaybackState with state=" + mPlayback.getState());
         long position = PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
         if (mPlayback != null && mPlayback.isConnected()) {
@@ -144,12 +147,8 @@ public class PlaybackManager implements Playback.Callback {
 
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
-        if (state == PlaybackStateCompat.STATE_PLAYING ||
-                state == PlaybackStateCompat.STATE_PAUSED) {
-            LogHelper.d(TAG, "state is " + state + " notification required, onNotificationRequired");
-            mServiceCallback.onNotificationRequired();
-        } else {
-            LogHelper.d(TAG, "state is " + state + " notification not required");
+        if (currentMusic != null) {
+            mServiceCallback.updateServiceState(stateBuilder.build(), currentMusic.getDescription());
         }
     }
 
@@ -388,14 +387,13 @@ public class PlaybackManager implements Playback.Callback {
         }
     }
 
-
     public interface PlaybackServiceCallback {
         void onPlaybackStart();
-
-        void onNotificationRequired();
 
         void onPlaybackStop();
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState);
+
+        void updateServiceState(PlaybackStateCompat state, MediaDescriptionCompat description);
     }
 }

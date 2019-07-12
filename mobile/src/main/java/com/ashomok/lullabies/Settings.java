@@ -5,7 +5,7 @@ package com.ashomok.lullabies;
  */
 public class Settings {
 
-    public static boolean isAdsActive = true; //will be set in MainActivity
+    public static boolean isAdsActive = false; //will be set in MainActivity
 
     public static final String PRIVACY_POLICY_LINK = BuildConfig.PRIVACY_POLICY_LINK;
 
