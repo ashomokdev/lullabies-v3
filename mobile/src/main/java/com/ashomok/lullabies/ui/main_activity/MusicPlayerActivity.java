@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.android.material.navigation.NavigationView;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -32,13 +31,14 @@ import androidx.core.view.GravityCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBar;
+
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
@@ -151,6 +151,9 @@ public class MusicPlayerActivity extends BaseActivity
                         case R.id.navigation_rate_app:
                             rateApp();
                             break;
+                        case R.id.navigation_download_app:
+                            downloadApp();
+                            break;
                         case R.id.navigation_about:
                             activityClass = AboutActivity.class;
                             break;
@@ -168,6 +171,13 @@ public class MusicPlayerActivity extends BaseActivity
                     mDrawerLayout.closeDrawers();
                     return true;
                 });
+    }
+
+    private void downloadApp() {
+        RateAppUtil rateAppUtil = new RateAppUtil();
+        String uri = getResources().getString(R.string.propose_download_app_dynamic_link);
+        String packageName = getResources().getString(R.string.propose_download_app_package_name);
+        rateAppUtil.openPackageInMarket(uri, packageName, this);
     }
 
     private void exit() {
@@ -188,6 +198,26 @@ public class MusicPlayerActivity extends BaseActivity
         inflater.inflate(R.menu.remove_ads, menu);
         menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Menu navigationMenu = navigationView.getMenu();
+
+        updateDownloadAppMenuItem(navigationMenu);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void updateDownloadAppMenuItem(Menu navigationMenu) {
+        MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_download_app);
+        CharSequence menuItemText = updateToPremiumMenuItem.getTitle();
+        SpannableString spannableString = new SpannableString(menuItemText);
+        spannableString.setSpan(
+                new ForegroundColorSpan(getResources().getColor(R.color.orange_600)),
+                0,
+                spannableString.length(),
+                0);
+        updateToPremiumMenuItem.setTitle(spannableString);
     }
 
     @Override

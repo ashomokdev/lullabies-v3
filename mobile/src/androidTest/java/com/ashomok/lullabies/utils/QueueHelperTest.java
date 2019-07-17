@@ -71,7 +71,7 @@ public class QueueHelperTest {
 
         String mediaId = MediaIDHelper.createMediaID(
                 selectedMusic.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
-                MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE, selectedGenre);
+                MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY, selectedGenre);
 
         List<MediaSessionCompat.QueueItem> queue = QueueHelper.getPlayingQueue(mediaId, provider);
         assertNotNull(queue);

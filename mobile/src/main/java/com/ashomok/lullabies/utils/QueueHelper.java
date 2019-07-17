@@ -29,7 +29,7 @@ import com.ashomok.lullabies.model.MusicProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_GENRE;
+import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH;
 
 /**
@@ -58,7 +58,7 @@ public class QueueHelper {
 
         Iterable<MediaMetadataCompat> tracks = null;
         // This sample only supports genre and by_search category types.
-        if (categoryType.equals(MEDIA_ID_MUSICS_BY_GENRE)) {
+        if (categoryType.equals(MEDIA_ID_MUSICS_BY_CATEGORY)) {
             tracks = musicProvider.getMusicsByGenre(categoryValue);
         } else if (categoryType.equals(MEDIA_ID_MUSICS_BY_SEARCH)) {
             tracks = musicProvider.searchMusicBySongTitle(categoryValue);

@@ -98,4 +98,9 @@
     <string name="never">Never</string>
     <string name="preferences" translatable="false">preferences</string>
     <string name="ok_sure">OK, sure</string>
+    <string name="propose_download_app_package_name" translatable="false">com.ashomok.lullabies_classics</string>
+    <string name="propose_download_app_dynamic_link" translatable="false">https://ashomok.page.link/fFWD</string>
+    <string name="download_app">Download more lullabies Free</string>
+    <string name="our_other_aps">Our other aps</string>
+    <string name="download_app_name">Lullaby Classic Music for Kids and Babies Relax 0+</string>
 </resources>

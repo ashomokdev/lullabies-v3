@@ -76,9 +76,8 @@ public class CircleView extends View {
         PagerAdapter adapter = viewPager.getAdapter();
         if (adapter != null){
             adapter.registerDataSetObserver( dataSetObserver);
+            updateView(viewPager);
         }
-
-        updateView(viewPager);
     }
 
     private void updateView(ViewPager viewPager) {

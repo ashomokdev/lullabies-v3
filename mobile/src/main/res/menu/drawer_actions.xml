@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2014 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,28 +14,39 @@
   limitations under the License.
   -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single"
-        android:id="@+id/menu_items">
+    <group
+        android:id="@+id/menu_items"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_animals_lullabies"
             android:checked="true"
             android:icon="@drawable/ic_library_music_black_24dp"
-            android:title="@string/home"/>
+            android:title="@string/home" />
         <item
             android:id="@+id/navigation_rate_app"
             android:icon="@drawable/ic_sentiment_satisfied_black_24dp"
-            android:title="@string/rate_app"/>
+            android:title="@string/rate_app" />
         <!--<item-->
-            <!--android:id="@+id/update_to_premium"-->
-            <!--android:icon="@drawable/my_premium_icon"-->
-            <!--android:title="@string/get_no_ads_forever" />-->
+        <!--android:id="@+id/update_to_premium"-->
+        <!--android:icon="@drawable/my_premium_icon"-->
+        <!--android:title="@string/get_no_ads_forever" />-->
 
         <item
             android:id="@+id/navigation_about"
             android:icon="@drawable/ic_info_outline_black_24dp"
-            android:title="@string/about_app"/>
+            android:title="@string/about_app" />
     </group>
 
+    <item
+        android:id="@+id/submenu_1"
+        android:title="@string/our_other_aps">
+        <menu>
+            <item
+                android:id="@+id/navigation_download_app"
+                android:icon="@drawable/download_app_icon"
+                android:title="@string/download_app_name" />
+        </menu>
+    </item>
     <group
         android:id="@+id/exit_group"
         android:checkableBehavior="single">
