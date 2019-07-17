@@ -13,15 +13,16 @@ public class RateAppUtil {
     public void rate(Activity activity) {
         Toast.makeText(activity, R.string.thank_you_for_your_support, Toast.LENGTH_SHORT).show();
         String appPackageName = activity.getPackageName();
-        openPackageInMarket(appPackageName, activity);
+        openPackageInMarket("https://play.google.com/store/apps/details?id=" + appPackageName,
+                appPackageName, activity);
     }
 
-    private void openPackageInMarket(String appPackageName, Activity activity) {
-        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
-        try {
-            activity.startActivity(marketIntent);
-        } catch (ActivityNotFoundException exception) {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-        }
+    public void openPackageInMarket(String uri, String appPackageName, Activity activity) {
+//        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
+//        try {
+//            activity.startActivity(marketIntent);
+//        } catch (ActivityNotFoundException exception) {
+            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
+//        }
     }
 }

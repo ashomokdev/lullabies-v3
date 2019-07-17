@@ -47,9 +47,8 @@ public class BillingProviderImpl implements BillingProvider {
     public void init(BillingProviderCallback billingProviderCallback) {
         callback = billingProviderCallback;
         // Create and initialize BillingManager which talks to BillingLibrary
-        mBillingManager = new BillingManager(activity, new UpdateListener()); //todo inject billingmanager
+        mBillingManager = new BillingManager(activity, new UpdateListener());
     }
-
 
     public List<SkuRowData> getSkuRowDataList() {
         return skuRowDataList;

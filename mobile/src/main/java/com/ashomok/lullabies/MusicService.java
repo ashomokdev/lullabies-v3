@@ -141,9 +141,6 @@
      // A value of a CMD_NAME key in the extras of the incoming Intent that
      // indicates that the music playback should be stopped (see {@link #onStartCommand})
      public static final String CMD_STOP = "CMD_STOP";
-     // A value of a CMD_NAME key that indicates that the music playback should switch
-     // to local playback from cast playback.
-     public static final String CMD_STOP_CASTING = "CMD_STOP_CASTING";
      // Delay stopSelf by using a handler.
      private static final int STOP_DELAY = 30000;
 
@@ -151,7 +148,6 @@
      private PlaybackManager mPlaybackManager;
 
      private MediaSessionCompat mSession;
-     //    private MediaNotificationManager mMediaNotificationManager;
      private ServiceManager serviceManager;
      private Bundle mSessionExtras;
      private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
@@ -162,8 +158,7 @@
 
      private boolean mIsConnectedToCar;
      private BroadcastReceiver mCarConnectionReceiver;
-     private volatile boolean isStarted;
-     private boolean inStartedState; //todo
+     private boolean inStartedState;
 
 
      /*
@@ -236,10 +231,9 @@
          mPlaybackManager.updatePlaybackState(null);
 
          try {
-             //todo create in more simple way
-             serviceManager = new ServiceManager(new MediaNotificationManager(this));
+             serviceManager = new ServiceManager(this);
          } catch (RemoteException e) {
-             throw new IllegalStateException("Could not create a MediaNotificationManager", e);
+             throw new IllegalStateException("Could not create a ServiceManager", e);
          }
 
          int playServicesAvailable =
@@ -271,8 +265,6 @@
              if (ACTION_CMD.equals(action)) {
                  if (CMD_PAUSE.equals(command)) {
                      mPlaybackManager.handlePauseRequest();
-                 } else if (CMD_STOP_CASTING.equals(command)) {
-                     CastContext.getSharedInstance(this).getSessionManager().endCurrentSession(true);
                  } else if (CMD_STOP.equals(command)) {
                      mPlaybackManager.handleStopRequest(null);
                  }
@@ -310,7 +302,6 @@
          // Service is being killed, so make sure we release our resources
          mPlaybackManager.handleStopRequest(null);
          serviceManager.moveServiceOutOfStartedState();
-//        mMediaNotificationManager.stopNotification();
 
          if (mCastSessionManager != null) {
              mCastSessionManager.removeSessionManagerListener(mCastSessionManagerListener,
@@ -389,15 +380,6 @@
          // The service needs to continue running even after the bound client (usually a
          // MediaController) disconnects, otherwise the music playback will stop.
          // Calling startService(Intent) will keep the service running until it is explicitly killed.
-
-
-         //todo
-//         if (!isStarted) { //may be already started, just new song are playing
-//             Intent i = new Intent(this, MusicService.class);
-//             ContextCompat.startForegroundService(this, i);
-//             LogHelper.d(TAG, "startForegroundService called");
-//             isStarted = true;
-//         }
      }
 
      /**
@@ -410,14 +392,7 @@
          // potentially stopping the service.
          mDelayedStopHandler.removeCallbacksAndMessages(null);
          mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-         stopForeground(true);
-         isStarted = false;
      }
-
-//    @Override
-//    public void onNotificationRequired() {
-//        mMediaNotificationManager.startNotification();
-//    }
 
      @Override
      public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
