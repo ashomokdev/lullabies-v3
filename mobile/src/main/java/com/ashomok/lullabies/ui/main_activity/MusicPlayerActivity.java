@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.google.android.material.navigation.NavigationView;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -376,18 +377,18 @@ public class MusicPlayerActivity extends BaseActivity
         InfoSnackbarUtil.showInfo(message, mRootView);
     }
 
-    @Override
-    public void showRemoveAdDialog(SkuRowData data) {
-
-        RemoveAdDialogFragment removeAdDialogFragment =
-                RemoveAdDialogFragment.newInstance(data.getPrice());
-
-        removeAdDialogFragment.show(getFragmentManager(), "dialog");
-    }
 
     @Override
     public void updateView(boolean isAdsActive) {
         adMobContainer.showAd(isAdsActive);
+    }
+
+    @Override
+    public void showRemoveAdDialog(AugmentedSkuDetails removeAdsSkuRow) {
+        RemoveAdDialogFragment removeAdDialogFragment =
+                RemoveAdDialogFragment.newInstance(removeAdsSkuRow.getPrice());
+
+        removeAdDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     @Override

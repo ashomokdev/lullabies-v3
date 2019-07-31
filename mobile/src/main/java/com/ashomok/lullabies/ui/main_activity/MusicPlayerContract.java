@@ -3,6 +3,7 @@ package com.ashomok.lullabies.ui.main_activity;
 import androidx.annotation.StringRes;
 
 import com.ashomok.lullabies.billing.model.SkuRowData;
+import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.di_dagger.BasePresenter;
 
 public class MusicPlayerContract {
@@ -15,9 +16,9 @@ public class MusicPlayerContract {
 
         void showInfo(String message);
 
-        void showRemoveAdDialog(SkuRowData data);
-
         void updateView(boolean isAdsActive);
+
+        void showRemoveAdDialog(AugmentedSkuDetails removeAdsSkuRow);
     }
 
     interface Presenter extends BasePresenter<View> {
