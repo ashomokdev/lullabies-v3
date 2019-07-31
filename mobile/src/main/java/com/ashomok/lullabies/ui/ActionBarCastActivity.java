@@ -16,13 +16,14 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
-import android.app.Fragment;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.session.MediaControllerCompat;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.mediarouter.app.MediaRouteButton;
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
@@ -46,7 +47,7 @@ import javax.inject.Inject;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasFragmentInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
 /**
  * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
@@ -59,7 +60,7 @@ import dagger.android.HasFragmentInjector;
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
 public abstract class ActionBarCastActivity extends RxAppCompatActivity
-        implements HasFragmentInjector {
+        implements HasSupportFragmentInjector {
 
     private static final String TAG = LogHelper.makeLogTag(ActionBarCastActivity.class);
 
@@ -208,7 +209,7 @@ public abstract class ActionBarCastActivity extends RxAppCompatActivity
     }
 
     @Override
-    public AndroidInjector<Fragment> fragmentInjector() {
+    public AndroidInjector<Fragment> supportFragmentInjector() {
         return fragmentInjector;
     }
 }

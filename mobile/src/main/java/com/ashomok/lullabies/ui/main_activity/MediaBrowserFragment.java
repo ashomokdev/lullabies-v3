@@ -42,13 +42,14 @@ import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
+import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.DaggerFragment;
+import dagger.android.support.DaggerFragment;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -76,9 +77,10 @@ public class MediaBrowserFragment extends DaggerFragment {
     private CircleView circleView;
     private ClickableViewPager viewPager;
     private ProgressBar progressBar;
+    private MyViewPagerAdapter mBrowserAdapter;
 
     @Inject
-    MyViewPagerAdapter mBrowserAdapter;
+    RateAppAsker rateAppAsker; //inject interface instead
 
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
@@ -137,6 +139,10 @@ public class MediaBrowserFragment extends DaggerFragment {
                                 "  count=" + children.size());
                         checkForUserVisibleErrors(children.isEmpty());
 
+                        if (mBrowserAdapter == null){
+                            LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+                        }
+
                         mBrowserAdapter.clear();
                         for (MediaBrowserCompat.MediaItem item : children) {
                             mBrowserAdapter.add(item);
@@ -145,7 +151,7 @@ public class MediaBrowserFragment extends DaggerFragment {
 
                         emitter.onComplete();
                     } catch (Throwable t) {
-                        LogHelper.e(TAG, "Error on childrenloaded", t);
+                        LogHelper.e(TAG, "Error on childrenloaded ", t);
                         emitter.onError(t);
                     }
                 }
@@ -163,7 +169,18 @@ public class MediaBrowserFragment extends DaggerFragment {
         // If used on an activity that doesn't implement MediaFragmentListener, it
         // will throw an exception as expected:
         mMediaFragmentListener = (MediaFragmentListener) activity;
+
+        mBrowserAdapter = new MyViewPagerAdapter(activity, rateAppAsker);
     }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mMediaFragmentListener = null;
+
+        mBrowserAdapter = null;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -229,12 +246,6 @@ public class MediaBrowserFragment extends DaggerFragment {
         }
         this.getActivity().unregisterReceiver(mConnectivityChangeReceiver);
 
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mMediaFragmentListener = null;
     }
 
     public String getMediaId() {
@@ -358,6 +369,10 @@ public class MediaBrowserFragment extends DaggerFragment {
         LogHelper.d(TAG, "on reloadMedia");
         boolean isOnline = NetworkHelper.isOnline(getActivity());
         if (isOnline) {
+            if (mBrowserAdapter == null){
+                LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+            }
+
             if (mBrowserAdapter.getCount() == 0) {
                 onConnected();
             }

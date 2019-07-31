@@ -286,7 +286,7 @@ public class BillingManager implements PurchasesUpdatedListener {
                             + (System.currentTimeMillis() - time) + "ms");
                     Log.i(TAG, "Querying subscriptions result code: "
                             + subscriptionResult.getResponseCode()
-                            + " res: " + subscriptionResult.getPurchasesList().size());
+                            + " res: " + subscriptionResult.getPurchasesList().size()); //todo erroro here
 
                     if (subscriptionResult.getResponseCode() == BillingResponse.OK) {
                         purchasesResult.getPurchasesList().addAll(

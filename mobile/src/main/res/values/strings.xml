@@ -60,8 +60,8 @@
     <string name="about_app">About app</string>
 
     <!-- Notificaiton Channel -->
-    <string name="notification_channel">UAMP_Channel_ID</string>
-    <string name="notification_channel_description">Channel ID for UAMP</string>
+    <string name="notification_channel" translatable="false">UAMP_Channel_ID</string>
+    <string name="notification_channel_description" translatable="false">Channel ID for UAMP</string>
 
     <string name="main_activity_banner" translatable="false">ca-app-pub-5221781428763224/3093632356</string>
     <string name="full_screen_activity_banner" translatable="false">ca-app-pub-5221781428763224/1164543404</string>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <string name="stop_casting">停止投射</string>
+    <string name="label_pause">暂停</string>
+    <string name="label_play">播放</string>
+    <string name="label_previous">上一个</string>
+    <string name="label_next">下一个</string>
+</resources>
