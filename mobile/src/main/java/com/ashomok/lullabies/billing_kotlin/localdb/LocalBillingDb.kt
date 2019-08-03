@@ -28,7 +28,7 @@ import androidx.room.TypeConverters
             CachedPurchase::class,
             AdsFreeForever::class
         ],
-        version = 2,
+        version = 3,
         exportSchema = false
 )
 @TypeConverters(PurchaseTypeConverter::class)

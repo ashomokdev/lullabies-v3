@@ -22,8 +22,6 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
-
-
 android {
     compileSdkVersion 29
 
@@ -75,16 +73,20 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile(
-                    'proguard-android-optimize.txt'),
-                    'proguard-rules.pro'
-        }
-        debug {
-            pseudoLocalesEnabled true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+//    buildTypes {
+//        release {
+//            minifyEnabled true
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile(
+//                    'proguard-android-optimize.txt'),
+//                    'proguard-rules.pro'
+//        }
+//    }
 
     kapt {
         generateStubs = true
@@ -118,6 +120,7 @@ dependencies {
 
     // Dagger docs https://dagger.dev/
     implementation "com.google.dagger:dagger:2.16"
+    implementation "com.google.dagger:dagger-android:2.16"
     implementation "com.google.dagger:dagger-android-support:2.16"
     kapt 'com.google.dagger:dagger-compiler:2.16'
     kapt "com.google.dagger:dagger-android-processor:2.16"
