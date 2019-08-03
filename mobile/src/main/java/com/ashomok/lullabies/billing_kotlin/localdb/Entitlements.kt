@@ -55,7 +55,7 @@ abstract class Entitlement {
 /**
  * Indicates whether the user owns a ads free forever.
  */
-@Entity(tableName = "test2")
+@Entity(tableName = "ads_free_forever")
 data class AdsFreeForever(val entitled: Boolean) : Entitlement() {
     override fun mayPurchase(): Boolean = !entitled
 }
