@@ -1,10 +1,7 @@
 package com.ashomok.lullabies.ui.main_activity;
 
-import android.app.Activity;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -26,47 +23,14 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     @Nullable
     public MusicPlayerContract.View view;
 
-    private AppCompatActivity activity;
-
     private BillingViewModel billingViewModel;
 
     private AugmentedSkuDetails removeAdsSkuRow;
+    private AppCompatActivity activity;
 
-
-    /**
-     * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
-     * with {@code @Nullable} values.
-     */
     @Inject
-    MusicPlayerPresenter(AppCompatActivity activity) {
-        this.activity = activity;
-        this.billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class);
-        ;
+    MusicPlayerPresenter() {
     }
-
-    /**
-     * update sku rows
-     *
-     * @param inappSkuDetailsListLiveData
-     */
-    private void initSkuRows(LiveData<List<AugmentedSkuDetails>> inappSkuDetailsListLiveData) {
-
-    }
-
-//    private void initSkuRows(List<SkuRowData> skuRowData) {
-//        if (view != null) {
-//            for (SkuRowData item : skuRowData) {
-//                LogHelper.d(TAG, "init sku row " + item.toString());
-//                switch (item.getSku()) {
-//                    case ADS_FREE_FOREVER_SKU_ID:
-//                        removeAdsSkuRow = item;
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-//        }
-//    }
 
     @Override
     public void onRemoveAdsClicked() {
@@ -89,7 +53,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     private void checkConnection() {
-        if (view != null) {
+        if (view != null && activity != null) {
             if (!NetworkHelper.isOnline(activity)) {
                 view.showError(R.string.no_internet_connection);
             }
@@ -104,40 +68,48 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
 
     private void init() {
 
-        billingViewModel.
-                getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {
-            @Override
-            public void onChanged(AdsFreeForever adsFreeForever) {
-                Settings.isAdsActive = !adsFreeForever.getEntitled();
-                view.updateView(Settings.isAdsActive);
-            }
-        });
-
         if (view != null) {
+            activity = view.getActivity();
             checkConnection();
 
-            billingViewModel.getInappSkuDetailsListLiveData()
-                    .observe(activity, new Observer<List<AugmentedSkuDetails>>() {
+
+            billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class);
+
+
+            billingViewModel.
+                    getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {
                 @Override
-                public void onChanged(List<AugmentedSkuDetails> augmentedSkuDetails) {
-                    if (augmentedSkuDetails.size() == 1) {
-                        removeAdsSkuRow = augmentedSkuDetails.get(0);
-                        LogHelper.d(TAG, "init sku row " + removeAdsSkuRow.toString());
-                    }
-                    else
-                    {
-                        LogHelper.d(TAG,
-                                "unepected sku list size, expected 1, actual "
-                                        + augmentedSkuDetails.size());
+                public void onChanged(AdsFreeForever adsFreeForever) {
+                    if (adsFreeForever != null) {
+                        Settings.isAdsActive = adsFreeForever.mayPurchase();
+                        view.updateView(Settings.isAdsActive);
                     }
                 }
             });
+
+
+            billingViewModel.getInappSkuDetailsListLiveData()
+                    .observe(activity, new Observer<List<AugmentedSkuDetails>>() {
+                        @Override
+                        public void onChanged(List<AugmentedSkuDetails> augmentedSkuDetails) {
+                            if (augmentedSkuDetails != null) {
+                                if (augmentedSkuDetails.size() == 1) {
+                                    removeAdsSkuRow = augmentedSkuDetails.get(0);
+                                    LogHelper.d(TAG, "init sku row "
+                                            + removeAdsSkuRow.toString());
+                                } else {
+                                    LogHelper.e(TAG,
+                                            "unepected sku list size, expected 1, actual "
+                                                    + augmentedSkuDetails.size());
+                                }
+                            }
+                        }
+                    });
         }
     }
 
     @Override
     public void dropView() {
         view = null;
-        billingViewModel = null;
     }
 }

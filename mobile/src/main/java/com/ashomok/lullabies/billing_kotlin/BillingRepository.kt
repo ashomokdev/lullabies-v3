@@ -30,22 +30,11 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
-import com.ashomok.lullabies.billing.Security
 import com.ashomok.lullabies.billing_kotlin.Security.BASE_64_ENCODED_PUBLIC_KEY
 import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails
 import com.ashomok.lullabies.billing_kotlin.localdb.LocalBillingDb
 import com.ashomok.lullabies.billing_kotlin.localdb.AdsFreeForever
 import com.ashomok.lullabies.billing_kotlin.localdb.Entitlement
-
-
-//import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails
-//import com.ashomok.lullabies.billing_kotlin.localdb.Entitlement
-//import com.kotlin.trivialdrive.billingrepo.localdb.GAS_PURCHASE
-//import com.kotlin.trivialdrive.billingrepo.localdb.GasTank
-//import com.kotlin.trivialdrive.billingrepo.localdb.GoldStatus
-//import com.ashomok.lullabies.billing_kotlin.localdb.LocalBillingDb
-//import com.ashomok.lullabies.billing_kotlin.localdb.AdsFreeForever
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -570,7 +559,9 @@ class BillingRepository private constructor(private val application: Application
                         // purchases, prompt them to complete it, etc.
                     }
                 }
+                val nonConsumables = validPurchases.toList();
 
+                Log.d(LOG_TAG, "processPurchases non-consumables content $nonConsumables")
                 /*
                   As is being done in this sample, for extra reliability you may store the
                   receipts/purchases to a your own remote/local database for until after you
@@ -582,6 +573,7 @@ class BillingRepository private constructor(private val application: Application
                 val testing = localCacheBillingClient.purchaseDao().getPurchases()
                 Log.d(LOG_TAG, "processPurchases purchases in the lcl db ${testing?.size}")
                 localCacheBillingClient.purchaseDao().insert(*validPurchases.toTypedArray())
+                acknowledgeNonConsumablePurchasesAsync(nonConsumables)
             }
 
     /**
@@ -613,10 +605,10 @@ class BillingRepository private constructor(private val application: Application
             CoroutineScope(Job() + Dispatchers.IO).launch {
                 when (purchase.sku) {
                     AppSku.ADS_FREE_FOREVER_SKU_ID -> {
-                        val premiumCar = AdsFreeForever(true)
-                        insert(premiumCar)
+                        val adsFreeForever = AdsFreeForever(true)
+                        insert(adsFreeForever)
                         localCacheBillingClient.skuDetailsDao()
-                                .insertOrUpdate(purchase.sku, premiumCar.mayPurchase())
+                                .insertOrUpdate(purchase.sku, adsFreeForever.mayPurchase())
                     }
                 }
                 localCacheBillingClient.purchaseDao().delete(purchase)
@@ -763,7 +755,8 @@ class BillingRepository private constructor(private val application: Application
      */
 
     private object AppSku {
-        val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
+//        val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
+        val ADS_FREE_FOREVER_SKU_ID = "test2"
         val INAPP_SKUS = listOf(ADS_FREE_FOREVER_SKU_ID)
     }
 }

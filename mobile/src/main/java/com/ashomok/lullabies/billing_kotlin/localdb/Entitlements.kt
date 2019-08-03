@@ -53,9 +53,9 @@ abstract class Entitlement {
 }
 
 /**
- * Indicates whether the user owns a premium car.
+ * Indicates whether the user owns a ads free forever.
  */
-@Entity(tableName = "ads_free_forever")
+@Entity(tableName = "test2")
 data class AdsFreeForever(val entitled: Boolean) : Entitlement() {
     override fun mayPurchase(): Boolean = !entitled
 }

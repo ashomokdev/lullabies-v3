@@ -37,7 +37,7 @@ interface EntitlementsDao {
     @Update
     fun update(premium: AdsFreeForever)
 
-    @Query("SELECT * FROM ads_free_forever LIMIT 1")
+    @Query("SELECT * FROM test2 LIMIT 1")
     fun getPremiumCar(): LiveData<AdsFreeForever>
 
     @Delete

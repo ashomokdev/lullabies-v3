@@ -27,6 +27,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
@@ -44,7 +45,6 @@ import android.view.View;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.ad.AdMobContainer;
-import com.ashomok.lullabies.billing.model.SkuRowData;
 import com.ashomok.lullabies.ui.BaseActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
 import com.ashomok.lullabies.ui.about_activity.AboutActivity;
@@ -192,23 +192,6 @@ public class MusicPlayerActivity extends BaseActivity
         rateAppUtil.rate(this);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.remove_ads, menu);
-        menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        Menu navigationMenu = navigationView.getMenu();
-
-        updateDownloadAppMenuItem(navigationMenu);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
     private void updateDownloadAppMenuItem(Menu navigationMenu) {
         MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_download_app);
         CharSequence menuItemText = updateToPremiumMenuItem.getTitle();
@@ -279,6 +262,7 @@ public class MusicPlayerActivity extends BaseActivity
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
         initializeFromParams(null, intent);
         startFullScreenActivityIfNeeded(intent);
+        super.onNewIntent(intent);
     }
 
     private void startFullScreenActivityIfNeeded(Intent intent) {
@@ -381,7 +365,26 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public void updateView(boolean isAdsActive) {
         adMobContainer.showAd(isAdsActive);
+        invalidateOptionsMenu();
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.remove_ads, menu);
+        menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        Menu navigationMenu = navigationView.getMenu();
+        updateDownloadAppMenuItem(navigationMenu);
+        return true;
+    }
+
 
     @Override
     public void showRemoveAdDialog(AugmentedSkuDetails removeAdsSkuRow) {
@@ -389,6 +392,11 @@ public class MusicPlayerActivity extends BaseActivity
                 RemoveAdDialogFragment.newInstance(removeAdsSkuRow.getPrice());
 
         removeAdDialogFragment.show(getFragmentManager(), "dialog");
+    }
+
+    @Override
+    public AppCompatActivity getActivity() {
+        return this;
     }
 
     @Override
