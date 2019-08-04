@@ -54,6 +54,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
      */
     private final Object mLock = new Object();
 
+
     @Inject
     public MyViewPagerAdapter(Activity activity, RateAppAsker rateAppAsker) {
         this.activity = activity;
@@ -131,7 +132,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //ignore
         }
         super.notifyDataSetChanged();
     }

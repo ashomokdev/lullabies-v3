@@ -67,6 +67,7 @@ public class LogHelper {
 
     public static void e(String tag, Throwable t, Object... messages) {
         log(tag, Log.ERROR, t, messages);
+        Crashlytics.logException(t);
     }
 
     private static void log(String tag, int level, Throwable t, Object... messages) {

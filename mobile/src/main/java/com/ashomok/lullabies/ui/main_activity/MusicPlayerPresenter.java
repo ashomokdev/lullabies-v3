@@ -1,13 +1,15 @@
 package com.ashomok.lullabies.ui.main_activity;
 
-import android.content.Context;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
-import com.ashomok.lullabies.billing.BillingProvider;
-import com.ashomok.lullabies.billing.BillingProviderCallback;
-import com.ashomok.lullabies.billing.model.SkuRowData;
+import com.ashomok.lullabies.billing_kotlin.localdb.AdsFreeForever;
+import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
+import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 
@@ -15,83 +17,27 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import static com.ashomok.lullabies.billing.BillingProviderImpl.ADS_FREE_FOREVER_SKU_ID;
-
 public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     public static final String TAG = LogHelper.makeLogTag(MusicPlayerPresenter.class);
 
     @Nullable
     public MusicPlayerContract.View view;
 
-    private Context context;
-    private BillingProvider billingProvider;
-    private SkuRowData removeAdsSkuRow;
-    private BillingProviderCallback billingProviderCallback = new BillingProviderCallback() {
+    private BillingViewModel billingViewModel;
 
-        @Override
-        public void onPurchasesUpdated() {
-            if (view != null) {
-                Settings.isAdsActive = !billingProvider.isAdsFreeForever();
-                view.updateView(Settings.isAdsActive);
-            }
-        }
+    private AugmentedSkuDetails removeAdsSkuRow;
+    private AppCompatActivity activity;
 
-        @Override
-        public void showError(int stringResId) {
-            if (view != null) {
-                view.showError(stringResId);
-            }
-        }
-
-        @Override
-        public void showInfo(String message) {
-            if (view != null) {
-                view.showInfo(message);
-            }
-        }
-
-        @Override
-        public void onSkuRowDataUpdated() {
-            initSkuRows(billingProvider.getSkuRowDataListForInAppPurchases());
-        }
-    };
-
-    /**
-     * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
-     * with {@code @Nullable} values.
-     */
     @Inject
-    MusicPlayerPresenter(Context context, BillingProvider billingProvider) {
-        this.context = context;
-        this.billingProvider = billingProvider;
-    }
-
-    /**
-     * update sku rows
-     *
-     * @param skuRowData
-     */
-    private void initSkuRows(List<SkuRowData> skuRowData) {
-        if (view != null) {
-            for (SkuRowData item : skuRowData) {
-                LogHelper.d(TAG, "init sku row " + item.toString());
-                switch (item.getSku()) {
-                    case ADS_FREE_FOREVER_SKU_ID:
-                        removeAdsSkuRow = item;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+    MusicPlayerPresenter() {
     }
 
     @Override
     public void onRemoveAdsClicked() {
         if (removeAdsSkuRow != null) {
-            billingProvider.getBillingManager().initiatePurchaseFlow(removeAdsSkuRow.getSku(),
-                    removeAdsSkuRow.getSkuType());
-
+            billingViewModel.makePurchase(activity, removeAdsSkuRow);
+            LogHelper.d(TAG, "starting purchase flow for SkuDetail "
+                    + removeAdsSkuRow.toString());
         }
     }
 
@@ -107,8 +53,8 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     private void checkConnection() {
-        if (view != null) {
-            if (!NetworkHelper.isOnline(context)) {
+        if (view != null && activity != null) {
+            if (!NetworkHelper.isOnline(activity)) {
                 view.showError(R.string.no_internet_connection);
             }
         }
@@ -121,16 +67,49 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     private void init() {
-        billingProvider.init(billingProviderCallback);
 
         if (view != null) {
+            activity = view.getActivity();
             checkConnection();
+
+
+            billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class);
+
+
+            billingViewModel.
+                    getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {
+                @Override
+                public void onChanged(AdsFreeForever adsFreeForever) {
+                    if (adsFreeForever != null) {
+                        Settings.isAdsActive = adsFreeForever.mayPurchase();
+                        view.updateView(Settings.isAdsActive);
+                    }
+                }
+            });
+
+
+            billingViewModel.getInappSkuDetailsListLiveData()
+                    .observe(activity, new Observer<List<AugmentedSkuDetails>>() {
+                        @Override
+                        public void onChanged(List<AugmentedSkuDetails> augmentedSkuDetails) {
+                            if (augmentedSkuDetails != null) {
+                                if (augmentedSkuDetails.size() == 1) {
+                                    removeAdsSkuRow = augmentedSkuDetails.get(0);
+                                    LogHelper.d(TAG, "init sku row "
+                                            + removeAdsSkuRow.toString());
+                                } else {
+                                    LogHelper.e(TAG,
+                                            "unepected sku list size, expected 1, actual "
+                                                    + augmentedSkuDetails.size());
+                                }
+                            }
+                        }
+                    });
         }
     }
 
     @Override
     public void dropView() {
         view = null;
-        billingProvider.destroy();
     }
 }
