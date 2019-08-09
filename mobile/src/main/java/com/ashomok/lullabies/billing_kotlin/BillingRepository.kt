@@ -532,14 +532,10 @@ class BillingRepository private constructor(private val application: Application
     fun queryPurchasesAsync() {
         Log.d(LOG_TAG, "queryPurchasesAsync called")
         val purchasesResult = HashSet<Purchase>()
-        var result = playStoreBillingClient.queryPurchases(BillingClient.SkuType.INAPP)
+        val result = playStoreBillingClient.queryPurchases(BillingClient.SkuType.INAPP)
         Log.d(LOG_TAG, "queryPurchasesAsync INAPP results: ${result?.purchasesList?.size}")
         result?.purchasesList?.apply { purchasesResult.addAll(this) }
-        if (isSubscriptionSupported()) {
-            result = playStoreBillingClient.queryPurchases(BillingClient.SkuType.SUBS)
-            result?.purchasesList?.apply { purchasesResult.addAll(this) }
-            Log.d(LOG_TAG, "queryPurchasesAsync SUBS results: ${result?.purchasesList?.size}")
-        }
+
         processPurchases(purchasesResult)
     }
 
@@ -622,22 +618,6 @@ class BillingRepository private constructor(private val application: Application
         return Security.verifyPurchase(
                 BASE_64_ENCODED_PUBLIC_KEY, purchase.originalJson, purchase.signature
         )
-    }
-
-    /**
-     * Checks if the user's device supports subscriptions
-     */
-    private fun isSubscriptionSupported(): Boolean {
-        val billingResult =
-                playStoreBillingClient.isFeatureSupported(BillingClient.FeatureType.SUBSCRIPTIONS)
-        var succeeded = false
-        when (billingResult.responseCode) {
-            BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> connectToPlayBillingService()
-            BillingClient.BillingResponseCode.OK -> succeeded = true
-            else -> Log.w(LOG_TAG,
-                    "isSubscriptionSupported() error: ${billingResult.debugMessage}")
-        }
-        return succeeded
     }
 
     /**
