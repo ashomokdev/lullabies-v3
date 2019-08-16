@@ -18,7 +18,7 @@ public class RateAppAsker implements RateAppDialogListener {
     /**
      * Ask to rate app if the app was used RATE_APP_COUNT times
      */
-    public static final int RATE_APP_COUNT = 5;
+    public static final int RATE_APP_COUNT = 70;
     public static final int NEVER_ASK = -1;
     private final Context context;
     private SharedPreferences sharedPreferences;
