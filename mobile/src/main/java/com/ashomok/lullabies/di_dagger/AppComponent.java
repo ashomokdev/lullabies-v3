@@ -10,8 +10,8 @@ import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
 import dagger.android.support.AndroidSupportInjectionModule;
 
-/**
- * Created by iuliia on 11/14/17.
+/*
+  Created by iuliia on 11/14/17.
  */
 
 /**

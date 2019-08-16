@@ -68,7 +68,7 @@ object Security {
      */
 
 
-    val BASE_64_ENCODED_PUBLIC_KEY = Settings.BASE_64_ENCODED_PUBLIC_KEY;
+    val BASE_64_ENCODED_PUBLIC_KEY = Settings.BASE_64_ENCODED_PUBLIC_KEY
 
     /**
      * Verifies that the data was signed with the given signature

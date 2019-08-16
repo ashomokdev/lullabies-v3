@@ -2,14 +2,11 @@ package com.ashomok.lullabies.di_dagger;
 
 import android.app.Application;
 import android.content.Context;
+
 import androidx.multidex.MultiDex;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
-
-/**
- * Created by iuliia on 11/14/17.
- */
 
 /**
  * We create a custom {@link Application} class that extends  {@link DaggerApplication}.

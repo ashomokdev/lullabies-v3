@@ -93,6 +93,7 @@ public final class AlbumArtCache {
         }
         LogHelper.d(TAG, "getOrFetch: starting asynctask to fetch ", artUrl);
 
+        //todo replace with courotine kotlin
         fetchImageSingle(artUrl)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

@@ -4,10 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-
-import androidx.annotation.StringRes;
-
-import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
 
 import dagger.Binds;

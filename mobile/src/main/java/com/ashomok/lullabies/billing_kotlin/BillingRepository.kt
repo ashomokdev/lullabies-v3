@@ -21,26 +21,15 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.android.billingclient.api.AcknowledgePurchaseParams
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.BillingResult
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
+import com.android.billingclient.api.*
+import com.ashomok.lullabies.billing_kotlin.BillingRepository.AppSku.INAPP_SKUS
 import com.ashomok.lullabies.billing_kotlin.Security.BASE_64_ENCODED_PUBLIC_KEY
-import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails
-import com.ashomok.lullabies.billing_kotlin.localdb.LocalBillingDb
 import com.ashomok.lullabies.billing_kotlin.localdb.AdsFreeForever
+import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails
 import com.ashomok.lullabies.billing_kotlin.localdb.Entitlement
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.HashSet
+import com.ashomok.lullabies.billing_kotlin.localdb.LocalBillingDb
+import kotlinx.coroutines.*
+import java.util.*
 
 /**
  *
@@ -361,16 +350,6 @@ class BillingRepository private constructor(private val application: Application
     lateinit private var localCacheBillingClient: LocalBillingDb
 
     /**
-     * This list tells clients what subscriptions are available for sale
-     */
-    val subsSkuDetailsListLiveData: LiveData<List<AugmentedSkuDetails>> by lazy {
-        if (::localCacheBillingClient.isInitialized == false) {
-            localCacheBillingClient = LocalBillingDb.getInstance(application)
-        }
-        localCacheBillingClient.skuDetailsDao().getSubscriptionSkuDetails()
-    }
-
-    /**
      * This list tells clients what in-app products are available for sale
      */
     val inappSkuDetailsListLiveData: LiveData<List<AugmentedSkuDetails>> by lazy {
@@ -474,7 +453,7 @@ class BillingRepository private constructor(private val application: Application
         when (billingResult.responseCode) {
             BillingClient.BillingResponseCode.OK -> {
                 Log.d(LOG_TAG, "onBillingSetupFinished successfully")
-                querySkuDetailsAsync(BillingClient.SkuType.INAPP, AppSku.INAPP_SKUS)
+                querySkuDetailsAsync(BillingClient.SkuType.INAPP, INAPP_SKUS)
                 queryPurchasesAsync()
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
@@ -555,7 +534,7 @@ class BillingRepository private constructor(private val application: Application
                         // purchases, prompt them to complete it, etc.
                     }
                 }
-                val nonConsumables = validPurchases.toList();
+                val nonConsumables = validPurchases.toList()
 
                 Log.d(LOG_TAG, "processPurchases non-consumables content $nonConsumables")
                 /*
@@ -567,7 +546,7 @@ class BillingRepository private constructor(private val application: Application
                   disbursement.
                  */
                 val testing = localCacheBillingClient.purchaseDao().getPurchases()
-                Log.d(LOG_TAG, "processPurchases purchases in the lcl db ${testing?.size}")
+                Log.d(LOG_TAG, "processPurchases purchases in the lcl db ${testing.size}")
                 localCacheBillingClient.purchaseDao().insert(*validPurchases.toTypedArray())
                 acknowledgeNonConsumablePurchasesAsync(nonConsumables)
             }

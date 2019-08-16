@@ -15,9 +15,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="27dp"
-            android:text="@string/support_us"
+            android:text="@string/how_about_rating"
+            android:textColor="@android:color/white"
             android:gravity="center"
-            android:textSize="16sp"
+            android:textSize="18sp"
             />
 
         <LinearLayout
@@ -27,44 +28,31 @@
             android:layout_marginTop="14dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:weightSum="3">
+            android:weightSum="2">
 
             <Button
-                android:id="@+id/later"
+                android:id="@+id/no"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="3dp"
-                android:layout_marginRight="3dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:background="@color/colorPrimary"
-                android:text="@string/later"
+                android:background="@drawable/button_background"
                 android:textColor="@android:color/white"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/never"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="3dp"
-                android:layout_marginRight="3dp"
-                android:layout_weight="1"
-                android:background="@color/colorPrimary"
-                android:text="@string/never"
-                android:textColor="@android:color/white"
+                android:text="@string/no_thanks"
                 android:textSize="16sp" />
 
             <Button
                 android:id="@+id/ok"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="3dp"
-                android:layout_marginStart="3dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:background="@color/colorAccent"
+                android:background="@android:color/white"
                 android:text="@string/ok_sure"
-                android:textColor="@android:color/white"
+                android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />
-
         </LinearLayout>
     </RelativeLayout>
 
@@ -80,10 +68,10 @@
             android:tint="@color/colorAccent" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerInParent="true"
             android:tint="@color/white"
-            android:src="@drawable/ic_star_black_24dp" />
+            android:src="@drawable/ic_favorite_border_black_24dp" />
     </RelativeLayout>
 </RelativeLayout>

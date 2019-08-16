@@ -15,11 +15,12 @@
  */
 package com.ashomok.lullabies.playback;
 
-import androidx.annotation.NonNull;
-import androidx.test.runner.AndroidJUnit4;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.test.mock.MockResources;
+
+import androidx.annotation.NonNull;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.ashomok.lullabies.TestSetupHelper;
 import com.ashomok.lullabies.model.MusicProvider;

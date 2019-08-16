@@ -74,7 +74,7 @@ public class MusicProvider {
         mSource = source;
         mMusicListByGenre = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
-        mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+        mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
     /**
