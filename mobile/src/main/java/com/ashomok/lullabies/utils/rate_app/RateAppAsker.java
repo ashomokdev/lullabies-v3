@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * Created by iuliia on 10/5/16.
  */
 
-public class RateAppAsker implements OnNeverAskReachedListener {
+public class RateAppAsker implements RateAppDialogListener {
 
     /**
      * Ask to rate app if the app was used RATE_APP_COUNT times
@@ -23,6 +23,7 @@ public class RateAppAsker implements OnNeverAskReachedListener {
     private final Context context;
     private SharedPreferences sharedPreferences;
     private static final String TAG = LogHelper.makeLogTag(RateAppAsker.class);
+    RateAppAskerCallback callback;
 
 
     @Inject
@@ -32,13 +33,15 @@ public class RateAppAsker implements OnNeverAskReachedListener {
     }
 
     public void init(RateAppAskerCallback callback) {
+        this.callback = callback;
+
         int timesAppWasUsed = sharedPreferences.getInt(context.getString(R.string.times_app_was_used), 0);
         LogHelper.d(TAG, "adapter shows views count: " + timesAppWasUsed);
 
         if (timesAppWasUsed != NEVER_ASK) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             if (timesAppWasUsed >= RATE_APP_COUNT) {
-                askToRate(callback);
+                askToRate();
                 editor.putInt(context.getString(R.string.times_app_was_used), 0);
             } else {
 
@@ -48,10 +51,10 @@ public class RateAppAsker implements OnNeverAskReachedListener {
         }
     }
 
-    private void askToRate(RateAppAskerCallback callback) {
-        RateAppDialogFragment rateAppDialogFragment = RateAppDialogFragment.newInstance();
-        rateAppDialogFragment.setOnStopAskListener(this);
-        callback.showRateAppDialog(rateAppDialogFragment);
+    private void askToRate() {
+        RateAppDialog1Fragment rateAppDialog1Fragment = RateAppDialog1Fragment.newInstance();
+        rateAppDialog1Fragment.setRateAppDialogListener(this);
+        callback.showDialogFragment(rateAppDialog1Fragment);
     }
 
     @Override
@@ -59,5 +62,12 @@ public class RateAppAsker implements OnNeverAskReachedListener {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(context.getString(R.string.times_app_was_used), NEVER_ASK);
         editor.apply();
+    }
+
+    @Override
+    public void onEnjoyAppClicked() {
+        RateAppDialog2Fragment rateAppDialog2Fragment = RateAppDialog2Fragment.newInstance();
+        rateAppDialog2Fragment.setRateAppDialogListener(this);
+        callback.showDialogFragment(rateAppDialog2Fragment);
     }
 }

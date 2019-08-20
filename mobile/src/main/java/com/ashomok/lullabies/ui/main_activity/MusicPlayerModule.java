@@ -1,10 +1,9 @@
 package com.ashomok.lullabies.ui.main_activity;
 
-import android.app.Activity;
 import android.content.Context;
+
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;

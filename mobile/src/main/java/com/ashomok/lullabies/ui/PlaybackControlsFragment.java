@@ -19,8 +19,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -32,6 +30,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.MusicService;
@@ -79,14 +80,14 @@ public class PlaybackControlsFragment extends Fragment { //todo remove deprecate
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
 
-        mPlayPause = (ImageButton) rootView.findViewById(R.id.play_pause);
+        mPlayPause = rootView.findViewById(R.id.play_pause);
         mPlayPause.setEnabled(true);
         mPlayPause.setOnClickListener(mButtonListener);
 
-        mTitle = (TextView) rootView.findViewById(R.id.title);
-        mSubtitle = (TextView) rootView.findViewById(R.id.artist);
-        mExtraInfo = (TextView) rootView.findViewById(R.id.extra_info);
-        mAlbumArt = (ImageView) rootView.findViewById(R.id.album_art);
+        mTitle = rootView.findViewById(R.id.title);
+        mSubtitle = rootView.findViewById(R.id.artist);
+        mExtraInfo = rootView.findViewById(R.id.extra_info);
+        mAlbumArt = rootView.findViewById(R.id.album_art);
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

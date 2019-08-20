@@ -3,7 +3,6 @@ package com.ashomok.lullabies.ui;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -189,9 +188,9 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     }
 
     @Override
-    public void showRateAppDialog(DialogFragment rateAppDialogFragment) {
+    public void showDialogFragment(DialogFragment dialogFragment) {
         if (activity != null) {
-            rateAppDialogFragment.show(activity.getFragmentManager(), "rate_app_dialog");
+            dialogFragment.show(activity.getFragmentManager(), "dialog");
         }
     }
 }

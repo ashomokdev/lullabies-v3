@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -34,6 +33,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.tools.CircleView;
 import com.ashomok.lullabies.tools.ClickableViewPager;
@@ -43,7 +44,6 @@ import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.List;
 
@@ -290,7 +290,7 @@ public class MediaBrowserFragment extends DaggerFragment {
                     // unsubscribe first.
                     mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
                 })
-                .compose(((RxAppCompatActivity) getActivity()).bindToLifecycle())
+//                .compose(((RxAppCompatActivity) getActivity()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     LogHelper.d(TAG, "complatable finished");

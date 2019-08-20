@@ -1,7 +1,6 @@
 package com.ashomok.lullabies.utils.rate_app;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
@@ -18,11 +17,6 @@ public class RateAppUtil {
     }
 
     public void openPackageInMarket(String uri, String appPackageName, Activity activity) {
-//        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
-//        try {
-//            activity.startActivity(marketIntent);
-//        } catch (ActivityNotFoundException exception) {
             activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
-//        }
     }
 }

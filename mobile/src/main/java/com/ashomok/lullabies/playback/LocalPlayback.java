@@ -26,9 +26,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 
-import androidx.core.content.ContextCompat;
-
-import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.model.MusicProviderSource;
 import com.ashomok.lullabies.utils.LogHelper;

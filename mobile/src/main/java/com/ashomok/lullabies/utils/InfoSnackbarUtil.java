@@ -1,11 +1,12 @@
 package com.ashomok.lullabies.utils;
 
-import androidx.annotation.StringRes;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+
 import com.ashomok.lullabies.R;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * Created by iuliia on 10/12/17.

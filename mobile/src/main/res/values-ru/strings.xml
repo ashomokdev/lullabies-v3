@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Колыбельные</string>
+    <string name="favorite">Любимые</string>
+    <string name="error_no_metadata">Невозможно получить метаданные.</string>
+    <string name="browse_genres">Жанры</string>
+    <string name="browse_genre_subtitle">Песни по жанрам</string>
+    <string name="browse_musics_by_genre_subtitle">%1$s</string>
+    <string name="random_queue_title">Рандом музыка</string>
+    <string name="error_no_connection">Невозможно соедениться с сервером. Пожалуйста проверьте интернет соединение.</string>
+    <string name="error_loading_media">Ошибка загрузки медиа</string>
+    <string name="casting_to_device">Трансляция на %1$s</string>
+    <string name="currently_playing_song">Текущая композиция</string>
+    <string name="currently_playing_artist">Исполнитель текущей композиции</string>
+    <string name="currently_playing_extra_info">Информация о текущей композиции</string>
+    <string name="play_pause">Проиграть или пауза</string>
+    <string name="skip_next">К следующей</string>
+    <string name="skip_prev">К предыдущей</string>
+    <string name="touch_to_cast">Нажмите, что бы присоедениться к Google Cast устройству</string>
+    <!-- Use the default receiver. To customize a styled media receiver, you can use
+         the css and images under <project-root>/docs/cast_styled_receiver -->
+    <string name="home_title">Домой</string>
+    <string name="now_playing">Текущая композиция</string>
+    <string name="search_queue_title">Результат поиска</string>
+    <string name="loading">Загрузка…</string>
+    <string name="media_route_menu_title">Проиграть на…</string>
+    <string name="get_no_ads_forever">Убрать рекламу навсегда</string>
+    <string name="about_app">О приложении</string>
+    <string name="cancel">Отмена</string>
+    <string name="buy_ads_free">Купить версию без рекламы</string>
+    <string name="ads_free_forever">Убрать рекламу навсегда</string>
+    <string name="remove_ads">Убрать рекламу</string>
+    <string name="no_internet_connection">Нет интернет соединения</string>
+    <string name="rate_app">Оценить приложение</string>
+    <string name="home">Домой</string>
+    <string name="contact_me">Связаться со мной:</string>
+    <string name="privacy_policy_agreement">Соглашение о конфиденциальности</string>
+    <string name="privacy_policy_explanation">Используя это приложение вы соглашаетесь с Политикой конфиденциальности.</string>
+    <string name="version">версия</string>
+    <string name="copied">Скопировано</string>
+    <string name="thank_you_for_your_support">Спасибо за поддержку!</string>
+    <string name="connectivity_error">Ошибка подключения</string>
+    <string name="exit">Выход</string>
+    <string name="exit_dialog_title">Хотите выйти?</string>
+    <string name="ok">OK</string>
+    <string name="enjoying_music">Нравится музыка?</string>
+    <string name="not_really">Не очень</string>
+    <string name="yes">Да!</string>
+    <string name="our_other_aps">Другие наши приложения</string>
+    <string name="download_app_name">Колыбельные Классическая Релакс Музыка для Детей</string>
+    <string name="how_about_rating">Может тогда оставите оценку в Play Market?</string>
+    <string name="no_thanks">Нет, спасибо</string>
+    <string name="ok_sure">Да, конечно</string>
+</resources>

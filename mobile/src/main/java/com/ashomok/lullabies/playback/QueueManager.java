@@ -19,9 +19,10 @@ package com.ashomok.lullabies.playback;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+
+import androidx.annotation.NonNull;
 
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
@@ -58,7 +59,7 @@ public class QueueManager {
         this.mListener = listener;
         this.mResources = resources;
 
-        mPlayingQueue = Collections.synchronizedList(new ArrayList<MediaSessionCompat.QueueItem>());
+        mPlayingQueue = Collections.synchronizedList(new ArrayList<>());
         mCurrentIndex = 0;
     }
 

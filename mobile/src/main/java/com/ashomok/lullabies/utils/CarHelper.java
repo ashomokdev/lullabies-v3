@@ -17,8 +17,6 @@ package com.ashomok.lullabies.utils;
 
 import android.os.Bundle;
 
-import com.ashomok.lullabies.MusicService;
-
 public class CarHelper {
     private static final String TAG = LogHelper.makeLogTag(CarHelper.class);
 

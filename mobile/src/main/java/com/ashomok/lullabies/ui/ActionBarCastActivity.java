@@ -16,19 +16,19 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.session.MediaControllerCompat;
-import androidx.appcompat.app.ActionBar;
-
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.mediarouter.app.MediaRouteButton;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.mediarouter.app.MediaRouteButton;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
@@ -40,7 +40,6 @@ import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import javax.inject.Inject;
 
@@ -59,7 +58,7 @@ import dagger.android.support.HasSupportFragmentInjector;
  * a {@link DrawerLayout} with id 'drawerLayout' and
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
-public abstract class ActionBarCastActivity extends RxAppCompatActivity
+public abstract class ActionBarCastActivity extends AppCompatActivity
         implements HasSupportFragmentInjector {
 
     private static final String TAG = LogHelper.makeLogTag(ActionBarCastActivity.class);
@@ -164,7 +163,7 @@ public abstract class ActionBarCastActivity extends RxAppCompatActivity
     }
 
     protected void initializeToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         if (mToolbar == null) {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
                     "'toolbar'");
@@ -199,7 +198,7 @@ public abstract class ActionBarCastActivity extends RxAppCompatActivity
     private void showFtu() {
         Menu menu = mToolbar.getMenu();
         View view = menu.findItem(R.id.media_route_menu_item).getActionView();
-        if (view != null && view instanceof MediaRouteButton) {
+        if (view instanceof MediaRouteButton) {
             IntroductoryOverlay overlay = new IntroductoryOverlay.Builder(this, mMediaRouteMenuItem)
                     .setTitleText(R.string.touch_to_cast)
                     .setSingleTime()

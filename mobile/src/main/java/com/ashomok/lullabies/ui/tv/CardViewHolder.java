@@ -28,11 +28,12 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.v4.media.MediaDescriptionCompat;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
-import android.support.v4.media.MediaDescriptionCompat;
-import android.view.View;
 
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.utils.MediaItemStateHelper;

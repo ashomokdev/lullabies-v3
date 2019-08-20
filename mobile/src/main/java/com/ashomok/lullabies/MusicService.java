@@ -38,7 +38,6 @@
  import android.support.v4.media.session.PlaybackStateCompat;
 
  import androidx.annotation.NonNull;
- import androidx.core.content.ContextCompat;
  import androidx.media.MediaBrowserServiceCompat;
  import androidx.media.session.MediaButtonReceiver;
  import androidx.mediarouter.media.MediaRouter;
@@ -351,7 +350,7 @@
                                 @NonNull final Result<List<MediaItem>> result) {
          LogHelper.d(TAG, "OnLoadChildren: parentMediaId=", parentMediaId);
          if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
-             result.sendResult(new ArrayList<MediaItem>());
+             result.sendResult(new ArrayList<>());
          } else if (mMusicProvider.isInitialized()) {
              // if music library is ready, return immediately
              result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));

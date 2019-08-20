@@ -70,7 +70,7 @@
         <!-- AdsFree activity for phone UI -->
         <activity
             android:name="com.ashomok.lullabies.ui.AdsFreeActivity"
-            android:label="@string/get_no_ads_forever"></activity>
+            android:label="@string/get_no_ads_forever" />
 
         <!-- About activity for phone UI -->
         <activity

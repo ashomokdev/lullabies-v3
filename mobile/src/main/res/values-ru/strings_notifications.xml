@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="stop_casting">Остановить трансляцию</string>
+    <string name="label_pause">Пауза</string>
+    <string name="label_play">Играть</string>
+    <string name="label_previous">Предыдущий</string>
+    <string name="label_next">Следующий</string>
+</resources>

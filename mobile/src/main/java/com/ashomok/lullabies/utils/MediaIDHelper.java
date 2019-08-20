@@ -17,10 +17,11 @@
 package com.ashomok.lullabies.utils;
 
 import android.app.Activity;
-import androidx.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import java.util.Arrays;
 
