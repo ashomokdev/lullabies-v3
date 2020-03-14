@@ -15,16 +15,12 @@
 */
 package com.ashomok.lullabies.playback;
 
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 class SimplePlaybackServiceCallback implements PlaybackManager.PlaybackServiceCallback {
     @Override
     public void onPlaybackStart() {
-
-    }
-
-    @Override
-    public void onNotificationRequired() {
 
     }
 
@@ -35,6 +31,11 @@ class SimplePlaybackServiceCallback implements PlaybackManager.PlaybackServiceCa
 
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
+
+    }
+
+    @Override
+    public void updateServiceState(PlaybackStateCompat state, MediaDescriptionCompat description) {
 
     }
 }

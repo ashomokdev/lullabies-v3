@@ -679,7 +679,6 @@ class BillingRepository private constructor(private val application: Application
     }
 
 
-
     @WorkerThread
     suspend private fun insert(entitlement: Entitlement) = withContext(Dispatchers.IO) {
         localCacheBillingClient.entitlementsDao().insert(entitlement)
@@ -713,6 +712,9 @@ class BillingRepository private constructor(private val application: Application
      * subsets: INAPP_SKUS and SUBS_SKUS
      */
 
+    //usign Dagger DI set test values for test purposes
+//    example ID android.test.purchased
+    // https://developer.android.com/google/play/billing/billing_testing
     private object AppSku {
         val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
         val INAPP_SKUS = listOf(ADS_FREE_FOREVER_SKU_ID)
