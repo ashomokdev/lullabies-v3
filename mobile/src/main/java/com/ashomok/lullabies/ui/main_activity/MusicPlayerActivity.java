@@ -391,7 +391,7 @@ public class MusicPlayerActivity extends BaseActivity
         RemoveAdDialogFragment removeAdDialogFragment =
                 RemoveAdDialogFragment.newInstance(removeAdsSkuRow.getPrice());
 
-        removeAdDialogFragment.show(getFragmentManager(), "dialog");
+        removeAdDialogFragment.show(getFragmentManager(), "dialog"); //todo check
     }
 
     @Override

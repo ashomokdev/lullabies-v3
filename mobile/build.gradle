@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
-
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 29
@@ -150,3 +147,6 @@ dependencies {
     implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0"
     implementation "android.arch.navigation:navigation-ui-ktx:1.0.0"
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
