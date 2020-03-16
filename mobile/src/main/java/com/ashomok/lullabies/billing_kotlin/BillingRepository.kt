@@ -712,11 +712,15 @@ class BillingRepository private constructor(private val application: Application
      * subsets: INAPP_SKUS and SUBS_SKUS
      */
 
+    //todo
     //usign Dagger DI set test values for test purposes
 //    example ID android.test.purchased
     // https://developer.android.com/google/play/billing/billing_testing
+//    2020-03-14 15:59:56.542 23890-23890/com.ashomok.lullabies W/BillingHelper: Couldn't find purchase lists, trying to find single data.
+//    2020-03-14 15:59:56.543 23890-23890/com.ashomok.lullabies W/BillingHelper: Received a bad purchase data.
+//    2020-03-14 15:59:56.543 23890-23890/com.ashomok.lullabies W/BillingHelper: Couldn't find single purchase data as well.
     private object AppSku {
-        val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
+        val ADS_FREE_FOREVER_SKU_ID = "android.test.purchased"
         val INAPP_SKUS = listOf(ADS_FREE_FOREVER_SKU_ID)
     }
 }

@@ -2,9 +2,9 @@
     <string name="app_name">摇篮曲</string>
     <string name="favorite">收藏</string>
     <string name="error_no_metadata">无法检索元数据。</string>
-    <string name="browse_genres">流派</string>
-    <string name="browse_genre_subtitle">歌曲流派</string>
-    <string name="browse_musics_by_genre_subtitle">%1$s首歌曲</string>
+    <string name="browse_categories">流派</string>
+    <string name="browse_categories_subtitle">歌曲流派</string>
+    <string name="browse_musics_by_category_subtitle">%1$s首歌曲</string>
     <string name="random_queue_title">随机音乐</string>
     <string name="error_no_connection">无法连接到服务器。请检查你的网络连接。</string>
     <string name="error_loading_media">加载媒体出错</string>

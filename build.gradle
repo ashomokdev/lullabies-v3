@@ -26,10 +26,14 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath 'com.google.gms:google-services:4.3.0'
-        classpath 'io.fabric.tools:gradle:1.29.0'  // Crashlytics plugin
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.41"
+        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.google.gms:google-services:4.3.3'
+
+        // Crashlytics plugin for firebase crash analytics
+        // https://console.firebase.google.com/u/0/project/lullabies-85be8/crashlytics/app/android:com.ashomok.lullabies/issues?state=open&time=last-seven-days&type=crash
+        classpath 'io.fabric.tools:gradle:1.29.0'
+
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

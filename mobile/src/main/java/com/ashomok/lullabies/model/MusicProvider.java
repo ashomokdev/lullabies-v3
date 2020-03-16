@@ -18,7 +18,6 @@ package com.ashomok.lullabies.model;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -52,7 +51,7 @@ public class MusicProvider {
     private MusicProviderSource mSource;
 
     // Categorized caches for music track data:
-    private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByGenre;
+    private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
 
     private final Set<String> mFavoriteTracks;
@@ -72,7 +71,7 @@ public class MusicProvider {
     }
     public MusicProvider(MusicProviderSource source) {
         mSource = source;
-        mMusicListByGenre = new ConcurrentHashMap<>();
+        mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
         mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
@@ -82,11 +81,11 @@ public class MusicProvider {
      *
      * @return genres
      */
-    public Iterable<String> getGenres() {
+    public Iterable<String> getCategories() {
         if (mCurrentState != State.INITIALIZED) {
             return Collections.emptyList();
         }
-        return mMusicListByGenre.keySet();
+        return mMusicListByCategory.keySet();
     }
 
     /**
@@ -105,14 +104,14 @@ public class MusicProvider {
     }
 
     /**
-     * Get music tracks of the given genre
+     * Get music tracks of the given category
      *
      */
-    public List<MediaMetadataCompat> getMusicsByGenre(String genre) {
-        if (mCurrentState != State.INITIALIZED || !mMusicListByGenre.containsKey(genre)) {
+    public List<MediaMetadataCompat> getMusicsByCategory(String category) {
+        if (mCurrentState != State.INITIALIZED || !mMusicListByCategory.containsKey(category)) {
             return Collections.emptyList();
         }
-        return mMusicListByGenre.get(genre);
+        return mMusicListByCategory.get(category);
     }
 
     /**
@@ -258,7 +257,7 @@ public class MusicProvider {
             }
             list.add(m.metadata);
         }
-        mMusicListByGenre = newMusicListByGenre;
+        mMusicListByCategory = newMusicListByGenre;
     }
 
     private synchronized void retrieveMedia() {
@@ -300,13 +299,13 @@ public class MusicProvider {
             mediaItems.add(createBrowsableMediaItemForRoot(resources));
 
         } else if (MEDIA_ID_MUSICS_BY_CATEGORY.equals(mediaId)) {
-            for (String genre : getGenres()) {
-                mediaItems.add(createBrowsableMediaItemForGenre(genre, resources));
+            for (String category : getCategories()) {
+                mediaItems.add(createBrowsableMediaItemForCategory(category, resources));
             }
 
         } else if (mediaId.startsWith(MEDIA_ID_MUSICS_BY_CATEGORY)) {
-            String genre = MediaIDHelper.getHierarchy(mediaId)[1];
-            for (MediaMetadataCompat metadata : getMusicsByGenre(genre)) {
+            String category = MediaIDHelper.getHierarchy(mediaId)[1];
+            for (MediaMetadataCompat metadata : getMusicsByCategory(category)) {
                 mediaItems.add(createMediaItem(metadata));
             }
 
@@ -317,24 +316,26 @@ public class MusicProvider {
     }
 
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForRoot(Resources resources) {
+
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
                 .setMediaId(MEDIA_ID_MUSICS_BY_CATEGORY)
-                .setTitle(resources.getString(R.string.browse_genres))
-                .setSubtitle(resources.getString(R.string.browse_genre_subtitle))
-                .setIconUri(Uri.parse("android.resource://" +
-                        "com.example.uamp/drawable/ic_by_genre"))
+                .setTitle(resources.getString(R.string.browse_categories))
+                .setSubtitle(resources.getString(R.string.browse_categories_subtitle))
                 .build();
         return new MediaBrowserCompat.MediaItem(description,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
-    private MediaBrowserCompat.MediaItem createBrowsableMediaItemForGenre(String genre,
-                                                                    Resources resources) {
+    private MediaBrowserCompat.MediaItem createBrowsableMediaItemForCategory(String category,
+                                                                             Resources resources) {
+        String subtitle = resources.getString(
+                R.string.browse_musics_by_category_subtitle, category);
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(createMediaID(null, MEDIA_ID_MUSICS_BY_CATEGORY, genre))
-                .setTitle(genre)
-                .setSubtitle(resources.getString(
-                        R.string.browse_musics_by_genre_subtitle, genre))
+                .setMediaId(createMediaID(null, MEDIA_ID_MUSICS_BY_CATEGORY, category))
+                .setTitle(category)
+                .setSubtitle(subtitle)
+//                .setIconUri(Uri.parse("android.resource://" +
+//                        "com.ashomok.lullabies/drawable/ic_default_art")) //set pretty icons
                 .build();
         return new MediaBrowserCompat.MediaItem(description,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);

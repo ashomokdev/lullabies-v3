@@ -26,8 +26,8 @@ android {
         applicationId "com.ashomok"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 30
-        versionName "3.9"
+        versionCode 31
+        versionName "4.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -50,22 +50,26 @@ android {
                     "FWEDnRiDuzIhDVq0vWJvs99/MgJ4qipYAo/mgsbe1JdQTfwfX34rZoU7VyI+OnL1klZfhpDhBC5wMQI54cUjsRF0tjnIxzy8Hr+u" +
                     "SbSU+JiumarDZ0iU/kZtSbr3uvP7ub+daZ1HIT6erJPUx2vJ3AFf1RDvkcgB/rQNTL7XXSiiL+ES3oX/YKs5+iVp/ULwrTwNN6Vo" +
                     "bPwt6lnxuzM11aKKZy1avFJsAbP6KbiGrIQFwIDAQAB\""
-            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fcommon.json?alt=media&token=14a55e22-da94-4055-a534-dfa8c4769e61\""
 
-        }
-        classics {
-            dimension "version"
-            applicationIdSuffix ".lullabies_classics"
-            buildConfigField "String", "PRIVACY_POLICY_LINK", "\"https://sites.google.com/view/lullaby-privacy-policy/home\""
-            buildConfigField "String", "BASE_64_ENCODED_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoBor" +
-                    "dnoO8U+1J+cnN6eGaQ72n/WNPSdO1qqvxH20XN6d8wj3+s2cw+EwOE8vVXrn6fYXCPTv8H5qraPtvL7eY7BG9I0jJ9jIBOmPoy0" +
-                    "0KRYQ3IHhV+mnIP+dnVzk71aP3bpwlcYHa2u3prqjTPwqYZPqHCh4W86C6FSajtyBfmjxLtz+lpxJBN9VHgvdfNR19sg+bG9lji" +
-                    "aQnJc0e9VLWcqrID3wIUt/WAkjBGI5CQaOWKOJrfiLoWpVH8we0a8YzI37rhKEa7a0Ygh0d0KQ5Fy0QvnnOaFvcVXoQVzPtg9jQ" +
-                    "vedZsSlG9bodF2pYj6Ww1pBJQcpRPSzBMYUJX7L4QIDAQAB\""
-            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fclassics.json?alt=media&token=0f8145b4-a94e-487a-add2-229679302c74\""
+//            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fcommon.json?alt=media&token=14a55e22-da94-4055-a534-dfa8c4769e61\""
+
+            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fmusic.json?alt=media&token=48f53505-4562-4622-88a6-b956edf4c5d2\""
 
 
         }
+//        classics {
+//            dimension "version"
+//            applicationIdSuffix ".lullabies_classics"
+//            buildConfigField "String", "PRIVACY_POLICY_LINK", "\"https://sites.google.com/view/lullaby-privacy-policy/home\""
+//            buildConfigField "String", "BASE_64_ENCODED_PUBLIC_KEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoBor" +
+//                    "dnoO8U+1J+cnN6eGaQ72n/WNPSdO1qqvxH20XN6d8wj3+s2cw+EwOE8vVXrn6fYXCPTv8H5qraPtvL7eY7BG9I0jJ9jIBOmPoy0" +
+//                    "0KRYQ3IHhV+mnIP+dnVzk71aP3bpwlcYHa2u3prqjTPwqYZPqHCh4W86C6FSajtyBfmjxLtz+lpxJBN9VHgvdfNR19sg+bG9lji" +
+//                    "aQnJc0e9VLWcqrID3wIUt/WAkjBGI5CQaOWKOJrfiLoWpVH8we0a8YzI37rhKEa7a0Ygh0d0KQ5Fy0QvnnOaFvcVXoQVzPtg9jQ" +
+//                    "vedZsSlG9bodF2pYj6Ww1pBJQcpRPSzBMYUJX7L4QIDAQAB\""
+//            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fclassics.json?alt=media&token=0f8145b4-a94e-487a-add2-229679302c74\""
+//
+//
+//        }
     }
 
     kapt {
@@ -84,30 +88,30 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.google.android.wearable:wearable:2.4.0'
+    compileOnly 'com.google.android.wearable:wearable:2.5.0'
 
-    implementation 'com.google.android.gms:play-services-cast-framework:17.0.0'
-    implementation 'com.google.android.support:wearable:2.4.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:18.1.0'
+    implementation 'com.google.android.support:wearable:2.5.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.mediarouter:mediarouter:1.0.0'
+    implementation 'androidx.mediarouter:mediarouter:1.1.0'
     implementation 'androidx.leanback:leanback:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
-    implementation 'com.google.firebase:firebase-ads:18.1.1'
+    implementation 'com.google.firebase:firebase-ads:19.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.android.billingclient:billing:2.0.1'
+    implementation 'com.android.billingclient:billing:2.1.0'
     implementation 'androidx.annotation:annotation:1.1.0'
 
     // Dagger docs https://dagger.dev/
-    implementation "com.google.dagger:dagger:2.16"
-    implementation "com.google.dagger:dagger-android:2.16"
-    implementation "com.google.dagger:dagger-android-support:2.16"
+    implementation 'com.google.dagger:dagger:2.22'
+    implementation 'com.google.dagger:dagger-android:2.16'
+    implementation 'com.google.dagger:dagger-android-support:2.16'
     kapt 'com.google.dagger:dagger-compiler:2.16'
-    kapt "com.google.dagger:dagger-android-processor:2.16"
+    kapt 'com.google.dagger:dagger-android-processor:2.16'
 
     implementation 'com.annimon:stream:1.1.8'
     implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
-    implementation 'com.google.firebase:firebase-core:17.0.1'
+    implementation 'com.google.firebase:firebase-core:17.2.3'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 
     //rx
@@ -133,19 +137,19 @@ dependencies {
     androidTestImplementation 'androidx.annotation:annotation:1.1.0'
 
     //kotlin
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0-alpha03'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    kapt 'androidx.lifecycle:lifecycle-compiler:2.0.0'
+    kapt 'androidx.lifecycle:lifecycle-compiler:2.2.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.31"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1"
-    implementation "androidx.room:room-runtime:2.2.0-alpha01"
-    kapt "androidx.room:room-compiler:2.2.0-alpha01"
-    implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0"
-    implementation "android.arch.navigation:navigation-ui-ktx:1.0.0"
+    implementation 'androidx.room:room-runtime:2.2.4'
+    kapt 'androidx.room:room-compiler:2.2.4'
+    implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
+    implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

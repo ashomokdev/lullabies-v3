@@ -68,7 +68,8 @@ public class MusicPlayerActivity extends BaseActivity
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
     private static final String SAVED_MEDIA_ID = "com.example.uamp.MEDIA_ID";
     private static final String FRAGMENT_TAG = "uamp_list_container";
-    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__/Free";
+    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__";
+//    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__/Classic Tones";
 
     public static final String EXTRA_START_FULLSCREEN =
             "com.example.uamp.EXTRA_START_FULLSCREEN";
@@ -297,6 +298,7 @@ public class MusicPlayerActivity extends BaseActivity
         navigateToBrowser(mediaId);
     }
 
+    //todo create similar but for generation menu items
     private void navigateToBrowser(String mediaId) {
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
         MediaBrowserFragment fragment = getBrowseFragment();

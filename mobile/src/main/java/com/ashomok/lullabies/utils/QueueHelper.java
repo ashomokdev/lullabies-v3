@@ -59,7 +59,7 @@ public class QueueHelper {
         Iterable<MediaMetadataCompat> tracks = null;
         // This sample only supports genre and by_search category types.
         if (categoryType.equals(MEDIA_ID_MUSICS_BY_CATEGORY)) {
-            tracks = musicProvider.getMusicsByGenre(categoryValue);
+            tracks = musicProvider.getMusicsByCategory(categoryValue);
         } else if (categoryType.equals(MEDIA_ID_MUSICS_BY_SEARCH)) {
             tracks = musicProvider.searchMusicBySongTitle(categoryValue);
         }
@@ -92,7 +92,7 @@ public class QueueHelper {
         if (params.isAlbumFocus) {
             result = musicProvider.searchMusicByAlbum(params.album);
         } else if (params.isGenreFocus) {
-            result = musicProvider.getMusicsByGenre(params.genre);
+            result = musicProvider.getMusicsByCategory(params.genre);
         } else if (params.isArtistFocus) {
             result = musicProvider.searchMusicByArtist(params.artist);
         } else if (params.isSongFocus) {
