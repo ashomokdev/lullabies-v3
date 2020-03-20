@@ -56,17 +56,17 @@ import com.google.android.gms.cast.framework.CastContext;
 public class MediaNotificationManager extends BroadcastReceiver {
     private static final String TAG = LogHelper.makeLogTag(MediaNotificationManager.class);
 
-    private static final String CHANNEL_ID = "com.example.uamp.MUSIC_CHANNEL_ID";
+    private static final String CHANNEL_ID = "com.ashomok.lullabies.MUSIC_CHANNEL_ID";
 
     public static final int NOTIFICATION_ID = 412;
     private static final int REQUEST_CODE = 100;
 
-    public static final String ACTION_PAUSE = "com.example.uamp.pause";
-    public static final String ACTION_PLAY = "com.example.uamp.play";
-    public static final String ACTION_PREV = "com.example.uamp.prev";
-    public static final String ACTION_NEXT = "com.example.uamp.next";
-    public static final String ACTION_STOP = "com.example.uamp.stop";
-    public static final String ACTION_STOP_CASTING = "com.example.uamp.stop_cast";
+    public static final String ACTION_PAUSE = "com.ashomok.lullabies.pause";
+    public static final String ACTION_PLAY = "com.ashomok.lullabies.play";
+    public static final String ACTION_PREV = "com.ashomok.lullabies.prev";
+    public static final String ACTION_NEXT = "com.ashomok.lullabies.next";
+    public static final String ACTION_STOP = "com.ashomok.lullabies.stop";
+    public static final String ACTION_STOP_CASTING = "com.ashomok.lullabies.stop_cast";
 
     public MusicService getmService() {
         return mService;

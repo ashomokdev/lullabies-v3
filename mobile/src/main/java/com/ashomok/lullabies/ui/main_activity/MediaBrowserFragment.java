@@ -273,7 +273,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         }
         mMediaId = getMediaId();
         if (mMediaId == null) {
-            mMediaId = mMediaFragmentListener.getMediaBrowser().getRoot();
+            mMediaId = mMediaFragmentListener.getMediaBrowser().getRoot(); //todo this is never call
         }
         updateTitle();
 
@@ -290,7 +290,6 @@ public class MediaBrowserFragment extends DaggerFragment {
                     // unsubscribe first.
                     mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
                 })
-//                .compose(((RxAppCompatActivity) getActivity()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     LogHelper.d(TAG, "complatable finished");

@@ -32,6 +32,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -53,7 +54,11 @@ import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.List;
+
 import javax.inject.Inject;
+
+import static android.view.Menu.NONE;
 
 /**
  * Main activity for the music player.
@@ -66,21 +71,18 @@ public class MusicPlayerActivity extends BaseActivity
         MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
-    private static final String SAVED_MEDIA_ID = "com.example.uamp.MEDIA_ID";
-    private static final String FRAGMENT_TAG = "uamp_list_container";
-    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__";
-//    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__/Classic Tones";
-
+    private static final String SAVED_MEDIA_ID = "com.ashomok.lullabies.MEDIA_ID";
+    private static final String FRAGMENT_TAG = "lullabies_list_container";
+    private static final String INIT_MEDIA_ID_VALUE_ROOT = "__BY_CATEGORY__";
     public static final String EXTRA_START_FULLSCREEN =
-            "com.example.uamp.EXTRA_START_FULLSCREEN";
+            "com.ashomok.lullabies.EXTRA_START_FULLSCREEN";
 
     /**
      * Optionally used with {@link #EXTRA_START_FULLSCREEN} to carry a MediaDescription to
      * the {@link FullScreenPlayerActivity}, speeding up the screen rendering
      * while the {@link android.support.v4.media.session.MediaControllerCompat} is connecting.
      */
-    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
-            "com.example.uamp.CURRENT_MEDIA_DESCRIPTION";
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION = "com.ashomok.lullabies.CURRENT_MEDIA_DESCRIPTION";
 
     private Bundle mVoiceSearchParams;
 
@@ -94,6 +96,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
+    private List<MediaBrowserCompat.MediaItem> categories;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -134,26 +137,21 @@ public class MusicPlayerActivity extends BaseActivity
         // Set up the navigation drawer_actions.
         navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
-        setupDrawerContent(navigationView);
+        setupDrawerContent();
     }
 
-    private void setupDrawerContent(final NavigationView navigationView) {
+    private void setupDrawerContent() {
+
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
-                    Bundle extras = ActivityOptions.makeCustomAnimation(
+                    Bundle bundle = ActivityOptions.makeCustomAnimation(
                             this, R.anim.fade_in, R.anim.fade_out).toBundle();
-
+                    String mediaId = null;
                     Class activityClass = null;
 
                     switch (menuItem.getItemId()) {
-                        case R.id.navigation_animals_lullabies:
-                            activityClass = MusicPlayerActivity.class;
-                            break;
                         case R.id.navigation_rate_app:
                             rateApp();
-                            break;
-                        case R.id.navigation_download_app:
-                            downloadApp();
                             break;
                         case R.id.navigation_about:
                             activityClass = AboutActivity.class;
@@ -161,24 +159,29 @@ public class MusicPlayerActivity extends BaseActivity
                         case R.id.navigation_exit:
                             exit();
                             break;
+                        case 0:
+                            activityClass = MusicPlayerActivity.class;
+                            mediaId = "__BY_CATEGORY__/Base Collection"; //todo remove hardcoding
+                            break;
+                        case 1:
+                            activityClass = MusicPlayerActivity.class;
+                            mediaId = "__BY_CATEGORY__/Classic Tones"; //todo remove hardcoding
+                            break;
                         default:
                             break;
                     }
                     if (activityClass != null) {
-                        startActivity(new Intent(this, activityClass), extras);
+                        Intent intent = new Intent(this, activityClass);
+                        if (mediaId != null) {
+                            intent.putExtra(MusicPlayerActivity.SAVED_MEDIA_ID, mediaId);
+                        }
+                        startActivity(intent, bundle);
                     }
                     // Close the navigation drawer_actions when an item is selected.
                     menuItem.setChecked(true);
                     mDrawerLayout.closeDrawers();
                     return true;
                 });
-    }
-
-    private void downloadApp() {
-        RateAppUtil rateAppUtil = new RateAppUtil();
-        String uri = getResources().getString(R.string.propose_download_app_dynamic_link);
-        String packageName = getResources().getString(R.string.propose_download_app_package_name);
-        rateAppUtil.openPackageInMarket(uri, packageName, this);
     }
 
     private void exit() {
@@ -192,8 +195,8 @@ public class MusicPlayerActivity extends BaseActivity
         rateAppUtil.rate(this);
     }
 
-    private void updateDownloadAppMenuItem(Menu navigationMenu) {
-        MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_download_app);
+    private void updateRateAppMenuItem(Menu navigationMenu) {
+        MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_rate_app);
         CharSequence menuItemText = updateToPremiumMenuItem.getTitle();
         SpannableString spannableString = new SpannableString(menuItemText);
         spannableString.setSpan(
@@ -280,7 +283,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
 
-        String mediaId = INIT_MEDIA_ID_VALUE;
+        String mediaId = INIT_MEDIA_ID_VALUE_ROOT;
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
         // (which contain the query details) in a parameter, so we can reuse it later, when the
         // MediaSession is connected.
@@ -292,37 +295,48 @@ public class MusicPlayerActivity extends BaseActivity
         } else {
             if (savedInstanceState != null) {
                 // If there is a saved media ID, use it
-                mediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
+                String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
+                if (savedMediaId != null) {
+                    mediaId = savedMediaId;
+                }
             }
         }
         navigateToBrowser(mediaId);
     }
 
-    //todo create similar but for generation menu items
-    private void navigateToBrowser(String mediaId) {
+    private void navigateToBrowser(@NonNull String mediaId) {
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
-        MediaBrowserFragment fragment = getBrowseFragment();
+        if (mediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) { //todo check
+            mPresenter.initCategoriesList(mediaId, getMediaBrowser());
+        } else {
+            MediaBrowserFragment fragment = getBrowseFragment();
 
-        if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
-            fragment = new MediaBrowserFragment();
-            fragment.setMediaId(mediaId);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.setCustomAnimations(
-                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
-                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-            transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
+            if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
+                fragment = new MediaBrowserFragment();
+                fragment.setMediaId(mediaId);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(
+                        R.animator.slide_in_from_right, R.animator.slide_out_to_left,
+                        R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+                transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
 
-            transaction.commit();
-            LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG + " commited");
+                transaction.commit();
+                LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG + " commited");
+            }
         }
     }
 
     public String getMediaId() {
         MediaBrowserFragment fragment = getBrowseFragment();
         if (fragment == null) {
-            return null;
+            String savedCategoryMediaId = getIntent().getStringExtra(SAVED_MEDIA_ID);
+            if (savedCategoryMediaId != null) {
+                return savedCategoryMediaId;
+            }
+        } else {
+            return fragment.getMediaId(); //track mediaId
         }
-        return fragment.getMediaId();
+        return null;
     }
 
     private MediaBrowserFragment getBrowseFragment() {
@@ -341,7 +355,9 @@ public class MusicPlayerActivity extends BaseActivity
                     .playFromSearch(query, mVoiceSearchParams);
             mVoiceSearchParams = null;
         }
-        getBrowseFragment().onConnected();
+        if (getBrowseFragment() != null) {
+            getBrowseFragment().onConnected();//todo
+        }
     }
 
     private void showBannerAd() {
@@ -383,7 +399,7 @@ public class MusicPlayerActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Menu navigationMenu = navigationView.getMenu();
-        updateDownloadAppMenuItem(navigationMenu);
+        updateRateAppMenuItem(navigationMenu);
         return true;
     }
 
@@ -393,12 +409,41 @@ public class MusicPlayerActivity extends BaseActivity
         RemoveAdDialogFragment removeAdDialogFragment =
                 RemoveAdDialogFragment.newInstance(removeAdsSkuRow.getPrice());
 
-        removeAdDialogFragment.show(getFragmentManager(), "dialog"); //todo check
+        removeAdDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     @Override
     public AppCompatActivity getActivity() {
         return this;
+    }
+
+    @Override
+    public void addMenuItems(List<String> menuTitles) {
+        if (navigationView == null) {
+            LogHelper.e(TAG, "navigationView == null - unexpected");
+        } else {
+            for (int i = 0; i < menuTitles.size(); i++) {
+                navigationView.getMenu().add(NONE, i, i, menuTitles.get(i));
+            }
+        }
+    }
+
+    @Override
+    public void browseCategory() {
+       String  mMediaId = getMediaId();
+       if (mMediaId == null || mMediaId.equals(getMediaBrowser().getRoot())){
+           if (categories.size() > 0) {
+               mMediaId = categories.get(0).getMediaId();
+           }
+       }
+        //open item depends on intent extra
+        navigateToBrowser(mMediaId); //navigationView.setCheckedItem(R.id.nav_map_type_normal);
+        LogHelper.d(TAG, "category" + mMediaId +" loaded, ");
+    }
+
+    @Override
+    public void setCategories(List<MediaBrowserCompat.MediaItem> children) {
+        categories = children; //todo
     }
 
     @Override
@@ -422,4 +467,20 @@ public class MusicPlayerActivity extends BaseActivity
             }
         }
     }
+
+
+//    public String getMediaId() {
+//        Bundle args = getArguments();
+//        if (args != null) {
+//            return args.getString(ARG_MEDIA_ID);
+//        }
+//        return null;
+//    }
+//
+//    public void setMediaId(String mediaId) {
+//        Bundle args = new Bundle(1);
+//        args.putString(ARG_MEDIA_ID, mediaId);
+//        setArguments(args);
+//    }
+
 }

@@ -39,7 +39,7 @@ ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/s
 		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:28:13-56
 	android:name
 		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:27:20-73
-service#com.example.uamp.media.MusicService
+service#com.ashomok.lullabies.media.MusicService
 ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:30:9-39:19
 	android:enabled
 		ADDED from /home/yuliia/Documents/projects/android_projects/lullabies-v3/media/src/main/AndroidManifest.xml:32:13-35

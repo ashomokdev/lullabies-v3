@@ -36,8 +36,8 @@ public class TvBrowseActivity extends FragmentActivity
         implements TvBrowseFragment.MediaFragmentListener {
 
     private static final String TAG = LogHelper.makeLogTag(TvBrowseActivity.class);
-    public static final String SAVED_MEDIA_ID="com.example.uamp.MEDIA_ID";
-    public static final String BROWSE_TITLE = "com.example.uamp.BROWSE_TITLE";
+    public static final String SAVED_MEDIA_ID="com.ashomok.lullabies.MEDIA_ID";
+    public static final String BROWSE_TITLE = "com.ashomok.lullabies.BROWSE_TITLE";
 
     private MediaBrowserCompat mMediaBrowser;
 

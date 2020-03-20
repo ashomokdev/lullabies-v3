@@ -23,11 +23,6 @@ public abstract class MusicPlayerModule {
         return activity;
     }
 
-//    @Provides
-//    static MusicPlayerPresenter provideMusicPlayerPresenter() {
-//        return new MusicPlayerPresenter();
-//    }
-
     @Provides
     static @StringRes
     int provideAdBannerId() {
@@ -47,5 +42,5 @@ public abstract class MusicPlayerModule {
     abstract MusicPlayerContract.Presenter mainPresenter(MusicPlayerPresenter presenter);
 
     @ContributesAndroidInjector
-    abstract MediaBrowserFragment mediaBrowserFragment();
+    abstract MediaBrowserFragment mediaBrowserFragment(); //todo don't inject - simplify
 }

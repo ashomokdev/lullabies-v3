@@ -23,6 +23,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.annimon.stream.Stream;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
@@ -69,6 +70,7 @@ public class MusicProvider {
     public MusicProvider() {
         this(new RemoteJSONSource());
     }
+
     public MusicProvider(MusicProviderSource source) {
         mSource = source;
         mMusicListByCategory = new ConcurrentHashMap<>();
@@ -77,15 +79,15 @@ public class MusicProvider {
     }
 
     /**
-     * Get an iterator over the list of genres
+     * Get an iterator over the list of categories mediaId
      *
-     * @return genres
+     * @return  categories mediaId
      */
     public Iterable<String> getCategories() {
         if (mCurrentState != State.INITIALIZED) {
             return Collections.emptyList();
         }
-        return mMusicListByCategory.keySet();
+        return Stream.of(new ArrayList<>(mMusicListByCategory.keySet())).sorted().toList();
     }
 
     /**
@@ -96,7 +98,7 @@ public class MusicProvider {
             return Collections.emptyList();
         }
         List<MediaMetadataCompat> shuffled = new ArrayList<>(mMusicListById.size());
-        for (MutableMediaMetadata mutableMetadata: mMusicListById.values()) {
+        for (MutableMediaMetadata mutableMetadata : mMusicListById.values()) {
             shuffled.add(mutableMetadata.metadata);
         }
         Collections.shuffle(shuffled);
@@ -105,7 +107,6 @@ public class MusicProvider {
 
     /**
      * Get music tracks of the given category
-     *
      */
     public List<MediaMetadataCompat> getMusicsByCategory(String category) {
         if (mCurrentState != State.INITIALIZED || !mMusicListByCategory.containsKey(category)) {
@@ -117,7 +118,6 @@ public class MusicProvider {
     /**
      * Very basic implementation of a search that filter music tracks with title containing
      * the given query.
-     *
      */
     public List<MediaMetadataCompat> searchMusicBySongTitle(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_TITLE, query);
@@ -126,7 +126,6 @@ public class MusicProvider {
     /**
      * Very basic implementation of a search that filter music tracks with album containing
      * the given query.
-     *
      */
     public List<MediaMetadataCompat> searchMusicByAlbum(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_ALBUM, query);
@@ -135,7 +134,6 @@ public class MusicProvider {
     /**
      * Very basic implementation of a search that filter music tracks with artist containing
      * the given query.
-     *
      */
     public List<MediaMetadataCompat> searchMusicByArtist(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_ARTIST, query);
@@ -144,7 +142,6 @@ public class MusicProvider {
     /**
      * Very basic implementation of a search that filter music tracks with a genre containing
      * the given query.
-     *
      */
     public List<MediaMetadataCompat> searchMusicByGenre(String query) {
         return searchMusic(MediaMetadataCompat.METADATA_KEY_GENRE, query);
@@ -158,7 +155,7 @@ public class MusicProvider {
         query = query.toLowerCase(Locale.US);
         for (MutableMediaMetadata track : mMusicListById.values()) {
             if (track.metadata.getString(metadataField).toLowerCase(Locale.US)
-                .contains(query)) {
+                    .contains(query)) {
                 result.add(track.metadata);
             }
         }
@@ -274,11 +271,9 @@ public class MusicProvider {
                 buildListsByGenre();
                 mCurrentState = State.INITIALIZED;
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             LogHelper.e(TAG, "Failed to retrieve media", e);
-        }
-        finally {
+        } finally {
             if (mCurrentState != State.INITIALIZED) {
                 // Something bad happened, so we reset state to NON_INITIALIZED to allow
                 // retries (eg if the network connection is temporary unavailable)
@@ -334,8 +329,6 @@ public class MusicProvider {
                 .setMediaId(createMediaID(null, MEDIA_ID_MUSICS_BY_CATEGORY, category))
                 .setTitle(category)
                 .setSubtitle(subtitle)
-//                .setIconUri(Uri.parse("android.resource://" +
-//                        "com.ashomok.lullabies/drawable/ic_default_art")) //set pretty icons
                 .build();
         return new MediaBrowserCompat.MediaItem(description,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
