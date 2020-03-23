@@ -310,6 +310,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         }
     }
 
+    //todo move to activity class
     private void checkForUserVisibleErrors(boolean forceError) {
         boolean showError = forceError;
         // If offline, message is about the lack of connectivity:

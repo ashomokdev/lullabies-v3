@@ -23,6 +23,7 @@ import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -49,6 +50,7 @@ import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -351,11 +353,6 @@ public class MusicPlayerActivity extends BaseActivity
         }
     }
 
-    private void checkForUserVisibleErrors(boolean b) {
-        //todo
-    }
-
-
     public @NonNull
     String getMediaId() {
         String mediaId = null;
@@ -479,8 +476,8 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     @Override
-    public void setCategories(List<MediaBrowserCompat.MediaItem> children) {
-        categories = children; //todo
+    public void setCategories(List<MediaBrowserCompat.MediaItem> mediaItems) {
+        categories = mediaItems;
     }
 
     @Override
@@ -505,19 +502,32 @@ public class MusicPlayerActivity extends BaseActivity
         }
     }
 
-
-//    public String getMediaId() {
-//        Bundle args = getArguments();
-//        if (args != null) {
-//            return args.getString(ARG_MEDIA_ID);
-//        }
-//        return null;
-//    }
-//
-//    public void setMediaId(String mediaId) {
-//        Bundle args = new Bundle(1);
-//        args.putString(ARG_MEDIA_ID, mediaId);
-//        setArguments(args);
-//    }
+    public void checkForUserVisibleErrors(boolean forceError) {
+        boolean showError = forceError;
+        // If offline, message is about the lack of connectivity:
+        if (!NetworkHelper.isOnline(getActivity())) {
+            mErrorMessage.setText(R.string.error_no_connection);
+            showError = true;
+        } else {
+            // otherwise, if state is ERROR and metadata!=null, use playback state error message:
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+            if (controller != null
+                    && controller.getMetadata() != null
+                    && controller.getPlaybackState() != null
+                    && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
+                    && controller.getPlaybackState().getErrorMessage() != null) {
+                mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
+                showError = true;
+            } else if (forceError) {
+                // Finally, if the caller requested to show error, show a generic message:
+                mErrorMessage.setText(R.string.error_loading_media);
+                showError = true;
+            }
+        }
+        emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
+        LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
+                " showError=", showError,
+                " isOnline=", NetworkHelper.isOnline(getActivity()));
+    }
 
 }

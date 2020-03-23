@@ -133,8 +133,11 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                                         menuTitles.add(String.valueOf(
                                                 children.get(i).getDescription().getTitle()));
                                     }
-                                    view.addMenuItems(menuTitles);
-                                    view.setCategories(children);
+                                    if (view != null) {
+                                        view.addMenuItems(menuTitles);
+                                        view.setCategories(children);
+                                    }
+
 
                                     emitter.onSuccess(children);
                                 } catch (Throwable t) {
