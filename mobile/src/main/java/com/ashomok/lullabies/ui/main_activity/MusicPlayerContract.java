@@ -10,6 +10,8 @@ import com.ashomok.lullabies.di_dagger.BasePresenter;
 
 import java.util.List;
 
+import io.reactivex.Single;
+
 public class MusicPlayerContract {
 
     interface View {
@@ -38,6 +40,6 @@ public class MusicPlayerContract {
 
         void proposeRemoveAds();
 
-        void initCategoriesList(String rootMediaId, MediaBrowserCompat mediaBrowser);
+        Single<List<MediaBrowserCompat.MediaItem>> initCategoriesList(String rootMediaId, MediaBrowserCompat mediaBrowser);
     }
 }

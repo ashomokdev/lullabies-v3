@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -57,6 +56,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import io.reactivex.schedulers.Schedulers;
 
 import static android.view.Menu.NONE;
 
@@ -121,6 +122,27 @@ public class MusicPlayerActivity extends BaseActivity
 
         showBannerAd();
         mPresenter.takeView(this);
+
+        mPresenter.initCategoriesList(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser())
+                .doOnSubscribe(disposable -> {
+                    // Unsubscribing before subscribing is required if this mediaId already has a subscriber
+                    // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
+                    // the callback, but won't trigger the initial callback.onChildrenLoaded.
+                    //
+                    // This is temporary: A bug is being fixed that will make subscribe
+                    // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
+                    // subscriber or not. Currently this only happens if the mediaID has no previous
+                    // subscriber or if the media content changes on the service side, so we need to
+                    // unsubscribe first.
+                    getMediaBrowser().unsubscribe(INIT_MEDIA_ID_VALUE_ROOT);
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(mediaItems -> {
+                    browseCategory();
+                }, throwable -> {
+                    LogHelper.e(TAG, throwable, "Error from loading media");
+                    checkForUserVisibleErrors(true);
+                });
     }
 
     @Override
@@ -284,6 +306,7 @@ public class MusicPlayerActivity extends BaseActivity
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
 
         String mediaId = INIT_MEDIA_ID_VALUE_ROOT;
+
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
         // (which contain the query details) in a parameter, so we can reuse it later, when the
         // MediaSession is connected.
@@ -293,12 +316,18 @@ public class MusicPlayerActivity extends BaseActivity
             LogHelper.d(TAG, "Starting from voice search query=",
                     mVoiceSearchParams.getString(SearchManager.QUERY));
         } else {
-            if (savedInstanceState != null) {
+            if (savedInstanceState != null) { //screen rotated
                 // If there is a saved media ID, use it
                 String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
                 if (savedMediaId != null) {
                     mediaId = savedMediaId;
+                    LogHelper.d(TAG,
+                            "initializeFromParams with savedInstanceState, " +
+                                    "mediaId = " + mediaId);
+
                 }
+            } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu
+                mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
             }
         }
         navigateToBrowser(mediaId);
@@ -306,11 +335,9 @@ public class MusicPlayerActivity extends BaseActivity
 
     private void navigateToBrowser(@NonNull String mediaId) {
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
-        if (mediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) { //todo check
-            mPresenter.initCategoriesList(mediaId, getMediaBrowser());
-        } else {
-            MediaBrowserFragment fragment = getBrowseFragment();
 
+        if (!mediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) { //don't create fragment for categories
+            MediaBrowserFragment fragment = getBrowseFragment();
             if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
                 fragment = new MediaBrowserFragment();
                 fragment.setMediaId(mediaId);
@@ -326,17 +353,28 @@ public class MusicPlayerActivity extends BaseActivity
         }
     }
 
-    public String getMediaId() {
+    private void checkForUserVisibleErrors(boolean b) {
+        //todo
+    }
+
+
+    public @NonNull
+    String getMediaId() {
+        String mediaId = null;
         MediaBrowserFragment fragment = getBrowseFragment();
         if (fragment == null) {
             String savedCategoryMediaId = getIntent().getStringExtra(SAVED_MEDIA_ID);
             if (savedCategoryMediaId != null) {
-                return savedCategoryMediaId;
+                mediaId = savedCategoryMediaId;
             }
         } else {
-            return fragment.getMediaId(); //track mediaId
+            mediaId = fragment.getMediaId(); //todo check category or track mediaId
         }
-        return null;
+        if (mediaId == null) {
+            mediaId = INIT_MEDIA_ID_VALUE_ROOT;
+        }
+        LogHelper.d(TAG, "getMediaId returned " + mediaId);
+        return mediaId;
     }
 
     private MediaBrowserFragment getBrowseFragment() {
@@ -355,9 +393,7 @@ public class MusicPlayerActivity extends BaseActivity
                     .playFromSearch(query, mVoiceSearchParams);
             mVoiceSearchParams = null;
         }
-        if (getBrowseFragment() != null) {
-            getBrowseFragment().onConnected();//todo
-        }
+        getBrowseFragment().onConnected();
     }
 
     private void showBannerAd() {
@@ -430,15 +466,16 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Override
     public void browseCategory() {
-       String  mMediaId = getMediaId();
-       if (mMediaId == null || mMediaId.equals(getMediaBrowser().getRoot())){
-           if (categories.size() > 0) {
-               mMediaId = categories.get(0).getMediaId();
-           }
-       }
+        String mMediaId = getMediaId();
+        if (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)
+                || mMediaId.equals(getMediaBrowser().getRoot())) {
+            if (categories.size() > 0) {
+                mMediaId = categories.get(0).getMediaId();
+            }
+        }
         //open item depends on intent extra
-        navigateToBrowser(mMediaId); //navigationView.setCheckedItem(R.id.nav_map_type_normal);
-        LogHelper.d(TAG, "category" + mMediaId +" loaded, ");
+        navigateToBrowser(mMediaId);
+        LogHelper.d(TAG, "category" + mMediaId + " loaded.");
     }
 
     @Override

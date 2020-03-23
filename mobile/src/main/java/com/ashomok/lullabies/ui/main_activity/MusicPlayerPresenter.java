@@ -21,10 +21,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
-import io.reactivex.schedulers.Schedulers;
-
-import static android.view.Menu.NONE;
+import io.reactivex.Single;
 
 public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     public static final String TAG = LogHelper.makeLogTag(MusicPlayerPresenter.class);
@@ -118,8 +115,9 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     @Override
-    public void initCategoriesList(String rootMediaId, MediaBrowserCompat mediaBrowser) {
-        Completable loadCategoriesComplatable = Completable.create(emitter ->
+    public Single<List<MediaBrowserCompat.MediaItem>> initCategoriesList(
+            String rootMediaId, MediaBrowserCompat mediaBrowser) {
+        return Single.create(emitter ->
                 mediaBrowser.subscribe(rootMediaId,
                         new MediaBrowserCompat.SubscriptionCallback() {
                             @Override
@@ -132,13 +130,13 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
 
                                     List<String> menuTitles = new ArrayList<>();
                                     for (int i = 0; i < children.size(); i++) {
-                                    menuTitles.add(String.valueOf(
-                                            children.get(i).getDescription().getTitle()));
+                                        menuTitles.add(String.valueOf(
+                                                children.get(i).getDescription().getTitle()));
                                     }
                                     view.addMenuItems(menuTitles);
                                     view.setCategories(children);
 
-                                    emitter.onComplete();
+                                    emitter.onSuccess(children);
                                 } catch (Throwable t) {
                                     LogHelper.e(TAG, "Error on childrenloaded ", t);
                                     emitter.onError(t);
@@ -151,28 +149,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                                 emitter.onError(new Exception(id));
                             }
                         }));
-
-        loadCategoriesComplatable
-                .doOnSubscribe(disposable -> {
-                    // Unsubscribing before subscribing is required if this mediaId already has a subscriber
-                    // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
-                    // the callback, but won't trigger the initial callback.onChildrenLoaded.
-                    //
-                    // This is temporary: A bug is being fixed that will make subscribe
-                    // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
-                    // subscriber or not. Currently this only happens if the mediaID has no previous
-                    // subscriber or if the media content changes on the service side, so we need to
-                    // unsubscribe first.
-                    mediaBrowser.unsubscribe(rootMediaId);
-                })
-                .subscribeOn(Schedulers.io())
-                .subscribe(() -> {
-                    view.browseCategory();
-
-                }, throwable -> {
-                    LogHelper.e(TAG, throwable, "Error from loading media");
-                    checkForUserVisibleErrors(true);
-                });
     }
 
 
