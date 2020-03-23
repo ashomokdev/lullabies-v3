@@ -181,16 +181,14 @@ public class MusicPlayerActivity extends BaseActivity
                         case R.id.navigation_exit:
                             exit();
                             break;
-                        case 0:
-                            activityClass = MusicPlayerActivity.class;
-                            mediaId = "__BY_CATEGORY__/Base Collection"; //todo remove hardcoding
-                            break;
-                        case 1:
-                            activityClass = MusicPlayerActivity.class;
-                            mediaId = "__BY_CATEGORY__/Classic Tones"; //todo remove hardcoding
-                            break;
                         default:
                             break;
+                    }
+                    for (int i = 0; i < categories.size(); i++){
+                        if (menuItem.getItemId() == i) {
+                            activityClass = MusicPlayerActivity.class;
+                            mediaId = categories.get(i).getMediaId();
+                        }
                     }
                     if (activityClass != null) {
                         Intent intent = new Intent(this, activityClass);
@@ -368,7 +366,7 @@ public class MusicPlayerActivity extends BaseActivity
                 mediaId = savedCategoryMediaId;
             }
         } else {
-            mediaId = fragment.getMediaId(); //todo check category or track mediaId
+            mediaId = fragment.getMediaId(); //track mediaId
         }
         if (mediaId == null) {
             mediaId = INIT_MEDIA_ID_VALUE_ROOT;
@@ -393,7 +391,9 @@ public class MusicPlayerActivity extends BaseActivity
                     .playFromSearch(query, mVoiceSearchParams);
             mVoiceSearchParams = null;
         }
-        getBrowseFragment().onConnected();
+        if (getBrowseFragment() != null) {
+            getBrowseFragment().onConnected();
+        }
     }
 
     private void showBannerAd() {
