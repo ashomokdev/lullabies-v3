@@ -17,7 +17,11 @@ package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.ActivityOptions;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
@@ -31,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -96,10 +101,33 @@ public class MusicPlayerActivity extends BaseActivity
     AdMobContainer adMobContainer;
 
     private View mRootView;
+    private View emptyResultView;
+    private TextView mErrorMessage;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
     private List<MediaBrowserCompat.MediaItem> categories;
+
+//    private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
+//        private boolean oldOnline = false;
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            // We don't care about network changes while this fragment is not associated
+//            // with a media ID (for example, while it is being initialized)
+//            if (mMediaId != null) {
+//                boolean isOnline = NetworkHelper.isOnline(context);
+//                if (isOnline != oldOnline) {
+//                    oldOnline = isOnline;
+//                    checkForUserVisibleErrors(false);
+//                    if (isOnline) {
+//                        reloadMedia();
+//                        mBrowserAdapter.notifyDataSetChanged();
+//                    }
+//                }
+//            }
+//        }
+//    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,6 +140,10 @@ public class MusicPlayerActivity extends BaseActivity
         if (mRootView == null) {
             mRootView = getWindow().getDecorView().findViewById(android.R.id.content);
         }
+
+        emptyResultView = findViewById(R.id.empty_result_layout);
+        mErrorMessage = emptyResultView.findViewById(R.id.error_message);
+
 
         initializeToolbar();
         initializeNavigationDrawer();
@@ -145,6 +177,10 @@ public class MusicPlayerActivity extends BaseActivity
                     LogHelper.e(TAG, throwable, "Error from loading media");
                     checkForUserVisibleErrors(true);
                 });
+
+//        // Registers BroadcastReceiver to track network connection changes.
+//        this.getActivity().registerReceiver(mConnectivityChangeReceiver,
+//                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
@@ -529,5 +565,4 @@ public class MusicPlayerActivity extends BaseActivity
                 " showError=", showError,
                 " isOnline=", NetworkHelper.isOnline(getActivity()));
     }
-
 }
