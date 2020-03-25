@@ -30,7 +30,7 @@ public class MusicPlayerContract {
 
         void addMenuItems(List<MediaBrowserCompat.MediaItem> menuTitles);
 
-        void forceBrowseDefaultCategory();
+        void browseMedia(String mediaId);
 
         void checkForUserVisibleErrors(boolean forceError);
     }

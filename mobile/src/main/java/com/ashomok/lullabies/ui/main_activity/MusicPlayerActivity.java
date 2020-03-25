@@ -128,7 +128,7 @@ public class MusicPlayerActivity extends BaseActivity
         LogHelper.d(TAG, "on reload Media");
         boolean isOnline = NetworkHelper.isOnline(getActivity());
         if (isOnline) {
-            initMediaBrowserLoader();
+            initMediaBrowserLoader(getMediaId());
         }
     }
 
@@ -146,7 +146,7 @@ public class MusicPlayerActivity extends BaseActivity
 
         emptyResultView = findViewById(R.id.empty_result_layout);
         mErrorMessage = emptyResultView.findViewById(R.id.error_message);
-
+        mPresenter.takeView(this);
 
         initializeToolbar();
         initializeNavigationDrawer();
@@ -158,11 +158,9 @@ public class MusicPlayerActivity extends BaseActivity
         }
 
         showBannerAd();
-        mPresenter.takeView(this);
-        initMediaBrowserLoader();
     }
 
-    private void initMediaBrowserLoader() {
+    private void initMediaBrowserLoader(String mediaId) {
         mPresenter.initMediaBrowserLoader(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser())
                 .doOnSubscribe(disposable -> {
                     // Unsubscribing before subscribing is required if this mediaId already has a subscriber
@@ -178,7 +176,7 @@ public class MusicPlayerActivity extends BaseActivity
                 })
                 .subscribeOn(Schedulers.io())
                 .subscribe(mediaItems -> {
-                    forceBrowseDefaultCategory();
+                    browseMedia(mediaId);
                 }, throwable -> {
                     LogHelper.e(TAG, throwable, "Error from loading media");
                     checkForUserVisibleErrors(true);
@@ -339,7 +337,7 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     protected void onNewIntent(Intent intent) {
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
-        initializeFromParams(null, intent); //todo check may be bug
+        initializeFromParams(null, intent);
         startFullScreenActivityIfNeeded(intent);
         super.onNewIntent(intent);
     }
@@ -356,7 +354,6 @@ public class MusicPlayerActivity extends BaseActivity
         }
     }
 
-    //todo update
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
 
         String mediaId = INIT_MEDIA_ID_VALUE_ROOT;
@@ -369,23 +366,21 @@ public class MusicPlayerActivity extends BaseActivity
             mVoiceSearchParams = intent.getExtras();
             LogHelper.d(TAG, "Starting from voice search query=",
                     mVoiceSearchParams.getString(SearchManager.QUERY));
-        } else {
-            if (savedInstanceState != null) { //screen rotated
-                // If there is a saved media ID, use it
-                String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
-                if (savedMediaId != null) {
-                    mediaId = savedMediaId;
-                    LogHelper.d(TAG,
-                            "initializeFromParams with savedInstanceState, " +
-                                    "mediaId = " + mediaId);
+        } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu or from internet broadcast receiver
+            mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
+        } else if (savedInstanceState != null) { //screen rotated
+            // If there is a saved media ID, use it
+            String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
+            if (savedMediaId != null) {
+                mediaId = savedMediaId;
+                LogHelper.d(TAG, "initializeFromParams with savedInstanceState, " +
+                        "mediaId = " + mediaId);
 
-                }
-            } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu or from internet broadcast receiver
-                mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
             }
         }
         LogHelper.d(TAG, "initializeFromParams with media " + mediaId);
-        navigateToBrowser(mediaId);
+
+        initMediaBrowserLoader(mediaId);
     }
 
     private void navigateToBrowser(@NonNull String mediaId) {
@@ -480,7 +475,6 @@ public class MusicPlayerActivity extends BaseActivity
         return super.onPrepareOptionsMenu(menu);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -488,7 +482,6 @@ public class MusicPlayerActivity extends BaseActivity
         updateRateAppMenuItem(navigationMenu);
         return true;
     }
-
 
     @Override
     public void showRemoveAdDialog(AugmentedSkuDetails removeAdsSkuRow) {
@@ -519,19 +512,17 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     @Override
-    public void forceBrowseDefaultCategory() {
-        LogHelper.d(TAG, "forceBrowseDefaultCategory");
-        String mMediaId = getMediaId();
+    public void browseMedia(String mMediaId) {
         if (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)
                 || mMediaId.equals(getMediaBrowser().getRoot())) {
             if (categories != null && categories.size() > 0) {
                 //browse first call only
                 mMediaId = categories.get(0).getMediaId();
-
-                LogHelper.d(TAG, "browseCategory " + mMediaId);
-                navigateToBrowser(mMediaId);
             }
         }
+
+        LogHelper.d(TAG, "browse media " + mMediaId);
+        navigateToBrowser(mMediaId);
     }
 
     @Override
