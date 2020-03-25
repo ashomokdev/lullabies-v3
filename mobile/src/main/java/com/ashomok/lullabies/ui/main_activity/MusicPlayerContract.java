@@ -28,11 +28,11 @@ public class MusicPlayerContract {
 
         AppCompatActivity getActivity();
 
-        void addMenuItems(List<String> menuTitles);
+        void addMenuItems(List<MediaBrowserCompat.MediaItem> menuTitles);
 
-        void browseCategory();
+        void forceBrowseDefaultCategory();
 
-        void setCategories(List<MediaBrowserCompat.MediaItem> children);
+        void checkForUserVisibleErrors(boolean forceError);
     }
 
     interface Presenter extends BasePresenter<View> {
@@ -40,6 +40,6 @@ public class MusicPlayerContract {
 
         void proposeRemoveAds();
 
-        Single<List<MediaBrowserCompat.MediaItem>> initCategoriesList(String rootMediaId, MediaBrowserCompat mediaBrowser);
+        Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(String rootMediaId, MediaBrowserCompat mediaBrowser);
     }
 }

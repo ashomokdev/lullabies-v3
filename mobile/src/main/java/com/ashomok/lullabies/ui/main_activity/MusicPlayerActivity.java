@@ -108,26 +108,29 @@ public class MusicPlayerActivity extends BaseActivity
     private NavigationView navigationView;
     private List<MediaBrowserCompat.MediaItem> categories;
 
-//    private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
-//        private boolean oldOnline = false;
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            // We don't care about network changes while this fragment is not associated
-//            // with a media ID (for example, while it is being initialized)
-//            if (mMediaId != null) {
-//                boolean isOnline = NetworkHelper.isOnline(context);
-//                if (isOnline != oldOnline) {
-//                    oldOnline = isOnline;
-//                    checkForUserVisibleErrors(false);
-//                    if (isOnline) {
-//                        reloadMedia();
-//                        mBrowserAdapter.notifyDataSetChanged();
-//                    }
-//                }
-//            }
-//        }
-//    };
+    private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
+        private boolean oldOnline = false;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isOnline = NetworkHelper.isOnline(context);
+            if (isOnline != oldOnline) {
+                oldOnline = isOnline;
+                checkForUserVisibleErrors(false);
+                if (isOnline) {
+                    reloadMedia();
+                }
+            }
+        }
+    };
+
+    private void reloadMedia() {
+        LogHelper.d(TAG, "on reload Media");
+        boolean isOnline = NetworkHelper.isOnline(getActivity());
+        if (isOnline) {
+            initMediaBrowserLoader();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,8 +159,11 @@ public class MusicPlayerActivity extends BaseActivity
 
         showBannerAd();
         mPresenter.takeView(this);
+        initMediaBrowserLoader();
+    }
 
-        mPresenter.initCategoriesList(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser())
+    private void initMediaBrowserLoader() {
+        mPresenter.initMediaBrowserLoader(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser())
                 .doOnSubscribe(disposable -> {
                     // Unsubscribing before subscribing is required if this mediaId already has a subscriber
                     // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
@@ -172,15 +178,25 @@ public class MusicPlayerActivity extends BaseActivity
                 })
                 .subscribeOn(Schedulers.io())
                 .subscribe(mediaItems -> {
-                    browseCategory();
+                    forceBrowseDefaultCategory();
                 }, throwable -> {
                     LogHelper.e(TAG, throwable, "Error from loading media");
                     checkForUserVisibleErrors(true);
                 });
+    }
 
-//        // Registers BroadcastReceiver to track network connection changes.
-//        this.getActivity().registerReceiver(mConnectivityChangeReceiver,
-//                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Registers BroadcastReceiver to track network connection changes.
+        registerReceiver(mConnectivityChangeReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(mConnectivityChangeReceiver);
     }
 
     @Override
@@ -201,7 +217,6 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     private void setupDrawerContent() {
-
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
                     Bundle bundle = ActivityOptions.makeCustomAnimation(
@@ -222,10 +237,12 @@ public class MusicPlayerActivity extends BaseActivity
                         default:
                             break;
                     }
-                    for (int i = 0; i < categories.size(); i++){
-                        if (menuItem.getItemId() == i) {
-                            activityClass = MusicPlayerActivity.class;
-                            mediaId = categories.get(i).getMediaId();
+                    if (categories != null) {
+                        for (int i = 0; i < categories.size(); i++) {
+                            if (menuItem.getItemId() == i) {
+                                activityClass = MusicPlayerActivity.class;
+                                mediaId = categories.get(i).getMediaId();
+                            }
                         }
                     }
                     if (activityClass != null) {
@@ -322,7 +339,7 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     protected void onNewIntent(Intent intent) {
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
-        initializeFromParams(null, intent);
+        initializeFromParams(null, intent); //todo check may be bug
         startFullScreenActivityIfNeeded(intent);
         super.onNewIntent(intent);
     }
@@ -339,6 +356,7 @@ public class MusicPlayerActivity extends BaseActivity
         }
     }
 
+    //todo update
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
 
         String mediaId = INIT_MEDIA_ID_VALUE_ROOT;
@@ -362,10 +380,11 @@ public class MusicPlayerActivity extends BaseActivity
                                     "mediaId = " + mediaId);
 
                 }
-            } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu
+            } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu or from internet broadcast receiver
                 mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
             }
         }
+        LogHelper.d(TAG, "initializeFromParams with media " + mediaId);
         navigateToBrowser(mediaId);
     }
 
@@ -404,7 +423,6 @@ public class MusicPlayerActivity extends BaseActivity
         if (mediaId == null) {
             mediaId = INIT_MEDIA_ID_VALUE_ROOT;
         }
-        LogHelper.d(TAG, "getMediaId returned " + mediaId);
         return mediaId;
     }
 
@@ -448,7 +466,6 @@ public class MusicPlayerActivity extends BaseActivity
         InfoSnackbarUtil.showInfo(message, mRootView);
     }
 
-
     @Override
     public void updateView(boolean isAdsActive) {
         adMobContainer.showAd(isAdsActive);
@@ -487,33 +504,34 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     @Override
-    public void addMenuItems(List<String> menuTitles) {
-        if (navigationView == null) {
-            LogHelper.e(TAG, "navigationView == null - unexpected");
-        } else {
-            for (int i = 0; i < menuTitles.size(); i++) {
-                navigationView.getMenu().add(NONE, i, i, menuTitles.get(i));
+    public void addMenuItems(List<MediaBrowserCompat.MediaItem> mediaItems) {
+        if (categories == null || categories.size() != mediaItems.size()) {
+            categories = mediaItems;
+            if (navigationView == null) {
+                LogHelper.e(TAG, "navigationView == null - unexpected");
+            } else {
+                for (int i = 0; i < categories.size(); i++) {
+                    navigationView.getMenu().add(NONE, i, i,
+                            categories.get(i).getDescription().getTitle());
+                }
             }
         }
     }
 
     @Override
-    public void browseCategory() {
+    public void forceBrowseDefaultCategory() {
+        LogHelper.d(TAG, "forceBrowseDefaultCategory");
         String mMediaId = getMediaId();
         if (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)
                 || mMediaId.equals(getMediaBrowser().getRoot())) {
-            if (categories.size() > 0) {
+            if (categories != null && categories.size() > 0) {
+                //browse first call only
                 mMediaId = categories.get(0).getMediaId();
+
+                LogHelper.d(TAG, "browseCategory " + mMediaId);
+                navigateToBrowser(mMediaId);
             }
         }
-        //open item depends on intent extra
-        navigateToBrowser(mMediaId);
-        LogHelper.d(TAG, "category" + mMediaId + " loaded.");
-    }
-
-    @Override
-    public void setCategories(List<MediaBrowserCompat.MediaItem> mediaItems) {
-        categories = mediaItems;
     }
 
     @Override
@@ -538,6 +556,7 @@ public class MusicPlayerActivity extends BaseActivity
         }
     }
 
+    @Override
     public void checkForUserVisibleErrors(boolean forceError) {
         boolean showError = forceError;
         // If offline, message is about the lack of connectivity:

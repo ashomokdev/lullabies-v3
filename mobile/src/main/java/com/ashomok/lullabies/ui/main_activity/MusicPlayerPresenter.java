@@ -28,9 +28,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
 
     @Nullable
     public MusicPlayerContract.View view;
-
     private BillingViewModel billingViewModel;
-
     private AugmentedSkuDetails removeAdsSkuRow;
     private AppCompatActivity activity;
 
@@ -53,7 +51,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
             checkConnection();
             if (removeAdsSkuRow != null) {
                 view.showRemoveAdDialog(removeAdsSkuRow);
-
             }
         }
     }
@@ -73,14 +70,11 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     private void init() {
-
         if (view != null) {
             activity = view.getActivity();
             checkConnection();
 
-
             billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class);
-
 
             billingViewModel.
                     getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {
@@ -92,7 +86,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                     }
                 }
             });
-
 
             billingViewModel.getInappSkuDetailsListLiveData()
                     .observe(activity, new Observer<List<AugmentedSkuDetails>>() {
@@ -115,10 +108,9 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     }
 
     @Override
-    public Single<List<MediaBrowserCompat.MediaItem>> initCategoriesList(
+    public Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
             String rootMediaId, MediaBrowserCompat mediaBrowser) {
-        return Single.create(emitter ->
-                mediaBrowser.subscribe(rootMediaId,
+        return Single.create(emitter -> mediaBrowser.subscribe(rootMediaId,
                         new MediaBrowserCompat.SubscriptionCallback() {
                             @Override
                             public void onChildrenLoaded(@NonNull String parentId,
@@ -127,25 +119,15 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                                     LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
                                             "  count=" + children.size());
                                     checkForUserVisibleErrors(children.isEmpty());
-
-                                    List<String> menuTitles = new ArrayList<>();
-                                    for (int i = 0; i < children.size(); i++) {
-                                        menuTitles.add(String.valueOf(
-                                                children.get(i).getDescription().getTitle()));
-                                    }
                                     if (view != null) {
-                                        view.addMenuItems(menuTitles);
-                                        view.setCategories(children);
+                                        view.addMenuItems(children);
                                     }
-
-
                                     emitter.onSuccess(children);
                                 } catch (Throwable t) {
                                     LogHelper.e(TAG, "Error on childrenloaded ", t);
                                     emitter.onError(t);
                                 }
                             }
-
                             @Override
                             public void onError(@NonNull String id) {
                                 LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
@@ -154,12 +136,13 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                         }));
     }
 
-
     private void checkForUserVisibleErrors(boolean emptyResult) {
         if (emptyResult) {
+            if (view != null) {
+                view.checkForUserVisibleErrors(true);
+            }
             LogHelper.e(TAG, "Loading media returns empty result");
         }
-        //todo
     }
 
     @Override

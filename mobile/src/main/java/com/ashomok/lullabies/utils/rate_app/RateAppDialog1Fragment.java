@@ -19,7 +19,7 @@ import com.ashomok.lullabies.R;
 
 public class RateAppDialog1Fragment extends DialogFragment {
 
-    private RateAppDialogListener rateAppDialogListener;
+    private RateAppAsker rateAppAsker;
 
     private Button notReallyBtn;
     private Button yesBtn;
@@ -53,16 +53,16 @@ public class RateAppDialog1Fragment extends DialogFragment {
     }
 
     private void onYesBtnClicked() {
-        rateAppDialogListener.onEnjoyAppClicked();
+        rateAppAsker.onEnjoyAppClicked();
         dismiss();
     }
 
     private void onNotReallyBtnClicked() {
-        rateAppDialogListener.onStopAsk();
+        rateAppAsker.onStopAsk();
         dismiss();
     }
 
-    public void setRateAppDialogListener(RateAppDialogListener rateAppDialogListener) {
-        this.rateAppDialogListener = rateAppDialogListener;
+    public void setRateAppAsker(RateAppAsker rateAppAsker) {
+        this.rateAppAsker = rateAppAsker;
     }
 }
