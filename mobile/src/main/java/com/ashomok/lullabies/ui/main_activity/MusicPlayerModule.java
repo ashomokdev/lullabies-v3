@@ -2,6 +2,7 @@ package com.ashomok.lullabies.ui.main_activity;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,18 +25,28 @@ public abstract class MusicPlayerModule {
     }
 
     @Provides
+    static @NonNull
+    String provideMediaId(MusicPlayerActivity activity) {
+        return activity.getMediaId();
+    }
+
+    @Provides
     static @StringRes
-    int provideAdBannerId() {
+    int provideAdMobId(Context context, String mediaId) {
         if (BuildConfig.DEBUG) {
             return R.string.test_banner;
         } else {
-            return R.string.main_activity_banner;
+            if (mediaId.contains(context.getResources().getString(R.string.classic_key))) {
+                return R.string.lullabies_main_activity_classic_tones_banner;
+            } else {
+                return R.string.lullabies_main_activity_base_collection_banner;
+            }
         }
     }
 
     @Provides
     static AdMobContainer provideAdMobContainer(Context context, @StringRes int adMobId) {
-       return new AdMobContainerImpl(context, adMobId);
+        return new AdMobContainerImpl(context, adMobId);
     }
 
     @Binds
