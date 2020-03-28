@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
+import com.ashomok.lullabies.billing_kotlin.BillingRepository;
 import com.ashomok.lullabies.billing_kotlin.localdb.AdsFreeForever;
 import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
@@ -79,14 +80,10 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                     getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {
                 @Override
                 public void onChanged(AdsFreeForever adsFreeForever) {
-//                    if (adsFreeForever != null) {
-//                        Settings.isAdsActive = adsFreeForever.mayPurchase();
-//                        view.updateViewForAd(Settings.isAdsActive);
-//                    }
-
-
-                        view.updateViewForAd(true);
-
+                    if (adsFreeForever != null) {
+                        Settings.isAdsActive = adsFreeForever.mayPurchase();
+                        view.updateViewForAd(Settings.isAdsActive);
+                    }
                 }
             });
 
@@ -95,14 +92,17 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                         @Override
                         public void onChanged(List<AugmentedSkuDetails> augmentedSkuDetails) {
                             if (augmentedSkuDetails != null) {
-                                if (augmentedSkuDetails.size() == 1) {
-                                    removeAdsSkuRow = augmentedSkuDetails.get(0);
-                                    LogHelper.d(TAG, "init sku row "
-                                            + removeAdsSkuRow.toString());
+                                if (augmentedSkuDetails.size() > 0 ) {
+                                    for (AugmentedSkuDetails item : augmentedSkuDetails){
+                                        if (item.getSku().equals(
+                                                BillingRepository.AppSku.INSTANCE.getADS_FREE_FOREVER_SKU_ID())){
+                                            removeAdsSkuRow = item;
+                                            LogHelper.d(TAG, "init sku row "
+                                                    + removeAdsSkuRow.toString());
+                                        }
+                                    }
                                 } else {
-                                    LogHelper.e(TAG,
-                                            "unepected sku list size, expected 1, actual "
-                                                    + augmentedSkuDetails.size());
+                                    LogHelper.e(TAG, "empty sku list size");
                                 }
                             }
                         }

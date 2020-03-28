@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ashomok.lullabies.R;
@@ -13,6 +15,7 @@ import com.ashomok.lullabies.utils.LogHelper;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.VideoOptions;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
@@ -36,7 +39,6 @@ public class AdMobNativeBannerAd extends AdMobAd {
         super(context, adId);
     }
 
-    //todo before result set free space for future ad view
     @Override
     protected void init() {
         loadNativeAd()
@@ -53,6 +55,18 @@ public class AdMobNativeBannerAd extends AdMobAd {
     }
 
     private void populateUnifiedNativeAdView(View adView, UnifiedNativeAd nativeAd) {
+
+        int heightInPixels = AdSize.SMART_BANNER.getHeightInPixels(parentLayout.getContext());
+        if (parentLayout instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) parentLayout.getLayoutParams();
+            layoutParams.height = heightInPixels;
+        } else {
+            LinearLayout.LayoutParams layoutParams =
+                    (LinearLayout.LayoutParams) parentLayout.getLayoutParams();
+            layoutParams.height = heightInPixels;
+        }
+
         LogHelper.d(TAG, "on populateUnifiedNativeAdView");
 
         NativeAdViewHolder nativeAdViewHolder = new NativeAdViewHolder(adView);
