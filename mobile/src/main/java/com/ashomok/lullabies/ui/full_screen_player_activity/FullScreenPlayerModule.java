@@ -7,8 +7,8 @@ import androidx.annotation.StringRes;
 
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.ad.AdMobContainer;
-import com.ashomok.lullabies.ad.AdMobContainerImpl;
+import com.ashomok.lullabies.ad.AdMobAd;
+import com.ashomok.lullabies.ad.AdMobBannerAd;
 
 import dagger.Binds;
 import dagger.Module;
@@ -31,8 +31,8 @@ public abstract class FullScreenPlayerModule {
         }
     }
     @Provides
-    static AdMobContainer provideAdMobContainer(Context context, @StringRes int adMobId) {
-        return new AdMobContainerImpl(context, adMobId, AdMobContainerImpl.AdType.BANNER);
+    static AdMobAd provideAdMobContainer(Context context, @StringRes int adMobId) {
+        return new AdMobBannerAd(context, adMobId);
     }
 
     @Binds

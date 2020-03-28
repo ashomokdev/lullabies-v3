@@ -43,7 +43,7 @@ import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
-import com.ashomok.lullabies.ad.AdMobContainer;
+import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.ui.ActionBarCastActivity;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
@@ -91,7 +91,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     FullScreenPlayerPresenter mPresenter;
 
     @Inject
-    AdMobContainer adMobContainer;
+    AdMobAd adMobAd;
 
     private final Runnable mUpdateProgressTask = () -> updateProgress();
 
@@ -429,7 +429,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     }
 
     private void initBannerAd() {
-        adMobContainer.initBottomBannerAd(findViewById(R.id.ads_container));
-        adMobContainer.showAd(Settings.isAdsActive);
+        adMobAd.initAd(findViewById(R.id.ads_container));
+        adMobAd.showAd(Settings.isAdsActive);
     }
 }

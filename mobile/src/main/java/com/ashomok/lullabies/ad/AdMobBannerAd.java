@@ -1,6 +1,5 @@
 package com.ashomok.lullabies.ad;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -20,30 +19,21 @@ import com.google.android.gms.ads.MobileAds;
 import javax.inject.Inject;
 
 
-public class AdMobContainerImpl implements AdMobContainer {
+public class AdMobBannerAd extends AdMobAd {
 
-    private static final String TAG = LogHelper.makeLogTag(AdMobContainerImpl.class);
-    private final Context context;
-    private final int adid;
-    private ViewGroup adParentLayout;
+    private static final String TAG = LogHelper.makeLogTag(AdMobBannerAd.class);
 
-    //todo remove reduntant?
-    public enum AdType {
-        BANNER,
-        NATIVE
+    public AdMobBannerAd(Context context, int adId) {
+        super(context, adId);
     }
 
-    NativeAdProviderImpl nativeAdProvider;
-
-    @Inject
-    Activity activity;
-
-    @Inject
-    public AdMobContainerImpl(Context context, @StringRes int adId, AdType adType) {
-        this.context = context;
-        this.adid = adId;
-        String appId = context.getResources().getString(R.string.appID);
-        MobileAds.initialize(context, appId);
+    @Override
+    protected void init() {
+        if (context.getResources().getConfiguration().orientation ==
+                android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+            //init banner
+            addBottomBanner(parentLayout);
+        }
     }
 
     /**
@@ -63,7 +53,7 @@ public class AdMobContainerImpl implements AdMobContainer {
                 adView.setLayoutParams(lp);
 
             } else {
-                LinearLayout.LayoutParams lp =  new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f);
                 adView.setLayoutParams(lp);
@@ -76,14 +66,12 @@ public class AdMobContainerImpl implements AdMobContainer {
             parent.addView(adView);
 
             int heightInPixels = AdSize.SMART_BANNER.getHeightInPixels(parent.getContext());
-            if (parent instanceof RelativeLayout ){
+            if (parent instanceof RelativeLayout) {
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) parent.getLayoutParams();
                 layoutParams.height = heightInPixels;
-            }
-            else
-            {
-                LinearLayout.LayoutParams layoutParams=
+            } else {
+                LinearLayout.LayoutParams layoutParams =
                         (LinearLayout.LayoutParams) parent.getLayoutParams();
                 layoutParams.height = heightInPixels;
             }
@@ -91,25 +79,5 @@ public class AdMobContainerImpl implements AdMobContainer {
             Log.e(TAG, "Ads can not been loaded programmaticaly. " +
                     "RelativeLayout and LinearLayout are supported as parent.");
         }
-    }
-
-    /**
-     * init ad with bottom banner. Note: It may overlay some view.
-     *
-     * @param parentLayout
-     */
-    @Override
-    public void initBottomBannerAd(ViewGroup parentLayout) {
-        adParentLayout = parentLayout;
-        if (context.getResources().getConfiguration().orientation ==
-                android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-            //init banner
-            addBottomBanner(parentLayout);
-        }
-    }
-
-    @Override
-    public void showAd(boolean isAdsActive) {
-        adParentLayout.setVisibility(isAdsActive ? View.VISIBLE : View.GONE);
     }
 }

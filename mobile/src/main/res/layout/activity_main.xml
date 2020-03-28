@@ -71,7 +71,7 @@
             android:id="@+id/ads_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true" >
+            android:layout_alignParentBottom="true">
 
             <com.google.android.gms.ads.formats.UnifiedNativeAdView
                 android:id="@+id/native_ad"

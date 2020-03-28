@@ -49,8 +49,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
-import com.ashomok.lullabies.ad.AdMobContainer;
-import com.ashomok.lullabies.ad.NativeAdProviderImpl;
+import com.ashomok.lullabies.ad.AdMobAd;
+import com.ashomok.lullabies.ad.AdMobNativeBannerAd;
 import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.ui.BaseActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
@@ -100,13 +100,13 @@ public class MusicPlayerActivity extends BaseActivity
     private Bundle mVoiceSearchParams;
 
     @Inject
-    public NativeAdProviderImpl adProvider;
+    public AdMobNativeBannerAd adProvider;
 
     @Inject
     MusicPlayerPresenter mPresenter;
 
     @Inject
-    AdMobContainer adMobContainer;
+    AdMobAd adMobAd;
 
     private View mRootView;
     private View emptyResultView;
@@ -451,70 +451,7 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     private void initAd() {
-        adMobContainer.initBottomBannerAd(findViewById(R.id.ads_container));
-
-////        if (adType.equals(AdMobContainerImpl.AdType.NATIVE)) {
-//        NativeAdProviderImpl nativeAdProvider =  new NativeAdProviderImpl(this, R.string.native_ad_test_banner);
-//            nativeAdProvider.loadNativeAd()
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe(
-//                            ad -> {
-//                                View nativeAd = findViewById(R.id.native_ad);
-//                                if (nativeAd != null) { //todo null
-//                                    populateUnifiedNativeAdView(nativeAd, ad);
-//                                }
-//                            }, throwable -> {
-//                                LogHelper.e(TAG, throwable.getMessage());
-//                            });
-////        }
-    }
-
-    private void populateUnifiedNativeAdView(View adView, UnifiedNativeAd nativeAd) {
-        LogHelper.d(TAG, "on populateUnifiedNativeAdView");
-        adView.setVisibility(View.VISIBLE);
-        NativeAdViewHolder nativeAdViewHolder = new NativeAdViewHolder(adView);
-
-//         The headline is guaranteed to be in every UnifiedNativeAd.
-        ((TextView) nativeAdViewHolder.adView.getHeadlineView()).setText(nativeAd.getHeadline());
-
-        if (nativeAd.getCallToAction() == null) {
-            nativeAdViewHolder.adView.getCallToActionView().setVisibility(View.GONE);
-        } else {
-            nativeAdViewHolder.adView.getCallToActionView().setVisibility(View.VISIBLE);
-            ((Button) nativeAdViewHolder.adView.getCallToActionView()).setText(nativeAd.getCallToAction());
-        }
-
-        // These assets aren't guaranteed to be in every UnifiedNativeAd, so it's important to
-        // check before trying to display them.
-        if (nativeAd.getBody() == null) {
-            nativeAdViewHolder.adView.getBodyView().setVisibility(View.GONE);
-        } else {
-            nativeAdViewHolder.adView.getBodyView().setVisibility(View.VISIBLE);
-            ((TextView) nativeAdViewHolder.adView.getBodyView()).setText(nativeAd.getBody());
-        }
-
-        if (nativeAd.getIcon() == null) {
-            nativeAdViewHolder.adView.getIconView().setVisibility(View.GONE);
-        } else {
-            ((ImageView) nativeAdViewHolder.adView.getIconView()).setImageDrawable(
-                    nativeAd.getIcon().getDrawable());
-            nativeAdViewHolder.adView.getIconView().setVisibility(View.VISIBLE);
-        }
-
-        nativeAdViewHolder.adView.setNativeAd(nativeAd);
-    }
-
-    private static class NativeAdViewHolder {
-        UnifiedNativeAdView adView;
-
-        NativeAdViewHolder(View view) {
-            adView = view.findViewById(R.id.native_ad);
-            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
-            adView.setBodyView(adView.findViewById(R.id.ad_body));
-            adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
-            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
-        }
+        adMobAd.initAd(findViewById(R.id.ads_container));
     }
 
     @Override
@@ -534,7 +471,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Override
     public void updateViewForAd(boolean isAdsActive) {
-        adMobContainer.showAd(isAdsActive);
+        adMobAd.showAd(isAdsActive);
         invalidateOptionsMenu();
     }
 

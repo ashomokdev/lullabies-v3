@@ -79,10 +79,14 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                     getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {
                 @Override
                 public void onChanged(AdsFreeForever adsFreeForever) {
-                    if (adsFreeForever != null) {
-                        Settings.isAdsActive = adsFreeForever.mayPurchase();
-                        view.updateViewForAd(Settings.isAdsActive);
-                    }
+//                    if (adsFreeForever != null) {
+//                        Settings.isAdsActive = adsFreeForever.mayPurchase();
+//                        view.updateViewForAd(Settings.isAdsActive);
+//                    }
+
+
+                        view.updateViewForAd(true);
+
                 }
             });
 
