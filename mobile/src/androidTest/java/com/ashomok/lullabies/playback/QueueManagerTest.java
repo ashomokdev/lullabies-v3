@@ -115,7 +115,7 @@ public class QueueManagerTest {
     public void testIsSameBrowsingCategory() throws Exception {
         QueueManager queueManager = createQueueManagerWithValidation(null, -1, null);
 
-        Iterator<String> genres = provider.getGenres().iterator();
+        Iterator<String> genres = provider.getCategories().iterator();
         String genre1 = genres.next();
         String genre2 = genres.next();
         List<MediaSessionCompat.QueueItem> queueGenre1 = QueueHelper.getPlayingQueue(
@@ -249,8 +249,8 @@ public class QueueManagerTest {
         QueueManager queueManager = createQueueManagerWithValidation(null, -1, null);
         // get the first music of the first genre and build a hierarchy-aware version of its
         // mediaId
-        String genre = provider.getGenres().iterator().next();
-        MediaMetadataCompat metadata = provider.getMusicsByGenre(genre).iterator().next();
+        String genre = provider.getCategories().iterator().next();
+        MediaMetadataCompat metadata = provider.getMusicsByCategory(genre).iterator().next();
         String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
                 metadata.getDescription().getMediaId(), MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY,
                 genre);
@@ -261,7 +261,7 @@ public class QueueManagerTest {
 
         // count all songs with the same genre
         int count = 0;
-        for (MediaMetadataCompat m: provider.getMusicsByGenre(genre)) {
+        for (MediaMetadataCompat m: provider.getMusicsByCategory(genre)) {
             count++;
         }
 

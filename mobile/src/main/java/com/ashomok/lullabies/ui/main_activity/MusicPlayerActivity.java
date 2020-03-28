@@ -17,12 +17,17 @@ package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.ActivityOptions;
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -30,6 +35,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -41,7 +49,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
-import com.ashomok.lullabies.ad.AdMobContainer;
+import com.ashomok.lullabies.ad.AdMobAd;
+import com.ashomok.lullabies.ad.AdMobNativeBannerAd;
 import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.ui.BaseActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
@@ -49,11 +58,20 @@ import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.List;
+
 import javax.inject.Inject;
+
+import io.reactivex.schedulers.Schedulers;
+
+import static android.view.Menu.NONE;
 
 /**
  * Main activity for the music player.
@@ -66,45 +84,77 @@ public class MusicPlayerActivity extends BaseActivity
         MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
-    private static final String SAVED_MEDIA_ID = "com.example.uamp.MEDIA_ID";
-    private static final String FRAGMENT_TAG = "uamp_list_container";
-    private static final String INIT_MEDIA_ID_VALUE = "__BY_CATEGORY__/Free";
-
+    private static final String SAVED_MEDIA_ID = "com.ashomok.lullabies.MEDIA_ID";
+    private static final String FRAGMENT_TAG = "lullabies_list_container";
+    private static final String INIT_MEDIA_ID_VALUE_ROOT = "__BY_CATEGORY__";
     public static final String EXTRA_START_FULLSCREEN =
-            "com.example.uamp.EXTRA_START_FULLSCREEN";
+            "com.ashomok.lullabies.EXTRA_START_FULLSCREEN";
 
     /**
      * Optionally used with {@link #EXTRA_START_FULLSCREEN} to carry a MediaDescription to
      * the {@link FullScreenPlayerActivity}, speeding up the screen rendering
      * while the {@link android.support.v4.media.session.MediaControllerCompat} is connecting.
      */
-    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
-            "com.example.uamp.CURRENT_MEDIA_DESCRIPTION";
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION = "com.ashomok.lullabies.CURRENT_MEDIA_DESCRIPTION";
 
     private Bundle mVoiceSearchParams;
+
+    @Inject
+    public AdMobNativeBannerAd adProvider;
 
     @Inject
     MusicPlayerPresenter mPresenter;
 
     @Inject
-    AdMobContainer adMobContainer;
+    AdMobAd adMobAd;
 
     private View mRootView;
+    private View emptyResultView;
+    private TextView mErrorMessage;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
+    private List<MediaBrowserCompat.MediaItem> categories;
+
+    private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
+        private boolean oldOnline = false;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean isOnline = NetworkHelper.isOnline(context);
+            if (isOnline != oldOnline) {
+                oldOnline = isOnline;
+                checkForUserVisibleErrors(false);
+                if (isOnline) {
+                    reloadMedia();
+                }
+            }
+        }
+    };
+
+    private void reloadMedia() {
+        LogHelper.d(TAG, "on reload Media");
+        boolean isOnline = NetworkHelper.isOnline(getActivity());
+        if (isOnline) {
+            initMediaBrowserLoader(getMediaId());
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.UAmpAppTheme);
         super.onCreate(savedInstanceState);
         LogHelper.d(TAG, "Activity onCreate");
-        setContentView(R.layout.activity_player);
+        setContentView(R.layout.activity_main);
 
         mRootView = findViewById(android.R.id.content);
         if (mRootView == null) {
             mRootView = getWindow().getDecorView().findViewById(android.R.id.content);
         }
+
+        emptyResultView = findViewById(R.id.empty_result_layout);
+        mErrorMessage = emptyResultView.findViewById(R.id.error_message);
+        mPresenter.takeView(this);
 
         initializeToolbar();
         initializeNavigationDrawer();
@@ -115,8 +165,44 @@ public class MusicPlayerActivity extends BaseActivity
             startFullScreenActivityIfNeeded(getIntent());
         }
 
-        showBannerAd();
-        mPresenter.takeView(this);
+        initAd();
+    }
+
+    private void initMediaBrowserLoader(String mediaId) {
+        mPresenter.initMediaBrowserLoader(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser())
+                .doOnSubscribe(disposable -> {
+                    // Unsubscribing before subscribing is required if this mediaId already has a subscriber
+                    // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
+                    // the callback, but won't trigger the initial callback.onChildrenLoaded.
+                    //
+                    // This is temporary: A bug is being fixed that will make subscribe
+                    // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
+                    // subscriber or not. Currently this only happens if the mediaID has no previous
+                    // subscriber or if the media content changes on the service side, so we need to
+                    // unsubscribe first.
+                    getMediaBrowser().unsubscribe(INIT_MEDIA_ID_VALUE_ROOT);
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(mediaItems -> {
+                    browseMedia(mediaId);
+                }, throwable -> {
+                    LogHelper.e(TAG, throwable, "Error from loading media");
+                    checkForUserVisibleErrors(true);
+                });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Registers BroadcastReceiver to track network connection changes.
+        registerReceiver(mConnectivityChangeReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(mConnectivityChangeReceiver);
     }
 
     @Override
@@ -133,26 +219,20 @@ public class MusicPlayerActivity extends BaseActivity
         // Set up the navigation drawer_actions.
         navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
-        setupDrawerContent(navigationView);
+        setupDrawerContent();
     }
 
-    private void setupDrawerContent(final NavigationView navigationView) {
+    private void setupDrawerContent() {
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
-                    Bundle extras = ActivityOptions.makeCustomAnimation(
+                    Bundle bundle = ActivityOptions.makeCustomAnimation(
                             this, R.anim.fade_in, R.anim.fade_out).toBundle();
-
+                    String mediaId = null;
                     Class activityClass = null;
 
                     switch (menuItem.getItemId()) {
-                        case R.id.navigation_animals_lullabies:
-                            activityClass = MusicPlayerActivity.class;
-                            break;
                         case R.id.navigation_rate_app:
                             rateApp();
-                            break;
-                        case R.id.navigation_download_app:
-                            downloadApp();
                             break;
                         case R.id.navigation_about:
                             activityClass = AboutActivity.class;
@@ -163,21 +243,26 @@ public class MusicPlayerActivity extends BaseActivity
                         default:
                             break;
                     }
+                    if (categories != null) {
+                        for (int i = 0; i < categories.size(); i++) {
+                            if (menuItem.getItemId() == i) {
+                                activityClass = MusicPlayerActivity.class;
+                                mediaId = categories.get(i).getMediaId();
+                            }
+                        }
+                    }
                     if (activityClass != null) {
-                        startActivity(new Intent(this, activityClass), extras);
+                        Intent intent = new Intent(this, activityClass);
+                        if (mediaId != null) {
+                            intent.putExtra(MusicPlayerActivity.SAVED_MEDIA_ID, mediaId);
+                        }
+                        startActivity(intent, bundle);
                     }
                     // Close the navigation drawer_actions when an item is selected.
                     menuItem.setChecked(true);
                     mDrawerLayout.closeDrawers();
                     return true;
                 });
-    }
-
-    private void downloadApp() {
-        RateAppUtil rateAppUtil = new RateAppUtil();
-        String uri = getResources().getString(R.string.propose_download_app_dynamic_link);
-        String packageName = getResources().getString(R.string.propose_download_app_package_name);
-        rateAppUtil.openPackageInMarket(uri, packageName, this);
     }
 
     private void exit() {
@@ -191,8 +276,8 @@ public class MusicPlayerActivity extends BaseActivity
         rateAppUtil.rate(this);
     }
 
-    private void updateDownloadAppMenuItem(Menu navigationMenu) {
-        MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_download_app);
+    private void updateRateAppMenuItem(Menu navigationMenu) {
+        MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_rate_app);
         CharSequence menuItemText = updateToPremiumMenuItem.getTitle();
         SpannableString spannableString = new SpannableString(menuItemText);
         spannableString.setSpan(
@@ -279,7 +364,8 @@ public class MusicPlayerActivity extends BaseActivity
 
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
 
-        String mediaId = INIT_MEDIA_ID_VALUE;
+        String mediaId = INIT_MEDIA_ID_VALUE_ROOT;
+
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
         // (which contain the query details) in a parameter, so we can reuse it later, when the
         // MediaSession is connected.
@@ -288,39 +374,59 @@ public class MusicPlayerActivity extends BaseActivity
             mVoiceSearchParams = intent.getExtras();
             LogHelper.d(TAG, "Starting from voice search query=",
                     mVoiceSearchParams.getString(SearchManager.QUERY));
-        } else {
-            if (savedInstanceState != null) {
-                // If there is a saved media ID, use it
-                mediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
+        } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu or from internet broadcast receiver
+            mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
+        } else if (savedInstanceState != null) { //screen rotated
+            // If there is a saved media ID, use it
+            String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
+            if (savedMediaId != null) {
+                mediaId = savedMediaId;
+                LogHelper.d(TAG, "initializeFromParams with savedInstanceState, " +
+                        "mediaId = " + mediaId);
+
             }
         }
-        navigateToBrowser(mediaId);
+        LogHelper.d(TAG, "initializeFromParams with media " + mediaId);
+
+        initMediaBrowserLoader(mediaId);
     }
 
-    private void navigateToBrowser(String mediaId) {
+    private void navigateToBrowser(@NonNull String mediaId) {
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
-        MediaBrowserFragment fragment = getBrowseFragment();
 
-        if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
-            fragment = new MediaBrowserFragment();
-            fragment.setMediaId(mediaId);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.setCustomAnimations(
-                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
-                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-            transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
+        if (!mediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) { //don't create fragment for categories
+            MediaBrowserFragment fragment = getBrowseFragment();
+            if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
+                fragment = new MediaBrowserFragment();
+                fragment.setMediaId(mediaId);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(
+                        R.animator.slide_in_from_right, R.animator.slide_out_to_left,
+                        R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+                transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
 
-            transaction.commit();
-            LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG + " commited");
+                transaction.commit();
+                LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG + " commited");
+            }
         }
     }
 
-    public String getMediaId() {
+    public @NonNull
+    String getMediaId() {
+        String mediaId = null;
         MediaBrowserFragment fragment = getBrowseFragment();
         if (fragment == null) {
-            return null;
+            String savedCategoryMediaId = getIntent().getStringExtra(SAVED_MEDIA_ID);
+            if (savedCategoryMediaId != null) {
+                mediaId = savedCategoryMediaId;
+            }
+        } else {
+            mediaId = fragment.getMediaId(); //track mediaId
         }
-        return fragment.getMediaId();
+        if (mediaId == null) {
+            mediaId = INIT_MEDIA_ID_VALUE_ROOT;
+        }
+        return mediaId;
     }
 
     private MediaBrowserFragment getBrowseFragment() {
@@ -339,11 +445,13 @@ public class MusicPlayerActivity extends BaseActivity
                     .playFromSearch(query, mVoiceSearchParams);
             mVoiceSearchParams = null;
         }
-        getBrowseFragment().onConnected();
+        if (getBrowseFragment() != null) {
+            getBrowseFragment().onConnected();
+        }
     }
 
-    private void showBannerAd() {
-        adMobContainer.initBottomBannerAd(findViewById(R.id.ads_container));
+    private void initAd() {
+        adMobAd.initAd(findViewById(R.id.ads_container));
     }
 
     @Override
@@ -361,10 +469,9 @@ public class MusicPlayerActivity extends BaseActivity
         InfoSnackbarUtil.showInfo(message, mRootView);
     }
 
-
     @Override
-    public void updateView(boolean isAdsActive) {
-        adMobContainer.showAd(isAdsActive);
+    public void updateViewForAd(boolean isAdsActive) {
+        adMobAd.showAd(isAdsActive);
         invalidateOptionsMenu();
     }
 
@@ -376,27 +483,54 @@ public class MusicPlayerActivity extends BaseActivity
         return super.onPrepareOptionsMenu(menu);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         Menu navigationMenu = navigationView.getMenu();
-        updateDownloadAppMenuItem(navigationMenu);
+        updateRateAppMenuItem(navigationMenu);
         return true;
     }
-
 
     @Override
     public void showRemoveAdDialog(AugmentedSkuDetails removeAdsSkuRow) {
         RemoveAdDialogFragment removeAdDialogFragment =
                 RemoveAdDialogFragment.newInstance(removeAdsSkuRow.getPrice());
 
-        removeAdDialogFragment.show(getFragmentManager(), "dialog"); //todo check
+        removeAdDialogFragment.show(getFragmentManager(), "dialog");
     }
 
     @Override
     public AppCompatActivity getActivity() {
         return this;
+    }
+
+    @Override
+    public void addMenuItems(List<MediaBrowserCompat.MediaItem> mediaItems) {
+        if (categories == null || categories.size() != mediaItems.size()) {
+            categories = mediaItems;
+            if (navigationView == null) {
+                LogHelper.e(TAG, "navigationView == null - unexpected");
+            } else {
+                for (int i = 0; i < categories.size(); i++) {
+                    navigationView.getMenu().add(NONE, i, i,
+                            categories.get(i).getDescription().getTitle());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void browseMedia(String mMediaId) {
+        if (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)
+                || mMediaId.equals(getMediaBrowser().getRoot())) {
+            if (categories != null && categories.size() > 0) {
+                //browse first call only
+                mMediaId = categories.get(0).getMediaId();
+            }
+        }
+
+        LogHelper.d(TAG, "browse media " + mMediaId);
+        navigateToBrowser(mMediaId);
     }
 
     @Override
@@ -419,5 +553,34 @@ public class MusicPlayerActivity extends BaseActivity
                 exitDialogFragment.show(getFragmentManager(), "dialog");
             }
         }
+    }
+
+    @Override
+    public void checkForUserVisibleErrors(boolean forceError) {
+        boolean showError = forceError;
+        // If offline, message is about the lack of connectivity:
+        if (!NetworkHelper.isOnline(getActivity())) {
+            mErrorMessage.setText(R.string.error_no_connection);
+            showError = true;
+        } else {
+            // otherwise, if state is ERROR and metadata!=null, use playback state error message:
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+            if (controller != null
+                    && controller.getMetadata() != null
+                    && controller.getPlaybackState() != null
+                    && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
+                    && controller.getPlaybackState().getErrorMessage() != null) {
+                mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
+                showError = true;
+            } else if (forceError) {
+                // Finally, if the caller requested to show error, show a generic message:
+                mErrorMessage.setText(R.string.error_loading_media);
+                showError = true;
+            }
+        }
+        emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
+        LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
+                " showError=", showError,
+                " isOnline=", NetworkHelper.isOnline(getActivity()));
     }
 }

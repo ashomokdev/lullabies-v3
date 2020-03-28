@@ -16,6 +16,7 @@
 package com.ashomok.lullabies.playback;
 
 import android.content.res.Resources;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -59,6 +60,7 @@ public class PlaybackManagerTest {
             public String getString(int id) throws NotFoundException {
                 return "";
             }
+
             @NonNull
             @Override
             public String getString(int id, Object... formatArgs) throws NotFoundException {
@@ -92,7 +94,7 @@ public class PlaybackManagerTest {
         final CountDownLatch latch = new CountDownLatch(5);
         final String expectedMediaId = mediaId;
 
-        QueueManager queueManager = new QueueManager(musicProvider, resources, new SimpleMetadataUpdateListener(){
+        QueueManager queueManager = new QueueManager(musicProvider, resources, new SimpleMetadataUpdateListener() {
             @Override
             public void onMetadataChanged(MediaMetadataCompat metadata) {
                 // Latch countdown 1: QueueManager will change appropriately
@@ -119,7 +121,8 @@ public class PlaybackManagerTest {
             }
 
             @Override
-            public void onNotificationRequired() {
+            public void updateServiceState(PlaybackStateCompat state, MediaDescriptionCompat description) {
+                super.updateServiceState(state, description);
                 // Latch countdown 4: PlaybackService will get call to show a media notification
                 latch.countDown();
             }
@@ -153,7 +156,7 @@ public class PlaybackManagerTest {
         final String expectedMusicId = musicProvider.searchMusicBySongTitle("Music 3")
                 .iterator().next().getDescription().getMediaId();
 
-        QueueManager queueManager = new QueueManager(musicProvider, resources, new SimpleMetadataUpdateListener(){
+        QueueManager queueManager = new QueueManager(musicProvider, resources, new SimpleMetadataUpdateListener() {
             @Override
             public void onMetadataChanged(MediaMetadataCompat metadata) {
                 // Latch countdown 1: QueueManager will change appropriately
@@ -179,10 +182,12 @@ public class PlaybackManagerTest {
             }
 
             @Override
-            public void onNotificationRequired() {
+            public void updateServiceState(PlaybackStateCompat state, MediaDescriptionCompat description) {
+                super.updateServiceState(state, description);
                 // Latch countdown 4: PlaybackService will get call to show a media notification
                 latch.countDown();
             }
+
         };
 
         Playback playback = new SimplePlayback() {
@@ -202,7 +207,7 @@ public class PlaybackManagerTest {
         latch.await(5, TimeUnit.SECONDS);
 
         // Finally, check if the current music in queueManager is as expected
-        assertEquals(expectedMusicId,  MediaIDHelper.extractMusicIDFromMediaID(
+        assertEquals(expectedMusicId, MediaIDHelper.extractMusicIDFromMediaID(
                 queueManager.getCurrentMusic().getDescription().getMediaId()));
     }
 

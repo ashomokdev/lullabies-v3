@@ -19,7 +19,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import static com.ashomok.lullabies.utils.MediaItemStateHelper.sColorStatePlayin
 
 public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCallback {
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
-    private final RateAppAsker rateAppAsker;
+    private final RateAppAskerImpl rateAppAsker;
     private Activity activity;
 
     //pager views by position
@@ -55,7 +55,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
 
 
     @Inject
-    public MyViewPagerAdapter(Activity activity, RateAppAsker rateAppAsker) {
+    public MyViewPagerAdapter(Activity activity, RateAppAskerImpl rateAppAsker) {
         this.activity = activity;
         this.rateAppAsker = rateAppAsker;
         views = new SparseArray<>();

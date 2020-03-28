@@ -18,6 +18,7 @@ package com.ashomok.lullabies.model;
 
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.utils.LogHelper;
 
@@ -41,7 +42,7 @@ public class RemoteJSONSource implements MusicProviderSource {
 
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);
 
-    private static final String CATALOG_URL = Settings.CATALOG_URL;
+    private static final String CATALOG_URL = BuildConfig.CATALOG_URL;
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";

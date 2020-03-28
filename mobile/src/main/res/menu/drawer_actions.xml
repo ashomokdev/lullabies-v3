@@ -14,16 +14,17 @@
   limitations under the License.
   -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/navigation_animals_lullabies"
-            android:checked="true"
-            android:icon="@drawable/ic_library_music_black_24dp"
-            android:title="@string/home" />
+    <group
+        android:id="@+id/menu_group"
+        android:checkableBehavior="single">
+
         <item
             android:id="@+id/navigation_rate_app"
             android:icon="@drawable/ic_sentiment_satisfied_black_24dp"
+            android:orderInCategory="12"
             android:title="@string/rate_app" />
+
+        <!--        todo-->
         <!--<item-->
         <!--android:id="@+id/update_to_premium"-->
         <!--android:icon="@drawable/my_premium_icon"-->
@@ -32,21 +33,15 @@
         <item
             android:id="@+id/navigation_about"
             android:icon="@drawable/ic_info_outline_black_24dp"
+            android:orderInCategory="13"
             android:title="@string/about_app" />
     </group>
 
-    <item android:title="@string/our_other_aps">
-        <menu>
-            <item
-                android:id="@+id/navigation_download_app"
-                android:icon="@drawable/download_app_icon"
-                android:title="@string/download_app_name" />
-        </menu>
-    </item>
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_exit"
             android:icon="@drawable/ic_arrow_back_black_24dp"
+            android:orderInCategory="14"
             android:title="@string/exit" />
     </group>
 </menu>

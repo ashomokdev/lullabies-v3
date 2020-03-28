@@ -3,9 +3,9 @@
     <string name="app_name">Колыбельные</string>
     <string name="favorite">Любимые</string>
     <string name="error_no_metadata">Невозможно получить метаданные.</string>
-    <string name="browse_genres">Жанры</string>
-    <string name="browse_genre_subtitle">Песни по жанрам</string>
-    <string name="browse_musics_by_genre_subtitle">%1$s</string>
+    <string name="browse_categories">Категории</string>
+    <string name="browse_categories_subtitle">Песни по категориям</string>
+    <string name="browse_musics_by_category_subtitle">%1$s мелодии</string>
     <string name="random_queue_title">Рандом музыка</string>
     <string name="error_no_connection">Невозможно соедениться с сервером. Пожалуйста проверьте интернет соединение.</string>
     <string name="error_loading_media">Ошибка загрузки медиа</string>
@@ -51,4 +51,6 @@
     <string name="how_about_rating">Может тогда оставите оценку в Play Market?</string>
     <string name="no_thanks">Нет, спасибо</string>
     <string name="ok_sure">Да, конечно</string>
+<!--    todo change to russia-->
+    <string name="classic_key">Classic</string>
 </resources>

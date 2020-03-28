@@ -37,6 +37,7 @@ package com.ashomok.lullabies.billing_kotlin
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
+import com.ashomok.lullabies.BuildConfig
 import com.ashomok.lullabies.Settings
 import java.io.IOException
 import java.security.*
@@ -68,7 +69,7 @@ object Security {
      */
 
 
-    val BASE_64_ENCODED_PUBLIC_KEY = Settings.BASE_64_ENCODED_PUBLIC_KEY
+    val BASE_64_ENCODED_PUBLIC_KEY = BuildConfig.BASE_64_ENCODED_PUBLIC_KEY
 
     /**
      * Verifies that the data was signed with the given signature

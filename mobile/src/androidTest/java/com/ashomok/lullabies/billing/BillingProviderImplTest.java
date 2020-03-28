@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -36,19 +37,33 @@ public class BillingProviderImplTest {
     public ActivityTestRule<MusicPlayerActivity> mMusicPlayerActivityTestRule =
             new ActivityTestRule<>(MusicPlayerActivity.class, true, true);
 
+
     @Test
     public void testRemoveAdIcon() throws Exception {
         if (Settings.isAdsActive) {
+            try {
+                String touch_to_cast = InstrumentationRegistry.getTargetContext()
+                        .getString(R.string.touch_to_cast);
+                onView(withText(containsString(touch_to_cast))).check(matches(isDisplayed()));
+                onView((withId(R.id.drawer_layout))).perform(click());
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                //ignore
+            }
+
+            onView(withId(R.id.ads_container)).check(matches(isDisplayed()));
+
             onView(withId(R.id.remove_ads)).check(matches(isDisplayed()));
             onView(withId(R.id.remove_ads)).perform(click());
-            onView(withId(R.id.ads_container)).check(matches(isDisplayed()));
+
 
             String expectedButtonText = InstrumentationRegistry.getTargetContext()
                     .getString(R.string.buy_ads_free);
             onView(withText(containsString(expectedButtonText))).check(matches(isDisplayed()));
             onView(withText(containsString(expectedButtonText))).perform(click());
         } else {
-            onView(withId(R.id.remove_ads)).check(matches(not(isDisplayed())));
+            onView(withId(R.id.remove_ads)).check(doesNotExist());
             onView(withId(R.id.ads_container)).check(matches(not(isDisplayed())));
         }
     }

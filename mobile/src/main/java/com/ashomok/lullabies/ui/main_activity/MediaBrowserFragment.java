@@ -43,7 +43,7 @@ import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
-import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import java.util.List;
 
@@ -80,13 +80,14 @@ public class MediaBrowserFragment extends DaggerFragment {
     private MyViewPagerAdapter mBrowserAdapter;
 
     @Inject
-    RateAppAsker rateAppAsker; //inject interface instead
+    RateAppAskerImpl rateAppAsker; //inject interface instead
 
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            LogHelper.d(TAG, "Receiver onReceive");
             // We don't care about network changes while this fragment is not associated
             // with a media ID (for example, while it is being initialized)
             if (mMediaId != null) {
@@ -230,6 +231,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         // Registers BroadcastReceiver to track network connection changes.
         this.getActivity().registerReceiver(mConnectivityChangeReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        LogHelper.d(TAG, "Receiver register ");
     }
 
     @Override
@@ -245,7 +247,7 @@ public class MediaBrowserFragment extends DaggerFragment {
             LogHelper.d(TAG, "unregister Callback");
         }
         this.getActivity().unregisterReceiver(mConnectivityChangeReceiver);
-
+        LogHelper.d(TAG, "Receiver unregister ");
     }
 
     public String getMediaId() {
@@ -273,7 +275,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         }
         mMediaId = getMediaId();
         if (mMediaId == null) {
-            mMediaId = mMediaFragmentListener.getMediaBrowser().getRoot();
+            mMediaId = mMediaFragmentListener.getMediaBrowser().getRoot(); //todo this is never call
         }
         updateTitle();
 
@@ -290,7 +292,6 @@ public class MediaBrowserFragment extends DaggerFragment {
                     // unsubscribe first.
                     mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
                 })
-//                .compose(((RxAppCompatActivity) getActivity()).bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .subscribe(() -> {
                     LogHelper.d(TAG, "complatable finished");
@@ -311,6 +312,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         }
     }
 
+    //todo move to activity class
     private void checkForUserVisibleErrors(boolean forceError) {
         boolean showError = forceError;
         // If offline, message is about the lack of connectivity:
