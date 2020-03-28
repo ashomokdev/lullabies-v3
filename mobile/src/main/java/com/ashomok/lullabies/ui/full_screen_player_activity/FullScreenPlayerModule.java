@@ -32,7 +32,7 @@ public abstract class FullScreenPlayerModule {
     }
     @Provides
     static AdMobContainer provideAdMobContainer(Context context, @StringRes int adMobId) {
-        return new AdMobContainerImpl(context, adMobId);
+        return new AdMobContainerImpl(context, adMobId, AdMobContainerImpl.AdType.BANNER);
     }
 
     @Binds

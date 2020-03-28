@@ -1,5 +1,6 @@
 package com.ashomok.lullabies.ad;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
@@ -24,10 +25,21 @@ public class AdMobContainerImpl implements AdMobContainer {
     private static final String TAG = LogHelper.makeLogTag(AdMobContainerImpl.class);
     private final Context context;
     private final int adid;
-    private ViewGroup bannerParent;
+    private ViewGroup adParentLayout;
+
+    //todo remove reduntant?
+    public enum AdType {
+        BANNER,
+        NATIVE
+    }
+
+    NativeAdProviderImpl nativeAdProvider;
 
     @Inject
-    public AdMobContainerImpl(Context context, @StringRes int adId) {
+    Activity activity;
+
+    @Inject
+    public AdMobContainerImpl(Context context, @StringRes int adId, AdType adType) {
         this.context = context;
         this.adid = adId;
         String appId = context.getResources().getString(R.string.appID);
@@ -63,10 +75,8 @@ public class AdMobContainerImpl implements AdMobContainer {
             adView.loadAd(adRequest);
             parent.addView(adView);
 
-
             int heightInPixels = AdSize.SMART_BANNER.getHeightInPixels(parent.getContext());
             if (parent instanceof RelativeLayout ){
-
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) parent.getLayoutParams();
                 layoutParams.height = heightInPixels;
@@ -77,7 +87,6 @@ public class AdMobContainerImpl implements AdMobContainer {
                         (LinearLayout.LayoutParams) parent.getLayoutParams();
                 layoutParams.height = heightInPixels;
             }
-
         } else {
             Log.e(TAG, "Ads can not been loaded programmaticaly. " +
                     "RelativeLayout and LinearLayout are supported as parent.");
@@ -91,7 +100,7 @@ public class AdMobContainerImpl implements AdMobContainer {
      */
     @Override
     public void initBottomBannerAd(ViewGroup parentLayout) {
-        this.bannerParent = parentLayout;
+        adParentLayout = parentLayout;
         if (context.getResources().getConfiguration().orientation ==
                 android.content.res.Configuration.ORIENTATION_PORTRAIT) {
             //init banner
@@ -101,6 +110,6 @@ public class AdMobContainerImpl implements AdMobContainer {
 
     @Override
     public void showAd(boolean isAdsActive) {
-        bannerParent.setVisibility(isAdsActive ? View.VISIBLE : View.GONE);
+        adParentLayout.setVisibility(isAdsActive ? View.VISIBLE : View.GONE);
     }
 }

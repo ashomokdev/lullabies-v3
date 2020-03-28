@@ -34,19 +34,38 @@ public abstract class MusicPlayerModule {
     static @StringRes
     int provideAdMobId(Context context, String mediaId) {
         if (BuildConfig.DEBUG) {
-            return R.string.test_banner;
+            if (BuildConfig.IS_NATIVE_AD_ACTIVE
+                    && getRandomBoolean()
+                    && mediaId.contains(context.getResources().getString(R.string.classic_key))) {
+                return R.string.native_ad_test_banner;
+            } else {
+                return R.string.test_banner;
+            }
         } else {
             if (mediaId.contains(context.getResources().getString(R.string.classic_key))) {
-                return R.string.lullabies_main_activity_classic_tones_banner;
+                if (BuildConfig.IS_NATIVE_AD_ACTIVE && getRandomBoolean()) {
+                    return R.string.lullabies_main_activity_classic_tones_native;
+                } else {
+                    return R.string.lullabies_main_activity_classic_tones_banner;
+                }
             } else {
                 return R.string.lullabies_main_activity_base_collection_banner;
             }
         }
     }
 
+    private static boolean getRandomBoolean() { return Math.random() < 0.5; }
+
     @Provides
     static AdMobContainer provideAdMobContainer(Context context, @StringRes int adMobId) {
-        return new AdMobContainerImpl(context, adMobId);
+        AdMobContainerImpl.AdType adType;
+        if (adMobId == R.string.lullabies_main_activity_classic_tones_native
+                || adMobId == R.string.native_ad_test_banner) {
+            adType = AdMobContainerImpl.AdType.NATIVE;
+        } else {
+            adType = AdMobContainerImpl.AdType.BANNER;
+        }
+        return new AdMobContainerImpl(context, adMobId, adType);
     }
 
     @Binds

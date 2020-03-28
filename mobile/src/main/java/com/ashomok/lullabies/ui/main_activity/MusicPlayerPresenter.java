@@ -16,7 +16,6 @@ import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -82,7 +81,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                 public void onChanged(AdsFreeForever adsFreeForever) {
                     if (adsFreeForever != null) {
                         Settings.isAdsActive = adsFreeForever.mayPurchase();
-                        view.updateView(Settings.isAdsActive);
+                        view.updateViewForAd(Settings.isAdsActive);
                     }
                 }
             });

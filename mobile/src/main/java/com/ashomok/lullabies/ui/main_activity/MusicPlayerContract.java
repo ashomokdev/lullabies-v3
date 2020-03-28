@@ -22,7 +22,7 @@ public class MusicPlayerContract {
 
         void showInfo(String message);
 
-        void updateView(boolean isAdsActive);
+        void updateViewForAd(boolean isAdsActive);
 
         void showRemoveAdDialog(AugmentedSkuDetails removeAdsSkuRow);
 

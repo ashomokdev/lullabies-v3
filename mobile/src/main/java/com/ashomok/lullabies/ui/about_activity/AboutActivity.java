@@ -103,6 +103,6 @@ public class AboutActivity extends BaseActivity {
     }
 
     private void openPrivacyPolicy() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Settings.PRIVACY_POLICY_LINK)));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_LINK)));
     }
 }

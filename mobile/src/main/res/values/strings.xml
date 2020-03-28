@@ -70,4 +70,7 @@
     <string name="ok_sure">OK, sure</string>
     <string name="lullabies_main_activity_classic_tones_banner" translatable="false">ca-app-pub-5221781428763224/4035198062</string>
     <string name="classic_key">Classic</string>
+    <string name="lullabies_main_activity_classic_tones_native" translatable="false">ca-app-pub-5221781428763224/7479904468</string>
+    <string name="ad_attribution" translatable="false">AD</string>
+    <string name="native_ad_test_banner" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
 </resources>
