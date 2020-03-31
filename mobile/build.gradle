@@ -26,8 +26,8 @@ android {
         applicationId "com.ashomok"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 31
-        versionName "4.0"
+        versionCode 32
+        versionName "4.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -63,7 +63,8 @@ android {
                     "SbSU+JiumarDZ0iU/kZtSbr3uvP7ub+daZ1HIT6erJPUx2vJ3AFf1RDvkcgB/rQNTL7XXSiiL+ES3oX/YKs5+iVp/ULwrTwNN6Vo" +
                     "bPwt6lnxuzM11aKKZy1avFJsAbP6KbiGrIQFwIDAQAB\""
 
-            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fmusic.json?alt=media&token=48f53505-4562-4622-88a6-b956edf4c5d2\""
+            buildConfigField "String", "CATALOG_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fv32%2Fmusic.json?alt=media&token=c8270de6-66c1-4198-a9f6-7f0c73c501b2\""
+            buildConfigField "String", "CATALOG_RU_URL", "\"https://firebasestorage.googleapis.com/v0/b/lullabies-85be8.appspot.com/o/json%2Fv32%2Fmusic_ru.json?alt=media&token=a97367c7-7479-4d91-881e-590c50f4de79\""
             buildConfigField "boolean", "IS_NATIVE_AD_ACTIVE", "true"
         }
     }

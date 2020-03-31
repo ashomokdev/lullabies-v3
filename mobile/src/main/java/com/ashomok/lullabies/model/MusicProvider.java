@@ -18,6 +18,7 @@ package com.ashomok.lullabies.model;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -112,7 +113,11 @@ public class MusicProvider {
         if (mCurrentState != State.INITIALIZED || !mMusicListByCategory.containsKey(category)) {
             return Collections.emptyList();
         }
-        return mMusicListByCategory.get(category);
+
+        if (mMusicListByCategory.get(category) != null){
+        return Stream.of(new ArrayList<>(mMusicListByCategory.get(category)))
+                .sortBy(i->i.getDescription().getMediaId()).toList();}
+        else return new ArrayList<>();
     }
 
     /**

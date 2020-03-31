@@ -21,7 +21,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
@@ -65,6 +67,8 @@ import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -512,8 +516,10 @@ public class MusicPlayerActivity extends BaseActivity
                 LogHelper.e(TAG, "navigationView == null - unexpected");
             } else {
                 for (int i = 0; i < categories.size(); i++) {
-                    navigationView.getMenu().add(NONE, i, i,
-                            categories.get(i).getDescription().getTitle());
+                    MediaBrowserCompat.MediaItem item = categories.get(i);
+                    MenuItem menuItem =  navigationView.getMenu().add(NONE, i, i,
+                            item.getDescription().getTitle());
+                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));
                 }
             }
         }

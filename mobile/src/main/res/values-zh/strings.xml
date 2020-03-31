@@ -26,8 +26,6 @@
     <string name="get_no_ads_forever">永久无广告</string>
     <string name="about_app">关于应用</string>
     <!-- Notificaiton Channel -->
-    <string name="notification_channel">UAMP_Channel_ID</string>
-    <string name="notification_channel_description">UAMP频道ID</string>
     <string name="cancel">取消</string>
     <string name="buy_ads_free">购买无广告</string>
     <string name="ads_free_forever">永久无广告</string>
@@ -53,5 +51,6 @@
     <string name="how_about_rating">如何评价PlayMarket？</string>
     <string name="no_thanks">不用了，谢谢</string>
     <string name="ok_sure">是当然</string>
-    <string name="classic_key">经典</string>
+    <string name="classic_key">Classic</string>
+    <string name="mom_songs_key">Mom</string>
 </resources>

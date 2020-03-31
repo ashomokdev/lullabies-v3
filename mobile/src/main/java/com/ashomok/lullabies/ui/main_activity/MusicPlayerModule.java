@@ -41,7 +41,13 @@ public abstract class MusicPlayerModule {
                     && getRandomBoolean()
                     && mediaId.contains(context.getResources().getString(R.string.classic_key))) {
                 return R.string.native_ad_test_banner;
-            } else {
+            }
+            else if (BuildConfig.IS_NATIVE_AD_ACTIVE
+                    && getRandomBoolean()
+                    && mediaId.contains(context.getResources().getString(R.string.mom_songs_key))) {
+                return R.string.native_ad_test_banner;
+            }
+            else {
                 return R.string.test_banner;
             }
         } else {
@@ -51,7 +57,15 @@ public abstract class MusicPlayerModule {
                 } else {
                     return R.string.lullabies_main_activity_classic_tones_banner;
                 }
-            } else {
+            }
+            else if (mediaId.contains(context.getResources().getString(R.string.mom_songs_key))){
+                if (BuildConfig.IS_NATIVE_AD_ACTIVE && getRandomBoolean()) {
+                    return R.string.lullabies_main_activity_mom_songs_native;
+                } else {
+                    return R.string.lullabies_main_activity_mom_songs_banner;
+                }
+            }
+            else {
                 return R.string.lullabies_main_activity_base_collection_banner;
             }
         }
