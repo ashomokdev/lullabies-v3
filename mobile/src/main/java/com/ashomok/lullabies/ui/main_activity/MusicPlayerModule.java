@@ -79,6 +79,7 @@ public abstract class MusicPlayerModule {
     static AdMobAd provideAdMobAd(Context context, @StringRes int adMobId) {
         LogHelper.d(TAG, adMobId);
         if (adMobId == R.string.lullabies_main_activity_classic_tones_native
+                || adMobId == R.string.lullabies_main_activity_mom_songs_native
                 || adMobId == R.string.native_ad_test_banner) {
             return new AdMobNativeBannerAd(context, adMobId);
         } else {
