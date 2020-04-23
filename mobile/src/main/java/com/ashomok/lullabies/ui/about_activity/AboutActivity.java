@@ -23,12 +23,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.Html;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.ui.BaseActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 
@@ -104,5 +104,16 @@ public class AboutActivity extends BaseActivity {
 
     private void openPrivacyPolicy() {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_LINK)));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

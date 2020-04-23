@@ -44,7 +44,7 @@ import com.ashomok.lullabies.utils.LogHelper;
 /**
  * A class that shows the Media Queue to the user.
  */
-public class PlaybackControlsFragment extends Fragment { //todo remove deprecated code
+public class PlaybackControlsFragment extends Fragment {
 
     private static final String TAG = LogHelper.makeLogTag(PlaybackControlsFragment.class);
 

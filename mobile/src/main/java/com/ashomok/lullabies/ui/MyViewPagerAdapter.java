@@ -19,8 +19,8 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import java.util.ArrayList;
 import java.util.List;

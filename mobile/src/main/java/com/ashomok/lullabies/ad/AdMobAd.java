@@ -9,8 +9,6 @@ import androidx.annotation.StringRes;
 import com.ashomok.lullabies.R;
 import com.google.android.gms.ads.MobileAds;
 
-import javax.inject.Inject;
-
 /**
  * Created by iuliia on 7/25/16.
  */

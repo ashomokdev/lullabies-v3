@@ -174,6 +174,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
         mToolbarInitialized = true;
     }
 

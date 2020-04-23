@@ -30,6 +30,8 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -132,11 +134,11 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "on Create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_player);
         initializeToolbar();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");
         }
 
@@ -225,6 +227,17 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
 
         initBannerAd();
         mPresenter.takeView(this);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {

@@ -174,6 +174,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
         openUI.putExtra(MusicPlayerActivity.EXTRA_START_FULLSCREEN, true);
         if (description != null) {
             openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+            int deviderIndex = 0;
+            if (description.getMediaId() != null) {
+                deviderIndex = description.getMediaId().indexOf("|");
+            }
+            if (deviderIndex > 0) {
+                String mediaId = description.getMediaId().substring(0, deviderIndex); //mediaId without tracking id. For example for "__BY_CATEGORY__/Классическая Музыка|113" returned "__BY_CATEGORY__/Классическая Музыка"
+                openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION, mediaId);
+            }
         }
         return PendingIntent.getActivity(mService, REQUEST_CODE, openUI,
                 PendingIntent.FLAG_CANCEL_CURRENT);

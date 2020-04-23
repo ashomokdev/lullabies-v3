@@ -119,7 +119,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                             public void onChildrenLoaded(@NonNull String parentId,
                                                          @NonNull List<MediaBrowserCompat.MediaItem> children) {
                                 try {
-                                    LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                    LogHelper.d(TAG, "onChildrenLoaded, parentId=" + parentId +
                                             "  count=" + children.size());
                                     checkForUserVisibleErrors(children.isEmpty());
                                     if (view != null) {
