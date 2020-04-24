@@ -1,5 +1,6 @@
 package com.ashomok.lullabies.ui.main_activity;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -9,9 +10,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ad.AdMobAd;
+import com.ashomok.lullabies.ad.AdMobAdaptiveBannerAd;
 import com.ashomok.lullabies.ad.AdMobBannerAd;
 import com.ashomok.lullabies.ad.AdMobNativeBannerAd;
 import com.ashomok.lullabies.utils.LogHelper;
+
+import java.util.Random;
 
 import dagger.Binds;
 import dagger.Module;
@@ -28,6 +32,12 @@ public abstract class MusicPlayerModule {
     }
 
     @Provides
+    static Activity provideActivity(MusicPlayerActivity activity) {
+        return activity;
+    }
+
+
+    @Provides
     static @NonNull
     String provideMediaId(MusicPlayerActivity activity) {
         return activity.getMediaId();
@@ -37,35 +47,38 @@ public abstract class MusicPlayerModule {
     static @StringRes
     int provideAdMobId(Context context, String mediaId) {
         if (BuildConfig.DEBUG) {
-            if (BuildConfig.IS_NATIVE_AD_ACTIVE
-                    && getRandomBoolean()
-                    && mediaId.contains(context.getResources().getString(R.string.classic_key))) {
-                return R.string.native_ad_test_banner;
-            }
-            else if (BuildConfig.IS_NATIVE_AD_ACTIVE
-                    && getRandomBoolean()
-                    && mediaId.contains(context.getResources().getString(R.string.mom_songs_key))) {
-                return R.string.native_ad_test_banner;
-            }
-            else {
+            boolean randomBoolean = getRandomBoolean();
+            if (BuildConfig.IS_NATIVE_AD_ACTIVE && (
+                    mediaId.contains(context.getResources().getString(R.string.classic_key)) ||
+                            mediaId.contains(context.getResources().getString(R.string.mom_songs_key)))) {
+
+                if (randomBoolean) {
+                    return R.string.native_ad_test_banner;
+                } else {
+                    return R.string.test_banner;
+                }
+            } else {
                 return R.string.test_banner;
             }
         } else {
+            int random = getRandomInt();
             if (mediaId.contains(context.getResources().getString(R.string.classic_key))) {
-                if (BuildConfig.IS_NATIVE_AD_ACTIVE && getRandomBoolean()) {
+                if (random == 0 && BuildConfig.IS_NATIVE_AD_ACTIVE) {
                     return R.string.lullabies_main_activity_classic_tones_native;
+                } else if (random == 1) {
+                    return R.string.lullabies_main_activity_classic_tones_adaptive_banner;
                 } else {
                     return R.string.lullabies_main_activity_classic_tones_banner;
                 }
-            }
-            else if (mediaId.contains(context.getResources().getString(R.string.mom_songs_key))){
-                if (BuildConfig.IS_NATIVE_AD_ACTIVE && getRandomBoolean()) {
+            } else if (mediaId.contains(context.getResources().getString(R.string.mom_songs_key))) {
+                if (random == 0 && BuildConfig.IS_NATIVE_AD_ACTIVE) {
                     return R.string.lullabies_main_activity_mom_songs_native;
+                } else if (random == 1) {
+                    return R.string.lullabies_main_activity_mom_songs_adaptive_banner;
                 } else {
                     return R.string.lullabies_main_activity_mom_songs_banner;
                 }
-            }
-            else {
+            } else {
                 return R.string.lullabies_main_activity_base_collection_banner;
             }
         }
@@ -75,15 +88,22 @@ public abstract class MusicPlayerModule {
         return Math.random() < 0.5;
     }
 
+    private static int getRandomInt() {
+        return new Random().nextInt(2);
+    } //0, 1, 2
+
     @Provides
-    static AdMobAd provideAdMobAd(Context context, @StringRes int adMobId) {
+    static AdMobAd provideAdMobAd(Activity activity, @StringRes int adMobId) {
         LogHelper.d(TAG, adMobId);
         if (adMobId == R.string.lullabies_main_activity_classic_tones_native
                 || adMobId == R.string.lullabies_main_activity_mom_songs_native
                 || adMobId == R.string.native_ad_test_banner) {
-            return new AdMobNativeBannerAd(context, adMobId);
+            return new AdMobNativeBannerAd(activity, adMobId);
+        } else if (adMobId == R.string.lullabies_main_activity_classic_tones_adaptive_banner
+                || adMobId == R.string.lullabies_main_activity_mom_songs_adaptive_banner) {
+            return new AdMobAdaptiveBannerAd(activity, adMobId);
         } else {
-            return new AdMobBannerAd(context, adMobId);
+            return new AdMobBannerAd(activity, adMobId);
         }
     }
 

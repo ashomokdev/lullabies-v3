@@ -16,12 +16,12 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 
-public class AdMobBannerAd extends AdMobAd {
+public class AdMobAdaptiveBannerAd extends AdMobAd {
 
-    private static final String TAG = LogHelper.makeLogTag(AdMobBannerAd.class);
+    private static final String TAG = LogHelper.makeLogTag(AdMobAdaptiveBannerAd.class);
 
-    public AdMobBannerAd(Context context, int adId) {
-        super(context, adId);
+    public AdMobAdaptiveBannerAd(Activity activity, int adId) {
+        super(activity, adId);
     }
 
     @Override
@@ -55,7 +55,8 @@ public class AdMobBannerAd extends AdMobAd {
                         LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f);
                 adView.setLayoutParams(lp);
             }
-            adView.setAdSize(AdSize.SMART_BANNER);
+            AdSize adSize = getAdSize();
+            adView.setAdSize(adSize);
             adView.setAdUnitId(context.getResources().getString(adid));
             adView.setId(R.id.ad_banner);
             AdRequest adRequest = new AdRequest.Builder().build();
@@ -63,7 +64,7 @@ public class AdMobBannerAd extends AdMobAd {
             adView.loadAd(adRequest);
             parent.addView(adView);
 
-            int heightInPixels = AdSize.SMART_BANNER.getHeightInPixels(parent.getContext());
+            int heightInPixels = adSize.getHeightInPixels(parent.getContext());
             if (parent instanceof RelativeLayout) {
                 RelativeLayout.LayoutParams layoutParams =
                         (RelativeLayout.LayoutParams) parent.getLayoutParams();
@@ -77,5 +78,20 @@ public class AdMobBannerAd extends AdMobAd {
             Log.e(TAG, "Ads can not been loaded programmaticaly. " +
                     "RelativeLayout and LinearLayout are supported as parent.");
         }
+    }
+
+    private AdSize getAdSize() {
+        Activity activity = (Activity) context;
+        Display display = activity.getWindowManager().getDefaultDisplay();
+
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float widthPixels = outMetrics.widthPixels;
+        float density = outMetrics.density;
+
+        int adWidth = (int) (widthPixels / density);
+
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth);
     }
 }

@@ -76,4 +76,6 @@
     <string name="mom_songs_key">Mom</string>
     <string name="lullabies_main_activity_mom_songs_native" translatable="false">ca-app-pub-5221781428763224/3892346385</string>
     <string name="lullabies_main_activity_mom_songs_banner" translatable="false">ca-app-pub-5221781428763224/6789972464</string>
+    <string name="lullabies_main_activity_classic_tones_adaptive_banner" translatable="false">ca-app-pub-5221781428763224/3545715659</string>
+    <string name="lullabies_main_activity_mom_songs_adaptive_banner" translatable="false">ca-app-pub-5221781428763224/1494267385</string>
 </resources>
