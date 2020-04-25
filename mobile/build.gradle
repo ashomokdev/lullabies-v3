@@ -26,8 +26,8 @@ android {
         applicationId "com.ashomok"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 32
-        versionName "4.1"
+        versionCode 33
+        versionName "4.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
