@@ -51,6 +51,6 @@
     <string name="how_about_rating">Может тогда оставите оценку в Play Market?</string>
     <string name="no_thanks">Нет, спасибо</string>
     <string name="ok_sure">Да, конечно</string>
-<!--    todo change to russia-->
-    <string name="classic_key">Classic</string>
+    <string name="classic_key">Классическая</string>
+    <string name="mom_songs_key">Мамины</string>
 </resources>

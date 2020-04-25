@@ -140,6 +140,14 @@
      // A value of a CMD_NAME key in the extras of the incoming Intent that
      // indicates that the music playback should be stopped (see {@link #onStartCommand})
      public static final String CMD_STOP = "CMD_STOP";
+
+     // A value of a CMD_NAME key that indicates that the music playback should switch
+     // to local playback from cast playback.
+     public static final String CMD_STOP_CASTING = "CMD_STOP_CASTING"; //todo i,plement
+
+     // A value of a CMD_NAME key that indicates that the music service should be stopped.
+     public static final String CMD_STOP_SERVICE = "CMD_STOP_SERVICE"; //todo i,plement
+
      // Delay stopSelf by using a handler.
      private static final int STOP_DELAY = 30000;
 
@@ -157,7 +165,7 @@
 
      private boolean mIsConnectedToCar;
      private BroadcastReceiver mCarConnectionReceiver;
-     private boolean inStartedState;
+     private boolean inStartedState; //todo remove & simplify
 
 
      /*
@@ -250,6 +258,9 @@
          registerCarConnectionReceiver();
      }
 
+     //todo test solution https://stackoverflow.com/a/50888586/3627736 two starts
+     //https://github.com/Truiton/ForegroundService/blob/master/app/src/main/java/com/truiton/foregroundservice/ForegroundService.java
+
      /**
       * (non-Javadoc)
       *
@@ -258,7 +269,11 @@
      @Override
      public int onStartCommand(Intent startIntent, int flags, int startId) {
 
-         if (startIntent != null) {
+
+         int result;
+         if (startIntent == null) {
+             result = START_STICKY_COMPATIBILITY;
+         } else {
              String action = startIntent.getAction();
              String command = startIntent.getStringExtra(CMD_NAME);
              if (ACTION_CMD.equals(action)) {
@@ -266,18 +281,58 @@
                      mPlaybackManager.handlePauseRequest();
                  } else if (CMD_STOP.equals(command)) {
                      mPlaybackManager.handleStopRequest(null);
+                 } else if (CMD_STOP_CASTING.equals(command)) {
+                     CastContext.getSharedInstance(this).getSessionManager().endCurrentSession(true);
+                 } else if (CMD_STOP_SERVICE.equals(command)) {
+                     stopForeground(true);
+                     stopSelf();
                  }
              } else {
                  // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
                  MediaButtonReceiver.handleIntent(mSession, startIntent);
              }
+             result = START_STICKY;
          }
          // Reset the delay handler to enqueue a message to stop the service if
          // nothing is playing.
          mDelayedStopHandler.removeCallbacksAndMessages(null);
          mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-         return START_STICKY;
+         return result;
      }
+
+     /**
+      * old version from 24 apr 2020
+      *
+      * @param rootIntent
+      */
+//     /**
+//      * (non-Javadoc)
+//      *
+//      * @see Service#onStartCommand(Intent, int, int)
+//      */
+//     @Override
+//     public int onStartCommand(Intent startIntent, int flags, int startId) {
+//
+//         if (startIntent != null) {
+//             String action = startIntent.getAction();
+//             String command = startIntent.getStringExtra(CMD_NAME);
+//             if (ACTION_CMD.equals(action)) {
+//                 if (CMD_PAUSE.equals(command)) {
+//                     mPlaybackManager.handlePauseRequest();
+//                 } else if (CMD_STOP.equals(command)) {
+//                     mPlaybackManager.handleStopRequest(null);
+//                 }
+//             } else {
+//                 // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
+//                 MediaButtonReceiver.handleIntent(mSession, startIntent);
+//             }
+//         }
+//         // Reset the delay handler to enqueue a message to stop the service if
+//         // nothing is playing.
+//         mDelayedStopHandler.removeCallbacksAndMessages(null);
+//         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
+//         return START_STICKY;
+//     }
 
      /*
       * Handle case when user swipes the app away from the recents apps list by
@@ -286,6 +341,7 @@
      @Override
      public void onTaskRemoved(Intent rootIntent) {
          super.onTaskRemoved(rootIntent);
+         stopForeground(true); //added
          stopSelf();
      }
 
@@ -462,6 +518,7 @@
                      LogHelper.d(TAG, "Ignoring delayed stop since the media player is in use.");
                  } else {
                      LogHelper.d(TAG, "Stopping service with delay handler.");
+                     service.stopForeground(true); //added
                      service.stopSelf();
                  }
              }

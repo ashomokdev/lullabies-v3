@@ -31,12 +31,11 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -60,8 +59,6 @@ import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -79,6 +76,7 @@ import static android.view.Menu.NONE;
  * when it is created and connect/disconnect on start/stop. Thus, a MediaBrowser will be always
  * connected while this activity is running.
  */
+
 public class MusicPlayerActivity extends BaseActivity
         implements MediaBrowserFragment.MediaFragmentListener,
         MusicPlayerContract.View {
@@ -87,15 +85,23 @@ public class MusicPlayerActivity extends BaseActivity
     private static final String SAVED_MEDIA_ID = "com.ashomok.lullabies.MEDIA_ID";
     private static final String FRAGMENT_TAG = "lullabies_list_container";
     private static final String INIT_MEDIA_ID_VALUE_ROOT = "__BY_CATEGORY__";
-    public static final String EXTRA_START_FULLSCREEN =
-            "com.ashomok.lullabies.EXTRA_START_FULLSCREEN";
+    public static final String EXTRA_START_FULLSCREEN = "com.ashomok.lullabies.EXTRA_START_FULLSCREEN";
 
     /**
      * Optionally used with {@link #EXTRA_START_FULLSCREEN} to carry a MediaDescription to
      * the {@link FullScreenPlayerActivity}, speeding up the screen rendering
      * while the {@link android.support.v4.media.session.MediaControllerCompat} is connecting.
      */
-    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION = "com.ashomok.lullabies.CURRENT_MEDIA_DESCRIPTION";
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "com.ashomok.lullabies.CURRENT_MEDIA_DESCRIPTION";
+
+    /**
+     * Optionally used with {@link #EXTRA_START_FULLSCREEN} to carry a MediaId (category) to
+     * update the view.
+     */
+    public static final String EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION =
+            "com.ashomok.lullabies.CURRENT_MEDIA_ID_FROM_NOTIFICATION";
+
 
     private Bundle mVoiceSearchParams;
 
@@ -126,19 +132,12 @@ public class MusicPlayerActivity extends BaseActivity
                 oldOnline = isOnline;
                 checkForUserVisibleErrors(false);
                 if (isOnline) {
-                    reloadMedia();
+                    LogHelper.d(TAG, "mConnectivityChangeReceiver - reload Media");
+                    initMediaBrowserLoader(getMediaId());
                 }
             }
         }
     };
-
-    private void reloadMedia() {
-        LogHelper.d(TAG, "on reload Media");
-        boolean isOnline = NetworkHelper.isOnline(getActivity());
-        if (isOnline) {
-            initMediaBrowserLoader(getMediaId());
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -305,10 +304,9 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         String mediaId = getMediaId();
-        if (mediaId != null) {
-            outState.putString(SAVED_MEDIA_ID, mediaId);
-        }
+        outState.putString(SAVED_MEDIA_ID, mediaId);
         outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+        Log.d(TAG, "onSaveInstanceState with media id " + mediaId);
         super.onSaveInstanceState(outState);
     }
 
@@ -344,6 +342,7 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Override
     protected void onNewIntent(Intent intent) {
+        setIntent(intent);//must store the new intent unless getIntent() will return the old one
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
         initializeFromParams(null, intent);
         startFullScreenActivityIfNeeded(intent);
@@ -376,6 +375,10 @@ public class MusicPlayerActivity extends BaseActivity
                     mVoiceSearchParams.getString(SearchManager.QUERY));
         } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu or from internet broadcast receiver
             mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
+            LogHelper.d(TAG, "initializeFromParams with mediaId from String extra, " +
+                    "mediaId = " + mediaId);
+        } else if (intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION) != null) { //returned from notification manager
+           mediaId = intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
         } else if (savedInstanceState != null) { //screen rotated
             // If there is a saved media ID, use it
             String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
@@ -417,11 +420,15 @@ public class MusicPlayerActivity extends BaseActivity
         MediaBrowserFragment fragment = getBrowseFragment();
         if (fragment == null) {
             String savedCategoryMediaId = getIntent().getStringExtra(SAVED_MEDIA_ID);
+
             if (savedCategoryMediaId != null) {
                 mediaId = savedCategoryMediaId;
+            } else if (getIntent().getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION) != null) { //returned from notification manager
+                mediaId = getIntent().getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
             }
         } else {
-            mediaId = fragment.getMediaId(); //track mediaId
+            mediaId = fragment.getMediaId(); //category mediaId
+            Log.d(TAG, "getMediaId for non null fragment returned " + mediaId);
         }
         if (mediaId == null) {
             mediaId = INIT_MEDIA_ID_VALUE_ROOT;
@@ -512,9 +519,10 @@ public class MusicPlayerActivity extends BaseActivity
                 LogHelper.e(TAG, "navigationView == null - unexpected");
             } else {
                 for (int i = 0; i < categories.size(); i++) {
-                    navigationView.getMenu().add(NONE, i, i,
-                            categories.get(i).getDescription().getTitle());
-                }
+                    MediaBrowserCompat.MediaItem item = categories.get(i);
+                    MenuItem menuItem = navigationView.getMenu().add(NONE, i, i,
+                            item.getDescription().getTitle());
+                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));                 }
             }
         }
     }

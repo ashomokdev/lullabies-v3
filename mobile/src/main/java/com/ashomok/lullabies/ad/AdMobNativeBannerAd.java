@@ -2,7 +2,6 @@ package com.ashomok.lullabies.ad;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -10,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
@@ -168,13 +166,15 @@ public class AdMobNativeBannerAd extends AdMobAd {
 
             builder.withNativeAdOptions(adOptions);
 
-            builder.withAdListener(new AdListener() {
-                @Override
-                public void onAdFailedToLoad(int errorCode) {
-                    emitter.onError(new Throwable("onAdFailedToLoad,error code " + errorCode));
-                    LogHelper.e(TAG, "onAdFailedToLoad,error code " + errorCode);
-                }
-            });
+            builder.withAdListener(getAdListener());
+
+//            builder.withAdListener(new AdListener() {
+//                @Override
+//                public void onAdFailedToLoad(int errorCode) {
+//                    emitter.onError(new Throwable("onAdFailedToLoad,error code " + errorCode));
+//                    LogHelper.e(TAG, "onAdFailedToLoad,error code " + errorCode);
+//                }
+//            });
             AdLoader adLoader = builder.build();
             adLoader.loadAd(new AdRequest.Builder().build());
         });

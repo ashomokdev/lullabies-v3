@@ -58,8 +58,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     private static final String CHANNEL_ID = "com.ashomok.lullabies.MUSIC_CHANNEL_ID";
 
-    public static final int NOTIFICATION_ID = 412;
-    private static final int REQUEST_CODE = 100;
+    public static final int NOTIFICATION_ID = 4125445;
+    private static final int REQUEST_CODE = 143400;
 
     public static final String ACTION_PAUSE = "com.ashomok.lullabies.pause";
     public static final String ACTION_PLAY = "com.ashomok.lullabies.play";
@@ -125,7 +125,6 @@ public class MediaNotificationManager extends BroadcastReceiver {
         mNotificationManager.cancelAll();
     }
 
-
     @Override
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
@@ -144,7 +143,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 mTransportControls.skipToPrevious();
                 break;
             case ACTION_STOP_CASTING:
-                CastContext.getSharedInstance(mService).getSessionManager().endCurrentSession(true);
+                Intent i = new Intent(context, MusicService.class);
+                i.setAction(MusicService.ACTION_CMD);
+                i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP_CASTING);
+                mService.startService(i);
                 break;
             default:
                 LogHelper.w(TAG, "Unknown intent ignored. Action=", action);
@@ -174,6 +176,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
         openUI.putExtra(MusicPlayerActivity.EXTRA_START_FULLSCREEN, true);
         if (description != null) {
             openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+
+            int deviderIndex = 0;
+            if (description.getMediaId() != null) {
+                deviderIndex = description.getMediaId().indexOf("|");
+            }
+            if (deviderIndex > 0) {
+                String mediaId = description.getMediaId().substring(0, deviderIndex); //mediaId without tracking id. For example for "__BY_CATEGORY__/Классическая Музыка|113" returned "__BY_CATEGORY__/Классическая Музыка"
+                openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION, mediaId);
+            }
         }
         return PendingIntent.getActivity(mService, REQUEST_CODE, openUI,
                 PendingIntent.FLAG_CANCEL_CURRENT);

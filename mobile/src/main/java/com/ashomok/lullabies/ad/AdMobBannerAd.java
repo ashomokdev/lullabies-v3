@@ -1,22 +1,19 @@
 package com.ashomok.lullabies.ad;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
+import android.view.Display;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import androidx.annotation.StringRes;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-
-import javax.inject.Inject;
 
 
 public class AdMobBannerAd extends AdMobAd {
@@ -62,6 +59,7 @@ public class AdMobBannerAd extends AdMobAd {
             adView.setAdUnitId(context.getResources().getString(adid));
             adView.setId(R.id.ad_banner);
             AdRequest adRequest = new AdRequest.Builder().build();
+            adView.setAdListener(getAdListener());
             adView.loadAd(adRequest);
             parent.addView(adView);
 

@@ -19,7 +19,6 @@ package com.ashomok.lullabies.model;
 import android.support.v4.media.MediaMetadataCompat;
 
 import com.ashomok.lullabies.BuildConfig;
-import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import org.json.JSONArray;
@@ -33,6 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Utility class to get a list of MusicTrack's based on a server-side JSON
@@ -43,6 +43,7 @@ public class RemoteJSONSource implements MusicProviderSource {
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);
 
     private static final String CATALOG_URL = BuildConfig.CATALOG_URL;
+    private static final String CATALOG_RU_URL = BuildConfig.CATALOG_RU_URL;
 
     private static final String JSON_MUSIC = "music";
     private static final String JSON_TITLE = "title";
@@ -59,7 +60,13 @@ public class RemoteJSONSource implements MusicProviderSource {
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
         try {
-            JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
+            JSONObject jsonObj;
+            String deviceLang = Locale.getDefault().toString();
+            if (deviceLang.contains("ru")) {
+                jsonObj = fetchJSONFromUrl(CATALOG_RU_URL);
+            } else {
+                jsonObj = fetchJSONFromUrl(CATALOG_URL);
+            }
             ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
             if (jsonObj != null) {
                 JSONArray jsonTracks = jsonObj.getJSONArray(JSON_MUSIC);
@@ -125,7 +132,7 @@ public class RemoteJSONSource implements MusicProviderSource {
         try {
             URLConnection urlConnection = new URL(urlString).openConnection();
             reader = new BufferedReader(new InputStreamReader(
-                    urlConnection.getInputStream(), "iso-8859-1"));
+                    urlConnection.getInputStream(), "UTF-8"));
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
