@@ -17,7 +17,11 @@ package com.ashomok.lullabies.utils;
 
 import android.util.Log;
 
+import com.annimon.stream.Collectors;
+import com.annimon.stream.Stream;
 import com.crashlytics.android.Crashlytics;
+
+import java.util.ArrayList;
 
 public class LogHelper {
 
@@ -63,6 +67,9 @@ public class LogHelper {
 
     public static void e(String tag, Object... messages) {
         log(tag, Log.ERROR, null, messages);
+        String error = tag + ": " +
+                Stream.of(messages).map(Object::toString).collect(Collectors.joining(", "));
+        Crashlytics.log(error);
     }
 
     public static void e(String tag, Throwable t, Object... messages) {

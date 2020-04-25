@@ -16,13 +16,16 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,6 +42,7 @@ import com.google.android.gms.cast.framework.CastStateListener;
 import com.google.android.gms.cast.framework.IntroductoryOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.dynamite.DynamiteModule;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Inject;
@@ -65,6 +69,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
 
     private static final int DELAY_MILLIS = 1000;
 
+    @Nullable
     private CastContext mCastContext;
     private MenuItem mMediaRouteMenuItem;
     private Toolbar mToolbar;
@@ -96,6 +101,8 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentInjector;
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -107,7 +114,13 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
                 GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
 
         if (playServicesAvailable == ConnectionResult.SUCCESS) {
-            mCastContext = CastContext.getSharedInstance(this);
+            try {
+                mCastContext = CastContext.getSharedInstance(this);
+            }
+            catch (Exception e){
+                Log.e(TAG, "CastContext.getSharedInstance(this) failed", e);
+                // probably LoadingException: Failed to get module context
+            }
         }
     }
 
