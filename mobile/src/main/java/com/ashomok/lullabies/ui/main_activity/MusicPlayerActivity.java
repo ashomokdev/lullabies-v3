@@ -485,7 +485,7 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.remove_ads, menu);
+        inflater.inflate(R.menu.toolbar, menu);
         menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
         return super.onPrepareOptionsMenu(menu);
     }

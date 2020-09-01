@@ -18,10 +18,8 @@
 
  import android.app.PendingIntent;
  import android.app.Service;
- import android.content.BroadcastReceiver;
  import android.content.Context;
  import android.content.Intent;
- import android.content.IntentFilter;
  import android.media.MediaMetadata;
  import android.media.MediaPlayer;
  import android.media.session.MediaSession;
@@ -49,10 +47,8 @@
  import com.ashomok.lullabies.playback.PlaybackManager;
  import com.ashomok.lullabies.playback.QueueManager;
  import com.ashomok.lullabies.ui.NowPlayingActivity;
- import com.ashomok.lullabies.utils.CarHelper;
  import com.ashomok.lullabies.utils.LogHelper;
  import com.ashomok.lullabies.utils.TvHelper;
- import com.ashomok.lullabies.utils.WearHelper;
  import com.google.android.gms.cast.framework.CastContext;
  import com.google.android.gms.cast.framework.CastSession;
  import com.google.android.gms.cast.framework.SessionManager;
@@ -104,21 +100,6 @@
   * <p>
   * To make your app compatible with Android Auto, you also need to:
   *
-  * <ul>
-  *
-  * <li> Declare a meta-data tag in AndroidManifest.xml linking to a xml resource
-  * with a &lt;automotiveApp&gt; root element. For a media app, this must include
-  * an &lt;uses name="media"/&gt; element as a child.
-  * For example, in AndroidManifest.xml:
-  * &lt;meta-data android:name="com.google.android.gms.car.application"
-  * android:resource="@xml/automotive_app_desc"/&gt;
-  * And in res/values/automotive_app_desc.xml:
-  * &lt;automotiveApp&gt;
-  * &lt;uses name="media"/&gt;
-  * &lt;/automotiveApp&gt;
-  *
-  * </ul>
-  *
   * @see <a href="README.md">README.md</a> for more details.
   */
  public class MusicService extends MediaBrowserServiceCompat implements
@@ -163,8 +144,6 @@
      private SessionManager mCastSessionManager;
      private SessionManagerListener<CastSession> mCastSessionManagerListener;
 
-     private boolean mIsConnectedToCar;
-     private BroadcastReceiver mCarConnectionReceiver;
      private boolean inStartedState; //todo remove & simplify
 
 
@@ -230,9 +209,7 @@
          mSession.setSessionActivity(pi);
 
          mSessionExtras = new Bundle();
-         CarHelper.setSlotReservationFlags(mSessionExtras, true, true, true);
-         WearHelper.setSlotReservationFlags(mSessionExtras, true, true);
-         WearHelper.setUseBackgroundFromTheme(mSessionExtras, true);
+
          mSession.setExtras(mSessionExtras);
 
          mPlaybackManager.updatePlaybackState(null);
@@ -254,8 +231,6 @@
          }
 
          mMediaRouter = MediaRouter.getInstance(getApplicationContext());
-
-         registerCarConnectionReceiver();
      }
 
      //todo test solution https://stackoverflow.com/a/50888586/3627736 two starts
@@ -353,7 +328,6 @@
      @Override
      public void onDestroy() {
          LogHelper.d(TAG, "onDestroy");
-         unregisterCarConnectionReceiver();
          // Service is being killed, so make sure we release our resources
          mPlaybackManager.handleStopRequest(null);
          serviceManager.moveServiceOutOfStartedState();
@@ -382,20 +356,6 @@
                      + "Returning empty browser root so all apps can use MediaController."
                      + clientPackageName);
              return new BrowserRoot(MEDIA_ID_EMPTY_ROOT, null);
-         }
-         //noinspection StatementWithEmptyBody
-         if (CarHelper.isValidCarPackage(clientPackageName)) {
-             // Optional: if your app needs to adapt the music library to show a different subset
-             // when connected to the car, this is where you should handle it.
-             // If you want to adapt other runtime behaviors, like tweak ads or change some behavior
-             // that should be different on cars, you should instead use the boolean flag
-             // set by the BroadcastReceiver mCarConnectionReceiver (mIsConnectedToCar).
-         }
-         //noinspection StatementWithEmptyBody
-         if (WearHelper.isValidWearCompanionPackage(clientPackageName)) {
-             // Optional: if your app needs to adapt the music library for when browsing from a
-             // Wear device, you should return a different MEDIA ROOT here, and then,
-             // on onLoadChildren, handle it accordingly.
          }
 
          return new BrowserRoot(MEDIA_ID_ROOT, null);
@@ -473,26 +433,7 @@
          }
      }
 
-     private void registerCarConnectionReceiver() {
-         IntentFilter filter = new IntentFilter(CarHelper.ACTION_MEDIA_STATUS);
-         mCarConnectionReceiver = new BroadcastReceiver() {
-             @Override
-             public void onReceive(Context context, Intent intent) {
-                 String connectionEvent = intent.getStringExtra(CarHelper.MEDIA_CONNECTION_STATUS);
-                 mIsConnectedToCar = CarHelper.MEDIA_CONNECTED.equals(connectionEvent);
-                 LogHelper.i(TAG, "Connection event to Android Auto: ", connectionEvent,
-                         " isConnectedToCar=", mIsConnectedToCar);
-             }
-         };
-         registerReceiver(mCarConnectionReceiver, filter);
-     }
-
-     private void unregisterCarConnectionReceiver() {
-         unregisterReceiver(mCarConnectionReceiver);
-     }
-
-
-     public void setInStartedState(boolean inStartedState) {
+    public void setInStartedState(boolean inStartedState) {
          this.inStartedState = inStartedState;
      }
 

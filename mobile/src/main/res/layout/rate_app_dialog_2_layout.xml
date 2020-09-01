@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="27dp"
             android:text="@string/how_about_rating"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:gravity="center"
             android:textSize="18sp"
             />
@@ -38,7 +38,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/button_background"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:text="@string/no_thanks"
                 android:textSize="16sp" />
 
@@ -49,7 +49,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:background="@android:color/white"
+                android:background="@color/white"
                 android:text="@string/ok_sure"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />

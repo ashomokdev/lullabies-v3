@@ -94,7 +94,7 @@ limitations under the License.
                     android:layout_marginStart="@dimen/text_view_margin"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@color/white" />
 
                 <SeekBar
                     android:id="@+id/seekBar1"
@@ -116,7 +116,7 @@ limitations under the License.
                     android:layout_marginEnd="@dimen/end_text_margin"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@color/white" />
 
             </RelativeLayout>
 

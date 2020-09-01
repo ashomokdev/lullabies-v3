@@ -75,7 +75,7 @@
                 android:layout_weight="1"
                 android:background="@color/colorPrimary"
                 android:text="@string/cancel"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
 
             <Button
@@ -87,7 +87,7 @@
                 android:layout_weight="1"
                 android:background="@color/colorAccent"
                 android:text="@string/buy_ads_free"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:textSize="16sp" />
 
         </LinearLayout>
