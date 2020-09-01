@@ -458,12 +458,12 @@ class BillingRepository private constructor(private val application: Application
             }
             BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
                 //Some apps may choose to make decisions based on this knowledge.
-                Log.d(LOG_TAG, billingResult.debugMessage)
+                Log.e(LOG_TAG, billingResult.debugMessage)
             }
             else -> {
                 //do nothing. Someone else will connect it through retry policy.
                 //May choose to send to server though
-                Log.d(LOG_TAG, billingResult.debugMessage)
+                Log.w(LOG_TAG, billingResult.debugMessage)
             }
         }
     }
@@ -722,7 +722,7 @@ class BillingRepository private constructor(private val application: Application
     object AppSku {
         val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
 
-        //        val ADS_FREE_FOREVER_SKU_ID = "android.test.purchased"
+//                val ADS_FREE_FOREVER_SKU_ID = "android.test.purchased"
         val INAPP_SKUS = listOf(ADS_FREE_FOREVER_SKU_ID)
     }
 }

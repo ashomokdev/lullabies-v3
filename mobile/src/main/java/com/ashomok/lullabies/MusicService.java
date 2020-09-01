@@ -100,21 +100,6 @@
   * <p>
   * To make your app compatible with Android Auto, you also need to:
   *
-  * <ul>
-  *
-  * <li> Declare a meta-data tag in AndroidManifest.xml linking to a xml resource
-  * with a &lt;automotiveApp&gt; root element. For a media app, this must include
-  * an &lt;uses name="media"/&gt; element as a child.
-  * For example, in AndroidManifest.xml:
-  * &lt;meta-data android:name="com.google.android.gms.car.application"
-  * android:resource="@xml/automotive_app_desc"/&gt;
-  * And in res/values/automotive_app_desc.xml:
-  * &lt;automotiveApp&gt;
-  * &lt;uses name="media"/&gt;
-  * &lt;/automotiveApp&gt;
-  *
-  * </ul>
-  *
   * @see <a href="README.md">README.md</a> for more details.
   */
  public class MusicService extends MediaBrowserServiceCompat implements
