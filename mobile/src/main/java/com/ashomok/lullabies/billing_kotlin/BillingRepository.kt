@@ -615,7 +615,7 @@ class BillingRepository private constructor(private val application: Application
             when (billingResult.responseCode) {
                 BillingClient.BillingResponseCode.OK -> {
                     if (skuDetailsList.orEmpty().isNotEmpty()) {
-                        skuDetailsList.forEach {
+                        skuDetailsList?.forEach {
                             CoroutineScope(Job() + Dispatchers.IO).launch {
                                 localCacheBillingClient.skuDetailsDao().insertOrUpdate(it)
                             }
@@ -634,8 +634,12 @@ class BillingRepository private constructor(private val application: Application
      * launch the Google Play Billing flow. The response to this call is returned in
      * [onPurchasesUpdated]
      */
-    fun launchBillingFlow(activity: Activity, augmentedSkuDetails: AugmentedSkuDetails) =
+    fun launchBillingFlow(activity: Activity, augmentedSkuDetails: AugmentedSkuDetails) {
+        if (augmentedSkuDetails.originalJson != null) {
             launchBillingFlow(activity, SkuDetails(augmentedSkuDetails.originalJson))
+            Log.d(LOG_TAG, "launchBillingFlow called"); //todo test
+        }
+    }
 
     fun launchBillingFlow(activity: Activity, skuDetails: SkuDetails) {
         val purchaseParams = BillingFlowParams.newBuilder().setSkuDetails(skuDetails).build()
@@ -717,7 +721,8 @@ class BillingRepository private constructor(private val application: Application
 //example ID android.test.purchased
     object AppSku {
         val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
-//        val ADS_FREE_FOREVER_SKU_ID = "android.test.purchased"
+
+        //        val ADS_FREE_FOREVER_SKU_ID = "android.test.purchased"
         val INAPP_SKUS = listOf(ADS_FREE_FOREVER_SKU_ID)
     }
 }

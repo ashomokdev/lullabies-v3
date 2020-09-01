@@ -31,7 +31,6 @@ import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
-import com.ashomok.lullabies.utils.WearHelper;
 
 /**
  * Manage the interactions among the container service, the queue manager and the actual playback.
@@ -167,7 +166,7 @@ public class PlaybackManager implements Playback.Callback {
         LogHelper.v(TAG, "updatePlaybackState, setting Favorite custom action of music ",
                 musicId, " current favorite=", mMusicProvider.isFavorite(musicId));
         Bundle customActionExtras = new Bundle();
-        WearHelper.setShowCustomActionOnWear(customActionExtras, true);
+
         stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
                 CUSTOM_ACTION_THUMBS_UP, mResources.getString(R.string.favorite), favoriteIcon)
                 .setExtras(customActionExtras)
