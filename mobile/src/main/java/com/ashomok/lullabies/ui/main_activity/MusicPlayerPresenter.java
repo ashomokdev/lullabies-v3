@@ -75,7 +75,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
             activity = view.getActivity();
             checkConnection();
 
-            billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class);
+            billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class); //todo fix deprecated https://startandroid.ru/ru/courses/architecture-components/27-course/architecture-components/527-urok-4-viewmodel.html
 
             billingViewModel.
                     getAdsFreeForeverLiveData().observe(activity, new Observer<AdsFreeForever>() {

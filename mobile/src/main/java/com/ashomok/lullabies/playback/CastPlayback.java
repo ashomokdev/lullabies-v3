@@ -270,7 +270,6 @@ public class CastPlayback implements Playback {
         } catch (JSONException e) {
             LogHelper.e(TAG, e, "Exception processing update metadata");
         }
-
     }
 
     private void updatePlaybackState() {

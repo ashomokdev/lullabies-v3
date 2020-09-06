@@ -13,19 +13,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BillingProviderImplTest {
+public class MusicPlayerActivityTest {
     /**
      * {@link ActivityTestRule} is a JUnit {@link Rule @Rule} to launch your activity under test.
      *
@@ -57,7 +64,6 @@ public class BillingProviderImplTest {
             onView(withId(R.id.remove_ads)).check(matches(isDisplayed()));
             onView(withId(R.id.remove_ads)).perform(click());
 
-
             String expectedButtonText = InstrumentationRegistry.getTargetContext()
                     .getString(R.string.buy_ads_free);
             onView(withText(containsString(expectedButtonText))).check(matches(isDisplayed()));
@@ -67,4 +73,5 @@ public class BillingProviderImplTest {
             onView(withId(R.id.ads_container)).check(matches(not(isDisplayed())));
         }
     }
+
 }

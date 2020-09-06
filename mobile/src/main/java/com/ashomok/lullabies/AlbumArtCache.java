@@ -16,6 +16,7 @@
 
 package com.ashomok.lullabies;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
@@ -93,7 +94,6 @@ public final class AlbumArtCache {
         }
         LogHelper.d(TAG, "getOrFetch: starting asynctask to fetch ", artUrl);
 
-        //todo replace with courotine kotlin
         fetchImageSingle(artUrl)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -132,6 +132,7 @@ public final class AlbumArtCache {
 
 
     public static abstract class FetchListener {
+
         public abstract void onFetched(String artUrl, Bitmap bigImage, Bitmap iconImage);
 
         public void onError(String artUrl, Exception e) {

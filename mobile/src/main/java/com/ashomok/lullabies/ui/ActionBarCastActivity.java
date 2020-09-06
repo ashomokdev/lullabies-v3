@@ -53,12 +53,12 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.HasSupportFragmentInjector;
 
 /**
- * Abstract activity with toolbar, navigation drawer_actions and cast support. Needs to be extended by
+ * Abstract activity with toolabr_menu, navigation drawer_actions and cast support. Needs to be extended by
  * any activity that wants to be shown as a top level activity.
  * <p>
  * The requirements for a subclass is to call {@link #initializeToolbar()} on onCreate, after
  * setContentView() is called and have three mandatory layout elements:
- * a {@link androidx.appcompat.widget.Toolbar} with id 'toolbar',
+ * a {@link androidx.appcompat.widget.Toolbar} with id 'toolabr_menu',
  * a {@link DrawerLayout} with id 'drawerLayout' and
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
@@ -74,12 +74,6 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
     private MenuItem mMediaRouteMenuItem;
     private Toolbar mToolbar;
     private boolean mToolbarInitialized;
-
-    public FirebaseAnalytics getmFirebaseAnalytics() {
-        return mFirebaseAnalytics;
-    }
-
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     private CastStateListener mCastStateListener = new CastStateListener() {
         @Override
@@ -101,13 +95,10 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentInjector;
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         LogHelper.d(TAG, "Activity onCreate");
 
         int playServicesAvailable =
@@ -179,7 +170,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
         mToolbar = findViewById(R.id.toolbar);
         if (mToolbar == null) {
             throw new IllegalStateException("Layout is required to include a Toolbar with id " +
-                    "'toolbar'");
+                    "'toolabr_menu'");
         }
 
         setSupportActionBar(mToolbar);

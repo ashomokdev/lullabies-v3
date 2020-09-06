@@ -16,6 +16,7 @@
 
 package com.ashomok.lullabies.playback;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -199,6 +200,8 @@ public class QueueManager {
                 metadata.getDescription().getIconUri() != null) {
             String albumUri = metadata.getDescription().getIconUri().toString();
             AlbumArtCache.getInstance().fetch(albumUri, new AlbumArtCache.FetchListener() {
+
+
                 @Override
                 public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                     mMusicProvider.updateMusicArt(musicId, bitmap, icon);

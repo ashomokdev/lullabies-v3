@@ -40,6 +40,7 @@ public class MusicPlayerContract {
 
         void proposeRemoveAds();
 
-        Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(String rootMediaId, MediaBrowserCompat mediaBrowser);
+        Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
+                String rootMediaId, MediaBrowserCompat mediaBrowser);
     }
 }

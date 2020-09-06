@@ -80,7 +80,7 @@ public class MediaBrowserFragment extends DaggerFragment {
     private MyViewPagerAdapter mBrowserAdapter;
 
     @Inject
-    RateAppAskerImpl rateAppAsker; //inject interface instead
+    RateAppAskerImpl rateAppAsker; //todo inject interface instead
 
     private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
         private boolean oldOnline = false;
@@ -205,7 +205,11 @@ public class MediaBrowserFragment extends DaggerFragment {
 
             MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
             mMediaFragmentListener.onMediaItemSelected(item);
+
+
         });
+
+        //todo possible to add favourite icon here for each mediaid
 
         circleView = rootView.findViewById(R.id.circle_view);
         circleView.setColorAccent(getResources().getColor(R.color.colorAccent));
@@ -354,12 +358,6 @@ public class MediaBrowserFragment extends DaggerFragment {
                         item.getDescription().getTitle());
             }
         });
-    }
-
-    public interface MediaFragmentListener extends MediaBrowserProvider {
-        void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
-
-        void setToolbarTitle(CharSequence title);
     }
 
     public ClickableViewPager getViewPager() {

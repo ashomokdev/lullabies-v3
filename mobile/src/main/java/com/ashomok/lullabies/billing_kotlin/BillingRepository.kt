@@ -637,7 +637,7 @@ class BillingRepository private constructor(private val application: Application
     fun launchBillingFlow(activity: Activity, augmentedSkuDetails: AugmentedSkuDetails) {
         if (augmentedSkuDetails.originalJson != null) {
             launchBillingFlow(activity, SkuDetails(augmentedSkuDetails.originalJson))
-            Log.d(LOG_TAG, "launchBillingFlow called"); //todo test
+            Log.d(LOG_TAG, "launchBillingFlow called");
         }
     }
 

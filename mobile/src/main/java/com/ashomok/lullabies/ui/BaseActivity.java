@@ -68,6 +68,8 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                 new ComponentName(this, MusicService.class), mConnectionCallback, null);
     }
 
+
+    //todo implement lifecycle instead
     @Override
     protected void onStart() {
         super.onStart();

@@ -16,6 +16,7 @@
 package com.ashomok.lullabies.ui.full_screen_player_activity;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -198,6 +199,15 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
             }
         });
 
+        //todo add favourite icon if possible here
+//        //
+//        MediaControllerCompat.TransportControls controls =
+//                MediaControllerCompat.getMediaController(
+//                        FullScreenPlayerActivity.this).getTransportControls();
+//        // public void onCustomAction(@NonNull String action, Bundle extras) {
+//        //            if (CUSTOM_ACTION_THUMBS_UP.equals(action)) {
+//        controls.sendCustomAction();
+//
         mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -340,6 +350,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         } else {
             // otherwise, fetch a high res version and update:
             cache.fetch(artUrl, new AlbumArtCache.FetchListener() {
+
                 @Override
                 public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                     // sanity check, in case a new fetch request has been done while

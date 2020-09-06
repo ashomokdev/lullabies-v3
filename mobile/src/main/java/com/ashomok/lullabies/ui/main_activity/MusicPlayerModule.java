@@ -26,16 +26,11 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class MusicPlayerModule {
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerModule.class);
 
-    @Provides
-    static AppCompatActivity provideAppCompatActivity(MusicPlayerActivity activity) {
-        return activity;
-    }
+    @Binds
+    abstract AppCompatActivity provideAppCompatActivity(MusicPlayerActivity activity);
 
-    @Provides
-    static Activity provideActivity(MusicPlayerActivity activity) {
-        return activity;
-    }
-
+    @Binds
+    abstract Activity provideActivity(MusicPlayerActivity activity);
 
     @Provides
     static @NonNull

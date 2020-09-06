@@ -42,6 +42,8 @@
     <string name="buy_ads_free">Buy ads free</string>
     <string name="ads_free_forever">Ads free forever</string>
     <string name="remove_ads">Remove ads</string>
+    <string name="add_to_favorites">To favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="rate_app">Rate app</string>
     <string name="home">Home</string>

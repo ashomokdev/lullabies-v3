@@ -16,6 +16,7 @@
 
 package com.ashomok.lullabies.model;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -67,8 +68,8 @@ public class MusicProvider {
         void onMusicCatalogReady(boolean success);
     }
 
-    public MusicProvider() {
-        this(new RemoteJSONSource());
+    public MusicProvider(Context context) {
+        this(new LocalJSONSource(context));
     }
 
     public MusicProvider(MusicProviderSource source) {
@@ -81,7 +82,7 @@ public class MusicProvider {
     /**
      * Get an iterator over the list of categories mediaId
      *
-     * @return  categories mediaId
+     * @return categories mediaId
      */
     public Iterable<String> getCategories() {
         if (mCurrentState != State.INITIALIZED) {
@@ -113,10 +114,12 @@ public class MusicProvider {
             return Collections.emptyList();
         }
 
-        if (mMusicListByCategory.get(category) != null){
-        return Stream.of(new ArrayList<>(mMusicListByCategory.get(category)))
-                .sortBy(i->i.getDescription().getMediaId()).toList();}
-        else return new ArrayList<>();
+        if (mMusicListByCategory.get(category) != null) {
+            return Stream.of(new ArrayList<>(mMusicListByCategory.get(category)))
+                    .sortBy(i -> i.getDescription().getMediaId()).toList();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**

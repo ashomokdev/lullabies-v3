@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import dagger.Binds;
 import dagger.Module;
@@ -25,6 +27,11 @@ public abstract class ApplicationModule {
     static SharedPreferences provideSharedPrefs(Context context) {
         return context.getSharedPreferences(
                 context.getString(R.string.preferences), Context.MODE_PRIVATE);
+    }
+
+    @Provides
+    static FirebaseAnalyticsHelper provideFirebaseAnalyticsHelper(Context context) {
+        return FirebaseAnalyticsHelper.getInstance(context);
     }
 
     //expose Application as an injectable context

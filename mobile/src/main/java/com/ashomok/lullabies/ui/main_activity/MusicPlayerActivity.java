@@ -55,6 +55,7 @@ import com.ashomok.lullabies.ui.BaseActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
 import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
+import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
@@ -77,8 +78,7 @@ import static android.view.Menu.NONE;
  * connected while this activity is running.
  */
 
-public class MusicPlayerActivity extends BaseActivity
-        implements MediaBrowserFragment.MediaFragmentListener,
+public class MusicPlayerActivity extends BaseActivity implements MediaFragmentListener,
         MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
@@ -113,6 +113,9 @@ public class MusicPlayerActivity extends BaseActivity
 
     @Inject
     AdMobAd adMobAd;
+
+    @Inject
+    FirebaseAnalyticsHelper firebaseAnalyticsHelper;
 
     private View mRootView;
     private View emptyResultView;
@@ -276,22 +279,22 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     private void updateRateAppMenuItem(Menu navigationMenu) {
-        MenuItem updateToPremiumMenuItem = navigationMenu.findItem(R.id.navigation_rate_app);
-        CharSequence menuItemText = updateToPremiumMenuItem.getTitle();
+        MenuItem rateAppMenuItem = navigationMenu.findItem(R.id.navigation_rate_app);
+        CharSequence menuItemText = rateAppMenuItem.getTitle();
         SpannableString spannableString = new SpannableString(menuItemText);
         spannableString.setSpan(
                 new ForegroundColorSpan(getResources().getColor(R.color.orange_600)),
                 0,
                 spannableString.length(),
                 0);
-        updateToPremiumMenuItem.setTitle(spannableString);
+        rateAppMenuItem.setTitle(spannableString);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Open the navigation drawer_actions when the home icon is selected from the toolbar.
+                // Open the navigation drawer_actions when the home icon is selected from the toolabr_menu.
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
             case R.id.remove_ads:
@@ -313,6 +316,8 @@ public class MusicPlayerActivity extends BaseActivity
     @Override
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
         LogHelper.d(TAG, "onMediaItemSelected, mediaId=" + item.getMediaId());
+        firebaseAnalyticsHelper.trackContentSelected(item);
+
         if (item.isPlayable()) {
             MediaControllerCompat.getMediaController(MusicPlayerActivity.this).getTransportControls()
                     .playFromMediaId(item.getMediaId(), null);
@@ -322,18 +327,11 @@ public class MusicPlayerActivity extends BaseActivity
             LogHelper.w(TAG, "Ignoring MediaItem that is neither browsable nor playable: ",
                     "mediaId=", item.getMediaId());
         }
-
-        //todo track events on special firebaseanalytics util
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, item.getMediaId());
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, item.getDescription().getTitle().toString());
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "MediaItem");
-        getmFirebaseAnalytics().logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Override
     public void setToolbarTitle(CharSequence title) {
-        LogHelper.d(TAG, "Setting toolbar title to ", title);
+        LogHelper.d(TAG, "Setting toolabr_menu title to ", title);
         if (title == null) {
             title = getString(R.string.app_name);
         }
@@ -378,7 +376,7 @@ public class MusicPlayerActivity extends BaseActivity
             LogHelper.d(TAG, "initializeFromParams with mediaId from String extra, " +
                     "mediaId = " + mediaId);
         } else if (intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION) != null) { //returned from notification manager
-           mediaId = intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
+            mediaId = intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
         } else if (savedInstanceState != null) { //screen rotated
             // If there is a saved media ID, use it
             String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
@@ -409,7 +407,8 @@ public class MusicPlayerActivity extends BaseActivity
                 transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
 
                 transaction.commit();
-                LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG + " commited");
+                LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG +
+                        " commited with mediaId " + mediaId);
             }
         }
     }
@@ -483,19 +482,20 @@ public class MusicPlayerActivity extends BaseActivity
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbar, menu);
-        menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_menu, menu);
+
         Menu navigationMenu = navigationView.getMenu();
         updateRateAppMenuItem(navigationMenu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -522,7 +522,8 @@ public class MusicPlayerActivity extends BaseActivity
                     MediaBrowserCompat.MediaItem item = categories.get(i);
                     MenuItem menuItem = navigationView.getMenu().add(NONE, i, i,
                             item.getDescription().getTitle());
-                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));                 }
+                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));
+                }
             }
         }
     }

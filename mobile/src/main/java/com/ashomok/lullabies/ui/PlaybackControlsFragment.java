@@ -16,6 +16,7 @@
 package com.ashomok.lullabies.ui;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -163,7 +164,8 @@ public class PlaybackControlsFragment extends Fragment {
                 mAlbumArt.setImageBitmap(art);
             } else {
                 cache.fetch(artUrl, new AlbumArtCache.FetchListener() {
-                            @Override
+
+                    @Override
                             public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
                                 if (icon != null) {
                                     LogHelper.d(TAG, "album art icon of w=", icon.getWidth(),
