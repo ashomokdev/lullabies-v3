@@ -82,7 +82,6 @@ public class PlaybackManagerTest {
                 "https://examplemusic.com/music5.mp3", null, 2, 2, 4200);
     }
 
-    //todo is it real test for play or mock play? - real test needed
     @Test
     public void testPlay() throws Exception {
         String mediaId = MediaIDHelper.MEDIA_ID_ROOT;
