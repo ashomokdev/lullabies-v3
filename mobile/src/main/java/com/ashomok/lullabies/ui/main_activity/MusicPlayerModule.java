@@ -16,6 +16,7 @@ import com.ashomok.lullabies.ad.AdMobNativeBannerAd;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import dagger.Binds;
 import dagger.Module;
@@ -43,9 +44,8 @@ public abstract class MusicPlayerModule {
     int provideAdMobId(Context context, String mediaId) {
         if (BuildConfig.DEBUG) {
             boolean randomBoolean = getRandomBoolean();
-            if (BuildConfig.IS_NATIVE_AD_ACTIVE && (
-                    mediaId.contains(context.getResources().getString(R.string.classic_key)) ||
-                            mediaId.contains(context.getResources().getString(R.string.mom_songs_key)))) {
+            if (BuildConfig.IS_NATIVE_AD_ACTIVE &&
+                    (mediaId.contains(context.getResources().getString(R.string.classic_key)) || mediaId.contains(context.getResources().getString(R.string.mom_songs_key)))) {
 
                 if (randomBoolean) {
                     return R.string.native_ad_test_banner;
@@ -84,8 +84,8 @@ public abstract class MusicPlayerModule {
     }
 
     private static int getRandomInt() {
-        return new Random().nextInt(2);
-    } //0, 1, 2
+        return new Random().nextInt(3); //0, 1, 2
+    }
 
     @Provides
     static AdMobAd provideAdMobAd(Activity activity, @StringRes int adMobId) {
