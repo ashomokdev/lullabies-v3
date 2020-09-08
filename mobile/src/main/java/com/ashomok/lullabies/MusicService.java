@@ -20,7 +20,6 @@
  import android.app.Service;
  import android.content.Context;
  import android.content.Intent;
- import android.content.res.AssetManager;
  import android.media.MediaMetadata;
  import android.media.MediaPlayer;
  import android.media.session.MediaSession;
@@ -57,7 +56,6 @@
  import com.google.android.gms.common.ConnectionResult;
  import com.google.android.gms.common.GoogleApiAvailability;
 
- import java.io.IOException;
  import java.lang.ref.WeakReference;
  import java.util.ArrayList;
  import java.util.List;

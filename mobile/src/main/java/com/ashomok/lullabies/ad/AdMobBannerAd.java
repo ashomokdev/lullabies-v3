@@ -1,10 +1,7 @@
 package com.ashomok.lullabies.ad;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;

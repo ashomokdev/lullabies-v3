@@ -1,7 +1,6 @@
 package com.ashomok.lullabies.ad;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;

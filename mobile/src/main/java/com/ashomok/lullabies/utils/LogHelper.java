@@ -21,8 +21,6 @@ import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 import com.crashlytics.android.Crashlytics;
 
-import java.util.ArrayList;
-
 public class LogHelper {
 
     private static final String LOG_PREFIX = "uamp_";

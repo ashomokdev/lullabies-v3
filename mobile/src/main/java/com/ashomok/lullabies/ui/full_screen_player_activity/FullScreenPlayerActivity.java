@@ -16,7 +16,6 @@
 package com.ashomok.lullabies.ui.full_screen_player_activity;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

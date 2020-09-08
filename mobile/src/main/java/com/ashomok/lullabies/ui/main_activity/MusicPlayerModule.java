@@ -16,7 +16,6 @@ import com.ashomok.lullabies.ad.AdMobNativeBannerAd;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import dagger.Binds;
 import dagger.Module;

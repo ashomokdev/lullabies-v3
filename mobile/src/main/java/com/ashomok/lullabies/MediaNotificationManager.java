@@ -43,7 +43,6 @@ import androidx.media.app.NotificationCompat.MediaStyle;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;
-import com.google.android.gms.cast.framework.CastContext;
 
 /**
  * Keeps track of a notification and updates it automatically for a given

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import dagger.Binds;
 import dagger.Module;

@@ -2,7 +2,6 @@ package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.media.MediaBrowserCompat;
