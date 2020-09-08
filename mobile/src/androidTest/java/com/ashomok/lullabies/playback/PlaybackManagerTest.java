@@ -23,6 +23,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.test.mock.MockResources;
 
 import androidx.annotation.NonNull;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.ashomok.lullabies.TestSetupHelper;
@@ -42,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Android instrumentation unit tests for {@link PlaybackManager} and related classes.
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class PlaybackManagerTest {
 
     private MusicProvider musicProvider;

@@ -36,7 +36,7 @@ import static com.ashomok.lullabies.utils.MediaItemStateHelper.sColorStatePlayin
 
 public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCallback {
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
-    private final RateAppAskerImpl rateAppAsker;
+    private final RateAppAskerImpl rateAppAsker; //todo better move to another class (music service?)
     private Activity activity;
 
     //pager views by position

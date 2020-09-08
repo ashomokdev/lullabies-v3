@@ -20,6 +20,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.test.mock.MockResources;
 
 import androidx.annotation.NonNull;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.ashomok.lullabies.TestSetupHelper;
@@ -44,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Android instrumentation unit tests for {@link QueueManager} and related classes.
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class QueueManagerTest {
 
     private MusicProvider provider;

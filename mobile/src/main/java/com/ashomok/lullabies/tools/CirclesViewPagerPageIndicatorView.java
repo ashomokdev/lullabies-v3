@@ -17,9 +17,9 @@ import androidx.viewpager.widget.ViewPager;
  * Created by iuliia on 16.05.16.
  */
 
-public class CircleView extends View {
+public class CirclesViewPagerPageIndicatorView extends View {
 
-    private static final String TAG = CircleView.class.getSimpleName();
+    private static final String TAG = CirclesViewPagerPageIndicatorView.class.getSimpleName();
 
     private Paint paintBase;
     private Paint paintAccent;
@@ -31,7 +31,7 @@ public class CircleView extends View {
     private int colorBase;
     private int colorAccent;
 
-    public CircleView(Context context, AttributeSet attrs) throws Exception {
+    public CirclesViewPagerPageIndicatorView(Context context, AttributeSet attrs) throws Exception {
         super(context, attrs);
 
         colorBase = Color.GRAY;

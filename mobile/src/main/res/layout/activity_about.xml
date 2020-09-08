@@ -47,7 +47,7 @@
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_above="@id/controls_container"
+            android:layout_above="@id/playback_controls_container"
             android:layout_below="@id/toolabar_layout"
             android:layout_margin="10dp">
 
@@ -219,7 +219,7 @@
         </ScrollView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/controls_container"
+            android:id="@+id/playback_controls_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

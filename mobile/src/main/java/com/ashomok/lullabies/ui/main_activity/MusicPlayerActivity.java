@@ -404,7 +404,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                 transaction.setCustomAnimations(
                         R.animator.slide_in_from_right, R.animator.slide_out_to_left,
                         R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-                transaction.replace(R.id.container, fragment, FRAGMENT_TAG);
+                transaction.replace(R.id.media_browser_container, fragment, FRAGMENT_TAG);
 
                 transaction.commit();
                 LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG +

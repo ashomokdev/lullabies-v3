@@ -36,9 +36,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.tools.CircleView;
+import com.ashomok.lullabies.tools.CirclesViewPagerPageIndicatorView;
 import com.ashomok.lullabies.tools.ClickableViewPager;
-import com.ashomok.lullabies.ui.MediaBrowserProvider;
 import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
@@ -74,8 +73,8 @@ public class MediaBrowserFragment extends DaggerFragment {
 
     private View emptyResultView;
     private TextView mErrorMessage;
-    private CircleView circleView;
-    private ClickableViewPager viewPager;
+    private CirclesViewPagerPageIndicatorView circlesViewPagerPageIndicatorView;
+    private ClickableViewPager viewPager; //todo why is it clickable when tap_button exists?
     private ProgressBar progressBar;
     private MyViewPagerAdapter mBrowserAdapter;
 
@@ -171,7 +170,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         // will throw an exception as expected:
         mMediaFragmentListener = (MediaFragmentListener) activity;
 
-        mBrowserAdapter = new MyViewPagerAdapter(activity, rateAppAsker);
+        mBrowserAdapter = new MyViewPagerAdapter(activity, rateAppAsker); //todo inject instaead
     }
 
     @Override
@@ -211,10 +210,10 @@ public class MediaBrowserFragment extends DaggerFragment {
 
         //todo possible to add favourite icon here for each mediaid
 
-        circleView = rootView.findViewById(R.id.circle_view);
-        circleView.setColorAccent(getResources().getColor(R.color.colorAccent));
-        circleView.setColorBase(getResources().getColor(R.color.colorPrimary));
-        circleView.setViewPager(viewPager);
+        circlesViewPagerPageIndicatorView = rootView.findViewById(R.id.circle_view);
+        circlesViewPagerPageIndicatorView.setColorAccent(getResources().getColor(R.color.colorAccent));
+        circlesViewPagerPageIndicatorView.setColorBase(getResources().getColor(R.color.colorPrimary));
+        circlesViewPagerPageIndicatorView.setViewPager(viewPager);
         return rootView;
     }
 

@@ -34,13 +34,13 @@
             android:layout_above="@id/ads_container">
 
             <FrameLayout
-                android:id="@+id/container"
+                android:id="@+id/media_browser_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@+id/controls_container" />
+                android:layout_above="@+id/playback_controls_container" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/controls_container"
+                android:id="@+id/playback_controls_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
