@@ -21,7 +21,12 @@ import android.graphics.BitmapFactory;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
+
 public class BitmapHelper {
+
+
+
     private static final String TAG = LogHelper.makeLogTag(BitmapHelper.class);
 
     // Max read limit that we allow our input stream to mark/reset.
@@ -57,12 +62,11 @@ public class BitmapHelper {
         return Math.min(actualW / targetW, actualH / targetH);
     }
 
-    public static Bitmap fetchAndRescaleBitmap(String imagePath, int width, int height)
+    public static Bitmap fetchAndRescaleBitmap(IOHelper ioHelper, String imagePath, int width, int height)
             throws IOException {
         InputStream is = null;
         try {
-            IOHelper ioHelper = new IOHelper();
-            is = ioHelper.pathToInputStream(imagePath);
+            is = ioHelper.pathToInputStream(imagePath); //todo E/uamp_AlbumArtCache: Attempt to invoke virtual method 'java.io.InputStream com.ashomok.lullabies.utils.IOHelper.pathToInputStream(java.lang.Strin
 
             is.mark(MAX_READ_LIMIT_PER_IMG);
             int scaleFactor = findScaleFactor(width, height, is);

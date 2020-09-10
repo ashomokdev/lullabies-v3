@@ -8,15 +8,19 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.inject.Inject;
+
 //todo possible sourse of futere bugs //add dagger injection context here
 public class IOHelper {
 
-    private Context context;
-    private static final String TAG = LogHelper.makeLogTag(IOHelper.class);
+    Context context;
 
-    public void setContext(Context context) {
+    @Inject
+    public IOHelper(Context context){
         this.context = context;
     }
+
+    private static final String TAG = LogHelper.makeLogTag(IOHelper.class);
 
     public InputStream pathToInputStream(String path) throws IOException {
         if (path.contains("http")) {

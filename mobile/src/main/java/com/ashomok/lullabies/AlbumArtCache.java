@@ -20,9 +20,12 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import com.ashomok.lullabies.utils.BitmapHelper;
+import com.ashomok.lullabies.utils.IOHelper;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -109,12 +112,15 @@ public final class AlbumArtCache {
                 });
     }
 
+    @Inject
+    IOHelper ioHelper;
+
     private Single<Bitmap[]> fetchImageSingle(final String artUrl) {
 
         return Single.create(emitter -> {
             Bitmap[] bitmaps = null;
             try {
-                Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl,
+                Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(ioHelper, artUrl,
                         MAX_ART_WIDTH, MAX_ART_HEIGHT);
                 Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
                         MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);

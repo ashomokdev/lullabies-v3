@@ -38,6 +38,7 @@ import java.util.Locale;
  * Utility class to get a list of MusicTrack's based on a server-side JSON
  * configuration.
  */
+@Deprecated
 public class RemoteJSONSource implements MusicProviderSource {
 
     private static final String TAG = LogHelper.makeLogTag(RemoteJSONSource.class);

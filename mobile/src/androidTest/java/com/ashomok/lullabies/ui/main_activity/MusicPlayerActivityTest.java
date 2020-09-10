@@ -28,6 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+//todo update deprecated https://stackoverflow.com/questions/63790916/get-resource-from-android-test-instrumentationregistry-getinstrumentation-get
 @RunWith(AndroidJUnit4ClassRunner.class)
 @LargeTest
 public class MusicPlayerActivityTest {
