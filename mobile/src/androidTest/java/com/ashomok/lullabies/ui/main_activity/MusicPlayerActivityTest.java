@@ -1,5 +1,8 @@
 package com.ashomok.lullabies.ui.main_activity;
 
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+
 import androidx.test.filters.LargeTest;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -7,10 +10,13 @@ import androidx.test.rule.ActivityTestRule;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
+import com.ashomok.lullabies.playback.PlaybackManager;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.concurrent.CountDownLatch;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING;
 import static androidx.test.espresso.Espresso.onView;
@@ -20,6 +26,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static com.ashomok.lullabies.utils.MatcherHelper.withIndex;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -28,7 +35,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-//todo update deprecated https://stackoverflow.com/questions/63790916/get-resource-from-android-test-instrumentationregistry-getinstrumentation-get
 @RunWith(AndroidJUnit4ClassRunner.class)
 @LargeTest
 public class MusicPlayerActivityTest {
@@ -56,13 +62,32 @@ public class MusicPlayerActivityTest {
     @Test
     public void testPlayBtn() throws Exception {
         //GIVEN
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         assertNotEquals(STATE_PLAYING, mMusicPlayerActivityTestRule.getActivity()
                 .getSupportMediaController().getPlaybackState().getState());
+
+
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                mMusicPlayerActivityTestRule.getActivity()
+                        .getSupportMediaController().registerCallback(
+                        new MediaControllerCompat.Callback() {
+                            @Override
+                            public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                                super.onPlaybackStateChanged(state);
+                                if (state.getState() == STATE_PLAYING) {
+                                    countDownLatch.countDown();
+                                }
+                            }
+                        });
+            }});
+
 
         //WHEN
         onView(withIndex(withId(R.id.tap_me_btn), 0)).check(matches(isDisplayed()));
         onView(withIndex(withId(R.id.tap_me_btn), 0)).perform(click());
-        Thread.sleep(1000); //it needs time for music to start playing
+        countDownLatch.await();
 
         //THAN
         assertEquals(STATE_PLAYING, mMusicPlayerActivityTestRule.getActivity()
@@ -73,7 +98,7 @@ public class MusicPlayerActivityTest {
     public void testRemoveAdIcon() throws Exception {
         if (Settings.isAdsActive) {
             try {
-                String touch_to_cast = InstrumentationRegistry.getInstrumentation().getTargetContext()
+                String touch_to_cast = getInstrumentation().getTargetContext()
                         .getString(R.string.touch_to_cast);
                 onView(withText(containsString(touch_to_cast))).check(matches(isDisplayed()));
                 onView((withId(R.id.drawer_layout))).perform(click());
@@ -87,7 +112,7 @@ public class MusicPlayerActivityTest {
             onView(withId(R.id.remove_ads)).check(matches(isDisplayed()));
             onView(withId(R.id.remove_ads)).perform(click());
 
-            String expectedButtonText = InstrumentationRegistry.getInstrumentation().getTargetContext()
+            String expectedButtonText = getInstrumentation().getTargetContext()
                     .getString(R.string.buy_ads_free);
             onView(withText(containsString(expectedButtonText))).check(matches(isDisplayed()));
             onView(withText(containsString(expectedButtonText))).perform(click());
