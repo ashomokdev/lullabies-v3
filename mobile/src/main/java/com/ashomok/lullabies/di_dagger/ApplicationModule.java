@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
-import com.ashomok.lullabies.utils.IOHelper;
 
 import dagger.Binds;
 import dagger.Module;
@@ -32,11 +31,6 @@ public abstract class ApplicationModule {
     @Provides
     static FirebaseAnalyticsHelper provideFirebaseAnalyticsHelper(Context context) {
         return FirebaseAnalyticsHelper.getInstance(context);
-    }
-
-    @Provides
-    static IOHelper provideIOHelper(Context context) {
-        return new IOHelper(context);
     }
 
     @Binds

@@ -18,13 +18,17 @@ package com.ashomok.lullabies.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.ashomok.lullabies.AlbumArtCache;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.inject.Inject;
 
 public class BitmapHelper {
-
 
 
     private static final String TAG = LogHelper.makeLogTag(BitmapHelper.class);
@@ -62,16 +66,23 @@ public class BitmapHelper {
         return Math.min(actualW / targetW, actualH / targetH);
     }
 
-    public static Bitmap fetchAndRescaleBitmap(IOHelper ioHelper, String imagePath, int width, int height)
-            throws IOException {
+    public static Bitmap fetchAndRescaleBitmap(String path, int width, int height)
+            throws Exception {
         InputStream is = null;
         try {
-            is = ioHelper.pathToInputStream(imagePath); //todo E/uamp_AlbumArtCache: Attempt to invoke virtual method 'java.io.InputStream com.ashomok.lullabies.utils.IOHelper.pathToInputStream(java.lang.Strin
-
+            URL url;
+            if (path.contains("http")) { //provided by RemoteJSONSource
+                url = new URL(path);
+            } else { //provided by LocalJSONSource
+                Class<? extends AlbumArtCache> aClass = AlbumArtCache.class;
+                url = aClass.getResource(path);
+            }
+            URLConnection urlConnection = url.openConnection();
+            is = new BufferedInputStream(urlConnection.getInputStream());
             is.mark(MAX_READ_LIMIT_PER_IMG);
             int scaleFactor = findScaleFactor(width, height, is);
-            LogHelper.d(TAG, "Scaling bitmap ", imagePath, " by factor ", scaleFactor, " to support ",
-                    width, "x", height, "requested dimension");
+            LogHelper.d(TAG, "Scaling bitmap ", path, " by factor ", scaleFactor,
+                    " to support ", width, "x", height, "requested dimension");
             is.reset();
             return scaleBitmap(scaleFactor, is);
         } finally {

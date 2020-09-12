@@ -20,7 +20,6 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import com.ashomok.lullabies.utils.BitmapHelper;
-import com.ashomok.lullabies.utils.IOHelper;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import java.io.IOException;
@@ -59,7 +58,8 @@ public final class AlbumArtCache {
         return sInstance;
     }
 
-    private AlbumArtCache() {
+    @Inject
+    public AlbumArtCache() {
         // Holds no more than MAX_ALBUM_ART_CACHE_SIZE bytes, bounded by maxmemory/4 and
         // Integer.MAX_VALUE:
         int maxSize = Math.min(MAX_ALBUM_ART_CACHE_SIZE,
@@ -112,21 +112,17 @@ public final class AlbumArtCache {
                 });
     }
 
-    @Inject
-    IOHelper ioHelper;
-
-    private Single<Bitmap[]> fetchImageSingle(final String artUrl) {
-
+    Single<Bitmap[]> fetchImageSingle(final String artUrl) {
         return Single.create(emitter -> {
             Bitmap[] bitmaps = null;
             try {
-                Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(ioHelper, artUrl,
+                Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl,
                         MAX_ART_WIDTH, MAX_ART_HEIGHT);
                 Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
                         MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
                 bitmaps = new Bitmap[]{bitmap, icon};
                 mCache.put(artUrl, bitmaps);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 emitter.onError(e);
             }
             LogHelper.d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
@@ -134,7 +130,6 @@ public final class AlbumArtCache {
             emitter.onSuccess(bitmaps);
         });
     }
-
 
     public static abstract class FetchListener {
 
