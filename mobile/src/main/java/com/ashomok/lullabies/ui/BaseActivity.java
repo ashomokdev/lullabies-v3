@@ -25,6 +25,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -44,11 +45,16 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
 
+    protected View mRootView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LogHelper.d(TAG, "Activity onCreate");
+        mRootView = findViewById(android.R.id.content);
+        if (mRootView == null) {
+            mRootView = getWindow().getDecorView().findViewById(android.R.id.content);
+        }
 
         if (Build.VERSION.SDK_INT >= 21) {
             // Since our app icon has the same color as colorPrimary, our entry in the Recent Apps
@@ -107,14 +113,12 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
 
     protected void showPlaybackControls() {
         LogHelper.d(TAG, "showPlaybackControls");
-        if (NetworkHelper.isOnline(this)) {
-            getFragmentManager().beginTransaction()
-                    .setCustomAnimations(
-                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
-                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
-                    .show(mControlsFragment)
-                    .commit();
-        }
+        getFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
+                        R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
+                .show(mControlsFragment)
+                .commit();
     }
 
     protected void hidePlaybackControls() {

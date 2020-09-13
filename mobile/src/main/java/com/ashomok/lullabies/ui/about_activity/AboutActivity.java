@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,13 +31,14 @@ import android.widget.Toast;
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ui.BaseActivity;
+import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class AboutActivity extends BaseActivity {
+public class AboutActivity extends BaseActivity implements AboutContract.View {
     private static final String TAG = LogHelper.makeLogTag(AboutActivity.class);
 
     @Inject
@@ -81,6 +83,8 @@ public class AboutActivity extends BaseActivity {
                 Html.fromHtml("<u>" + getString(R.string.privacy_policy_agreement) + "</u>"));
 
         privacy_policy_link.setOnClickListener(view -> openPrivacyPolicy());
+
+        mPresenter.takeView(this);
     }
 
     @Override
@@ -95,15 +99,19 @@ public class AboutActivity extends BaseActivity {
             clipboard.setPrimaryClip(clip);
         }
         Toast.makeText(this, getString(R.string.copied), Toast.LENGTH_SHORT).show();
-        Vibrator v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-        // Vibrate for 300 milliseconds
-        if (v != null) {
-            v.vibrate(300);
+        try {
+            Vibrator v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 300 milliseconds
+            if (v != null) {
+                v.vibrate(300);
+            }
+        }catch (Exception e){
+            Log.w(TAG, "error with Vibrator");
         }
     }
 
     private void openPrivacyPolicy() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.PRIVACY_POLICY_LINK)));
+        mPresenter.openPrivacyPolicy();
     }
 
     @Override
@@ -115,5 +123,10 @@ public class AboutActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void showError(int errorMessageRes) {
+        InfoSnackbarUtil.showError(errorMessageRes, mRootView);
     }
 }

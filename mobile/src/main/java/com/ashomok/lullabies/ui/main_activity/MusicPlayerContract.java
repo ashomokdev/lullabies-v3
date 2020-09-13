@@ -42,5 +42,7 @@ public class MusicPlayerContract {
 
         Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
                 String rootMediaId, MediaBrowserCompat mediaBrowser);
+
+        void rateApp();
     }
 }
