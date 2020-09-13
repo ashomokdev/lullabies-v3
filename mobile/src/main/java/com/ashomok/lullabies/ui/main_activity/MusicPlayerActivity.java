@@ -116,30 +116,12 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     @Inject
     FirebaseAnalyticsHelper firebaseAnalyticsHelper;
 
-    private View mRootView;
     private View emptyResultView;
     private TextView mErrorMessage;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
     private List<MediaBrowserCompat.MediaItem> categories;
-
-    private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
-        private boolean oldOnline = false;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            boolean isOnline = NetworkHelper.isOnline(context);
-            if (isOnline != oldOnline) {
-                oldOnline = isOnline;
-                checkForUserVisibleErrors(false);
-                if (isOnline) {
-                    LogHelper.d(TAG, "mConnectivityChangeReceiver - reload Media");
-                    initMediaBrowserLoader(getMediaId());
-                }
-            }
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,14 +130,9 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         LogHelper.d(TAG, "Activity onCreate");
         setContentView(R.layout.activity_main);
 
-        mRootView = findViewById(android.R.id.content);
-        if (mRootView == null) {
-            mRootView = getWindow().getDecorView().findViewById(android.R.id.content);
-        }
-
         emptyResultView = findViewById(R.id.empty_result_layout);
         mErrorMessage = emptyResultView.findViewById(R.id.error_message);
-        mPresenter.takeView(this);
+        mPresenter.takeView(this); //todo move to the end of method?
 
         initializeToolbar();
         initializeNavigationDrawer();
@@ -190,20 +167,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                     LogHelper.e(TAG, throwable, "Error from loading media");
                     checkForUserVisibleErrors(true);
                 });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Registers BroadcastReceiver to track network connection changes.
-        registerReceiver(mConnectivityChangeReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(mConnectivityChangeReceiver);
     }
 
     @Override
@@ -273,8 +236,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     }
 
     private void rateApp() {
-        RateAppUtil rateAppUtil = new RateAppUtil();
-        rateAppUtil.rate(this);
+        mPresenter.rateApp();
     }
 
     private void updateRateAppMenuItem(Menu navigationMenu) {
@@ -566,29 +528,23 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     @Override
     public void checkForUserVisibleErrors(boolean forceError) {
         boolean showError = forceError;
-        // If offline, message is about the lack of connectivity:
-        if (!NetworkHelper.isOnline(getActivity())) {
-            mErrorMessage.setText(R.string.error_no_connection);
+        // if state is ERROR and metadata!=null, use playback state error message:
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+        if (controller != null
+                && controller.getMetadata() != null
+                && controller.getPlaybackState() != null
+                && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
+                && controller.getPlaybackState().getErrorMessage() != null) {
+            mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
             showError = true;
-        } else {
-            // otherwise, if state is ERROR and metadata!=null, use playback state error message:
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-            if (controller != null
-                    && controller.getMetadata() != null
-                    && controller.getPlaybackState() != null
-                    && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
-                    && controller.getPlaybackState().getErrorMessage() != null) {
-                mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
-                showError = true;
-            } else if (forceError) {
-                // Finally, if the caller requested to show error, show a generic message:
-                mErrorMessage.setText(R.string.error_loading_media);
-                showError = true;
-            }
+        } else if (forceError) {
+            // Finally, if the caller requested to show error, show a generic message:
+            mErrorMessage.setText(R.string.error_loading_media);
+            showError = true;
         }
+
         emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
         LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
-                " showError=", showError,
-                " isOnline=", NetworkHelper.isOnline(getActivity()));
+                " showError=", showError);
     }
 }

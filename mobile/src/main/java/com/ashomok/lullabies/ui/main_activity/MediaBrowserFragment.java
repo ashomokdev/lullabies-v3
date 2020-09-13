@@ -81,28 +81,6 @@ public class MediaBrowserFragment extends DaggerFragment {
     @Inject
     RateAppAskerImpl rateAppAsker; //todo inject interface instead
 
-    private final BroadcastReceiver mConnectivityChangeReceiver = new BroadcastReceiver() {
-        private boolean oldOnline = false;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            LogHelper.d(TAG, "Receiver onReceive");
-            // We don't care about network changes while this fragment is not associated
-            // with a media ID (for example, while it is being initialized)
-            if (mMediaId != null) {
-                boolean isOnline = NetworkHelper.isOnline(context);
-                if (isOnline != oldOnline) {
-                    oldOnline = isOnline;
-                    checkForUserVisibleErrors(false);
-                    if (isOnline) {
-                        reloadMedia();
-                        mBrowserAdapter.notifyDataSetChanged();
-                    }
-                }
-            }
-        }
-    };
-
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
     private final MediaControllerCompat.Callback mMediaControllerCallback =
@@ -130,38 +108,38 @@ public class MediaBrowserFragment extends DaggerFragment {
 
     Completable loadMediaComplatable = Completable.create(emitter ->
             mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId,
-            new MediaBrowserCompat.SubscriptionCallback() {
-                @Override
-                public void onChildrenLoaded(@NonNull String parentId,
-                                             @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    try {
-                        LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
-                                "  count=" + children.size());
-                        checkForUserVisibleErrors(children.isEmpty());
+                    new MediaBrowserCompat.SubscriptionCallback() {
+                        @Override
+                        public void onChildrenLoaded(@NonNull String parentId,
+                                                     @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                            try {
+                                LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
+                                        "  count=" + children.size());
+                                checkForUserVisibleErrors(children.isEmpty());
 
-                        if (mBrowserAdapter == null){
-                            LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+                                if (mBrowserAdapter == null) {
+                                    LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+                                }
+
+                                mBrowserAdapter.clear();
+                                for (MediaBrowserCompat.MediaItem item : children) {
+                                    mBrowserAdapter.add(item);
+                                }
+                                mBrowserAdapter.notifyDataSetChanged();
+
+                                emitter.onComplete();
+                            } catch (Throwable t) {
+                                LogHelper.e(TAG, "Error on childrenloaded ", t);
+                                emitter.onError(t);
+                            }
                         }
 
-                        mBrowserAdapter.clear();
-                        for (MediaBrowserCompat.MediaItem item : children) {
-                            mBrowserAdapter.add(item);
+                        @Override
+                        public void onError(@NonNull String id) {
+                            LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
+                            emitter.onError(new Exception(id));
                         }
-                        mBrowserAdapter.notifyDataSetChanged();
-
-                        emitter.onComplete();
-                    } catch (Throwable t) {
-                        LogHelper.e(TAG, "Error on childrenloaded ", t);
-                        emitter.onError(t);
-                    }
-                }
-
-                @Override
-                public void onError(@NonNull String id) {
-                    LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
-                    emitter.onError(new Exception(id));
-                }
-            }));
+                    }));
 
     @Override
     public void onAttach(Activity activity) {
@@ -230,11 +208,6 @@ public class MediaBrowserFragment extends DaggerFragment {
         if (mediaBrowser.isConnected()) {
             onConnected();
         }
-
-        // Registers BroadcastReceiver to track network connection changes.
-        this.getActivity().registerReceiver(mConnectivityChangeReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        LogHelper.d(TAG, "Receiver register ");
     }
 
     @Override
@@ -249,8 +222,6 @@ public class MediaBrowserFragment extends DaggerFragment {
             controller.unregisterCallback(mMediaControllerCallback);
             LogHelper.d(TAG, "unregister Callback");
         }
-        this.getActivity().unregisterReceiver(mConnectivityChangeReceiver);
-        LogHelper.d(TAG, "Receiver unregister ");
     }
 
     public String getMediaId() {
@@ -317,30 +288,25 @@ public class MediaBrowserFragment extends DaggerFragment {
 
     private void checkForUserVisibleErrors(boolean forceError) {
         boolean showError = forceError;
-        // If offline, message is about the lack of connectivity:
-        if (!NetworkHelper.isOnline(getActivity())) {
-            mErrorMessage.setText(R.string.error_no_connection);
+
+        //if state is ERROR and metadata!=null, use playback state error message:
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+        if (controller != null
+                && controller.getMetadata() != null
+                && controller.getPlaybackState() != null
+                && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
+                && controller.getPlaybackState().getErrorMessage() != null) {
+            mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
             showError = true;
-        } else {
-            // otherwise, if state is ERROR and metadata!=null, use playback state error message:
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-            if (controller != null
-                    && controller.getMetadata() != null
-                    && controller.getPlaybackState() != null
-                    && controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_ERROR
-                    && controller.getPlaybackState().getErrorMessage() != null) {
-                mErrorMessage.setText(controller.getPlaybackState().getErrorMessage());
-                showError = true;
-            } else if (forceError) {
-                // Finally, if the caller requested to show error, show a generic message:
-                mErrorMessage.setText(R.string.error_loading_media);
-                showError = true;
-            }
+        } else if (forceError) {
+            // Finally, if the caller requested to show error, show a generic message:
+            mErrorMessage.setText(R.string.error_loading_media);
+            showError = true;
         }
+
         emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
         LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
-                " showError=", showError,
-                " isOnline=", NetworkHelper.isOnline(getActivity()));
+                " showError=", showError);
     }
 
     private void updateTitle() {
@@ -363,20 +329,6 @@ public class MediaBrowserFragment extends DaggerFragment {
         return viewPager;
     }
 
-    private void reloadMedia() {
-        LogHelper.d(TAG, "on reloadMedia");
-        boolean isOnline = NetworkHelper.isOnline(getActivity());
-        if (isOnline) {
-            if (mBrowserAdapter == null){
-                LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
-            }
-
-            if (mBrowserAdapter.getCount() == 0) {
-                onConnected();
-            }
-        }
-    }
-
     private void updateLoadingView(PlaybackStateCompat state) {
         LogHelper.d(TAG, "updateLoadingView with state " + state);
         switch (state.getState()) {
@@ -388,5 +340,4 @@ public class MediaBrowserFragment extends DaggerFragment {
                 break;
         }
     }
-
 }

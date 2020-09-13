@@ -16,6 +16,7 @@ import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
+import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     public MusicPlayerContract.View view;
     private BillingViewModel billingViewModel;
     private AugmentedSkuDetails removeAdsSkuRow;
-    private AppCompatActivity activity;
+    private AppCompatActivity activity; //todo why not simple Activity?
 
     @Inject
     MusicPlayerPresenter() {
@@ -72,7 +73,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     private void init() {
         if (view != null) {
             activity = view.getActivity();
-            checkConnection();
 
             billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class); //todo fix deprecated https://startandroid.ru/ru/courses/architecture-components/27-course/architecture-components/527-urok-4-viewmodel.html
 
@@ -102,7 +102,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                                         }
                                     }
                                 } else {
-                                    LogHelper.e(TAG, "empty sku list size");
+                                    LogHelper.e(TAG, "empty In App Billing SKU list size");
                                 }
                             }
                         }
@@ -137,6 +137,15 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                                 emitter.onError(new Exception(id));
                             }
                         }));
+    }
+
+    @Override
+    public void rateApp() {
+        checkConnection();
+        if (NetworkHelper.isOnline(activity)){
+            RateAppUtil rateAppUtil = new RateAppUtil();
+            rateAppUtil.rate(activity);
+        }
     }
 
     private void checkForUserVisibleErrors(boolean emptyResult) {
