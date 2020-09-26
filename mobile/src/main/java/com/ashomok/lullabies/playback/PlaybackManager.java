@@ -39,7 +39,8 @@ public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = LogHelper.makeLogTag(PlaybackManager.class);
     // Action to thumbs up a media item
-    private static final String CUSTOM_ACTION_THUMBS_UP = "com.ashomok.lullabies.THUMBS_UP";
+    public static final String CUSTOM_ACTION_CHANGE_FAVOURITE_STATE = "com.ashomok.lullabies.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE";
+    public static final String CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE = "com.ashomok.lullabies.CUSTOM_ACTION_EXTRAS_KEY";
 
     private MusicProvider mMusicProvider;
     private QueueManager mQueueManager;
@@ -161,14 +162,16 @@ public class PlaybackManager implements Playback.Callback {
             return;
         }
         String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
-        int favoriteIcon = mMusicProvider.isFavorite(musicId) ?
+        boolean isFavorite = mMusicProvider.isFavorite(musicId);
+        int favoriteIcon = isFavorite ?
                 R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp;
         LogHelper.v(TAG, "updatePlaybackState, setting Favorite custom action of music ",
-                musicId, " current favorite=", mMusicProvider.isFavorite(musicId));
+                musicId, " current favorite=", isFavorite);
         Bundle customActionExtras = new Bundle();
+        customActionExtras.putBoolean(CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE, isFavorite);
 
         stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
-                CUSTOM_ACTION_THUMBS_UP, mResources.getString(R.string.favorite), favoriteIcon)
+                CUSTOM_ACTION_CHANGE_FAVOURITE_STATE, mResources.getString(R.string.favorite), favoriteIcon)
                 .setExtras(customActionExtras)
                 .build());
     }
@@ -328,9 +331,15 @@ public class PlaybackManager implements Playback.Callback {
             mQueueManager.updateMetadata();
         }
 
+        /**
+         * Called when a MediaController wants a PlaybackState.CustomAction to be performed.
+         *
+         * @param action
+         * @param extras
+         */
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
-            if (CUSTOM_ACTION_THUMBS_UP.equals(action)) {
+            if (CUSTOM_ACTION_CHANGE_FAVOURITE_STATE.equals(action)) {
                 LogHelper.i(TAG, "onCustomAction: favorite for current track");
                 MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
                 if (currentMusic != null) {
@@ -343,6 +352,7 @@ public class PlaybackManager implements Playback.Callback {
                 // playback state needs to be updated because the "Favorite" icon on the
                 // custom action will change to reflect the new favorite state.
                 updatePlaybackState(null);
+
             } else {
                 LogHelper.e(TAG, "Unsupported action: ", action);
             }
@@ -386,6 +396,7 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     public interface PlaybackServiceCallback {
+
         void onPlaybackStart();
 
         void onPlaybackStop();

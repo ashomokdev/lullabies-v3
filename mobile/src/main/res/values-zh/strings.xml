@@ -53,6 +53,5 @@
     <string name="ok_sure">是当然</string>
     <string name="classic_key">Classic</string>
     <string name="mom_songs_key">Mom</string>
-    <string name="add_to_favorites">加入“最喜欢的</string>
-    <string name="remove_from_favorites">从收藏夹中删除</string>
+    <string name="my_favorites">我的最爱</string>
 </resources>

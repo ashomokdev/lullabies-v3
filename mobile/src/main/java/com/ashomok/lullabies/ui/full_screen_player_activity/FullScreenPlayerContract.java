@@ -7,5 +7,9 @@ public class FullScreenPlayerContract {
     }
 
     interface Presenter extends BasePresenter<FullScreenPlayerContract.View> {
+
+        void addFavouriteMusicToSharedPreferences(String mediaId);
+
+        void removeFavouriteMusicToSharedPreferences(String mediaId);
     }
 }

@@ -20,6 +20,7 @@
  import android.app.Service;
  import android.content.Context;
  import android.content.Intent;
+ import android.content.SharedPreferences;
  import android.media.MediaMetadata;
  import android.media.MediaPlayer;
  import android.media.session.MediaSession;
@@ -59,6 +60,10 @@
  import java.lang.ref.WeakReference;
  import java.util.ArrayList;
  import java.util.List;
+
+ import javax.inject.Inject;
+
+ import dagger.android.AndroidInjection;
 
  import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_EMPTY_ROOT;
  import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_ROOT;
@@ -124,10 +129,10 @@
 
      // A value of a CMD_NAME key that indicates that the music playback should switch
      // to local playback from cast playback.
-     public static final String CMD_STOP_CASTING = "CMD_STOP_CASTING"; //todo i,plement
+     public static final String CMD_STOP_CASTING = "CMD_STOP_CASTING";
 
      // A value of a CMD_NAME key that indicates that the music service should be stopped.
-     public static final String CMD_STOP_SERVICE = "CMD_STOP_SERVICE"; //todo i,plement
+     public static final String CMD_STOP_SERVICE = "CMD_STOP_SERVICE";
 
      // Delay stopSelf by using a handler.
      private static final int STOP_DELAY = 30000;
@@ -146,6 +151,9 @@
 
      private boolean inStartedState; //todo remove & simplify
 
+     @Inject
+     SharedPreferences sharedPreferences;
+
 
      /*
       * (non-Javadoc)
@@ -153,6 +161,7 @@
       */
      @Override
      public void onCreate() {
+         AndroidInjection.inject(this);
          super.onCreate();
          LogHelper.d(TAG, "onCreate");
 
@@ -192,8 +201,8 @@
                  });
 
          LocalPlayback playback = new LocalPlayback(this, mMusicProvider);
-         mPlaybackManager = new PlaybackManager(this, getResources(), mMusicProvider, queueManager,
-                 playback);
+         mPlaybackManager = new PlaybackManager(this, getResources(),
+                 mMusicProvider, queueManager, playback);
 
          // Start a new MediaSession
          mSession = new MediaSessionCompat(this, "MusicService");
@@ -274,40 +283,6 @@
          mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
          return result;
      }
-
-     /**
-      * old version from 24 apr 2020
-      *
-      * @param rootIntent
-      */
-//     /**
-//      * (non-Javadoc)
-//      *
-//      * @see Service#onStartCommand(Intent, int, int)
-//      */
-//     @Override
-//     public int onStartCommand(Intent startIntent, int flags, int startId) {
-//
-//         if (startIntent != null) {
-//             String action = startIntent.getAction();
-//             String command = startIntent.getStringExtra(CMD_NAME);
-//             if (ACTION_CMD.equals(action)) {
-//                 if (CMD_PAUSE.equals(command)) {
-//                     mPlaybackManager.handlePauseRequest();
-//                 } else if (CMD_STOP.equals(command)) {
-//                     mPlaybackManager.handleStopRequest(null);
-//                 }
-//             } else {
-//                 // Try to handle the intent as a media button event wrapped by MediaButtonReceiver
-//                 MediaButtonReceiver.handleIntent(mSession, startIntent);
-//             }
-//         }
-//         // Reset the delay handler to enqueue a message to stop the service if
-//         // nothing is playing.
-//         mDelayedStopHandler.removeCallbacksAndMessages(null);
-//         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
-//         return START_STICKY;
-//     }
 
      /*
       * Handle case when user swipes the app away from the recents apps list by

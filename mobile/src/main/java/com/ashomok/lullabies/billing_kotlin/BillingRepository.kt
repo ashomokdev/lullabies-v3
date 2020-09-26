@@ -721,7 +721,6 @@ class BillingRepository private constructor(private val application: Application
 //example ID android.test.purchased
     object AppSku {
         val ADS_FREE_FOREVER_SKU_ID = "ads_free_forever"
-
 //                val ADS_FREE_FOREVER_SKU_ID = "android.test.purchased"
         val INAPP_SKUS = listOf(ADS_FREE_FOREVER_SKU_ID)
     }

@@ -42,8 +42,6 @@
     <string name="buy_ads_free">Buy ads free</string>
     <string name="ads_free_forever">Ads free forever</string>
     <string name="remove_ads">Remove ads</string>
-    <string name="add_to_favorites">To favorites</string>
-    <string name="remove_from_favorites">Remove from favorites</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="rate_app">Rate app</string>
     <string name="home">Home</string>
@@ -80,4 +78,5 @@
     <string name="lullabies_main_activity_mom_songs_banner" translatable="false">ca-app-pub-5221781428763224/6789972464</string>
     <string name="lullabies_main_activity_classic_tones_adaptive_banner" translatable="false">ca-app-pub-5221781428763224/3545715659</string>
     <string name="lullabies_main_activity_mom_songs_adaptive_banner" translatable="false">ca-app-pub-5221781428763224/1494267385</string>
+    <string name="my_favorites">My favourites</string>
 </resources>

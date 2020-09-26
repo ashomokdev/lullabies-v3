@@ -24,14 +24,8 @@ import dagger.android.ContributesAndroidInjector;
  * When Dagger.Android annotation processor runs it will create subcomponents for us.
  */
 @Module
-public abstract class ActivityBindingModule {
+public abstract class ServiceBindingModule {
 
-    @ContributesAndroidInjector(modules = MusicPlayerModule.class)
-    abstract MusicPlayerActivity musicPlayerActivity();
-
-    @ContributesAndroidInjector(modules = AboutModule.class)
-    abstract AboutActivity aboutActivity();
-
-    @ContributesAndroidInjector(modules = FullScreenPlayerModule.class)
-    abstract FullScreenPlayerActivity fullScreenPlayerActivity();
+    @ContributesAndroidInjector
+    abstract MusicService musicService();
 }

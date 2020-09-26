@@ -34,6 +34,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.tools.CirclesViewPagerPageIndicatorView;
@@ -48,6 +49,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
+import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
@@ -87,7 +90,6 @@ public class MediaBrowserFragment extends DaggerFragment {
             new MediaControllerCompat.Callback() {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
-                    super.onMetadataChanged(metadata);
                     if (metadata == null) {
                         return;
                     }
@@ -98,7 +100,6 @@ public class MediaBrowserFragment extends DaggerFragment {
 
                 @Override
                 public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-                    super.onPlaybackStateChanged(state);
                     LogHelper.d(TAG, "Received state change: ", state);
                     checkForUserVisibleErrors(false);
                     mBrowserAdapter.notifyDataSetChanged();

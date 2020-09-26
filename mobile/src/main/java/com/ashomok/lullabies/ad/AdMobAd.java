@@ -60,7 +60,7 @@ public abstract class AdMobAd {
     protected abstract void init();
 
     public void showAd(boolean isAdsActive) {
-        Log.w(TAG, "showAd with  " + isAdsActive + ", failed to load " + adFailedToLoad);
+        Log.d(TAG, "showAd with " + isAdsActive + ", failed to load " + adFailedToLoad);
         if (!adFailedToLoad) {
             parentLayout.setVisibility(isAdsActive ? View.VISIBLE : View.GONE);
         }

@@ -5,4 +5,5 @@ package com.ashomok.lullabies;
  */
 public class Settings {
     public static boolean isAdsActive = true; //will be updated in code
+    //todo ad unmutable Init_isAdsActive value for debug purposes
 }

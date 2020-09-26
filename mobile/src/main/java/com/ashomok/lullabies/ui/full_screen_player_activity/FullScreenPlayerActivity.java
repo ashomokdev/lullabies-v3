@@ -17,6 +17,7 @@ package com.ashomok.lullabies.ui.full_screen_player_activity;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -50,6 +53,9 @@ import com.ashomok.lullabies.ui.ActionBarCastActivity;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -59,13 +65,16 @@ import javax.inject.Inject;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static android.view.View.GONE;
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
 
 /**
  * A full screen player that shows the current playing music with a background image
  * depicting the album art. The activity also has controls to seek/pause/play the audio.
  */
 public class FullScreenPlayerActivity extends ActionBarCastActivity
-        implements FullScreenPlayerContract.View {
+        implements FullScreenPlayerContract.View, View.OnClickListener {
     private static final String TAG = LogHelper.makeLogTag(FullScreenPlayerActivity.class);
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
@@ -85,6 +94,9 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     private Drawable mPlayDrawable;
     private ImageView mBackgroundImage;
 
+    private ImageButton mFavouriteBtn;
+    private Button mFavouritesBtn;
+
     private String mCurrentArtUrl;
     private final Handler mHandler = new Handler();
     private MediaBrowserCompat mMediaBrowser;
@@ -95,6 +107,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     @Inject
     AdMobAd adMobAd;
 
+
     private final Runnable mUpdateProgressTask = () -> updateProgress();
 
     private final ScheduledExecutorService mExecutorService =
@@ -104,6 +117,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     private PlaybackStateCompat mLastPlaybackState;
 
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
+
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             LogHelper.d(TAG, "onPlaybackstate changed", state);
@@ -112,12 +126,14 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
+            LogHelper.d(TAG, "onMetadataChanged changed");
             if (metadata != null) {
                 updateMediaDescription(metadata.getDescription());
                 updateDuration(metadata);
             }
         }
     };
+
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
             new MediaBrowserCompat.ConnectionCallback() {
@@ -156,57 +172,18 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         mLine1 = findViewById(R.id.line1);
         mLine2 = findViewById(R.id.line2);
         mLine3 = findViewById(R.id.line3);
-        mLoading = findViewById(R.id.progressBar1);
+        mLoading = findViewById(R.id.progressBarMediaLoading);
         mControllers = findViewById(R.id.controllers);
+        mFavouriteBtn = findViewById(R.id.favourite_icon);
+        mFavouritesBtn = findViewById(R.id.my_favorites_btn);
 
-        mSkipNext.setOnClickListener(v -> {
-            MediaControllerCompat.TransportControls controls =
-                    MediaControllerCompat.getMediaController(
-                            FullScreenPlayerActivity.this).getTransportControls();
-            controls.skipToNext();
-        });
+        mFavouriteBtn.setOnClickListener(this);
+        mFavouritesBtn.setOnClickListener(this);
 
-        mSkipPrev.setOnClickListener(v -> {
-            MediaControllerCompat.TransportControls controls =
-                    MediaControllerCompat.getMediaController(
-                            FullScreenPlayerActivity.this).getTransportControls();
-            controls.skipToPrevious();
-        });
+        mSkipNext.setOnClickListener(this);
+        mSkipPrev.setOnClickListener(this);
+        mPlayPause.setOnClickListener(this);
 
-        mPlayPause.setOnClickListener(v -> {
-            PlaybackStateCompat state =
-                    MediaControllerCompat.getMediaController(
-                            FullScreenPlayerActivity.this).getPlaybackState();
-            if (state != null) {
-                MediaControllerCompat.TransportControls controls =
-                        MediaControllerCompat.getMediaController(
-                                FullScreenPlayerActivity.this).getTransportControls();
-                switch (state.getState()) {
-                    case PlaybackStateCompat.STATE_PLAYING: // fall through
-                    case PlaybackStateCompat.STATE_BUFFERING:
-                        controls.pause();
-                        stopSeekbarUpdate();
-                        break;
-                    case PlaybackStateCompat.STATE_PAUSED:
-                    case PlaybackStateCompat.STATE_STOPPED:
-                        controls.play();
-                        scheduleSeekbarUpdate();
-                        break;
-                    default:
-                        LogHelper.d(TAG, "onClick with state ", state.getState());
-                }
-            }
-        });
-
-        //todo add favourite icon if possible here
-//        //
-//        MediaControllerCompat.TransportControls controls =
-//                MediaControllerCompat.getMediaController(
-//                        FullScreenPlayerActivity.this).getTransportControls();
-//        // public void onCustomAction(@NonNull String action, Bundle extras) {
-//        //            if (CUSTOM_ACTION_THUMBS_UP.equals(action)) {
-//        controls.sendCustomAction();
-//
         mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -234,8 +211,82 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         mMediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class), mConnectionCallback, null);
 
-        initBannerAd();
+        initAd();
         mPresenter.takeView(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.favourite_icon:
+                onFavouriteClicked();
+                break;
+            case R.id.my_favorites_btn:
+                openMyFavouritesActivity();
+                break;
+            case R.id.next:
+                skipToNext();
+                break;
+            case R.id.prev:
+                skipToPrevious();
+                break;
+            case R.id.play_pause:
+                onPlayPauseClicked();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void openMyFavouritesActivity() {
+//        todo
+    }
+
+    private void onPlayPauseClicked() {
+        PlaybackStateCompat state =
+                MediaControllerCompat.getMediaController(
+                        FullScreenPlayerActivity.this).getPlaybackState();
+
+        if (state != null) {
+            MediaControllerCompat.TransportControls controls =
+                    MediaControllerCompat.getMediaController(
+                            FullScreenPlayerActivity.this).getTransportControls();
+            switch (state.getState()) {
+                case PlaybackStateCompat.STATE_PLAYING: // fall through
+                case PlaybackStateCompat.STATE_BUFFERING:
+                    controls.pause();
+                    stopSeekbarUpdate();
+                    break;
+                case PlaybackStateCompat.STATE_PAUSED:
+                case PlaybackStateCompat.STATE_STOPPED:
+                    controls.play();
+                    scheduleSeekbarUpdate();
+                    break;
+                default:
+                    LogHelper.d(TAG, "onClick with state ", state.getState());
+            }
+        }
+    }
+
+    private void skipToPrevious() {
+        MediaControllerCompat.TransportControls controls =
+                MediaControllerCompat.getMediaController(this).getTransportControls();
+        controls.skipToPrevious();
+    }
+
+    private void skipToNext() {
+        MediaControllerCompat.TransportControls controls =
+                MediaControllerCompat.getMediaController(this).getTransportControls();
+        controls.skipToNext();
+    }
+
+    private void onFavouriteClicked() {
+        MediaControllerCompat.TransportControls controls =
+                MediaControllerCompat.getMediaController(this).getTransportControls();
+
+        PlaybackStateCompat state =
+                MediaControllerCompat.getMediaController(this).getPlaybackState();
+        controls.sendCustomAction(CUSTOM_ACTION_CHANGE_FAVOURITE_STATE, state.getExtras());
     }
 
     @Override
@@ -366,7 +417,6 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         if (description == null) {
             return;
         }
-        LogHelper.d(TAG, "updateMediaDescription called ");
         mLine1.setText(description.getTitle());
         mLine2.setText(description.getSubtitle());
         fetchImageAsync(description);
@@ -432,6 +482,28 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
                 ? INVISIBLE : VISIBLE);
         mSkipPrev.setVisibility((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) == 0
                 ? INVISIBLE : VISIBLE);
+
+        List<PlaybackStateCompat.CustomAction> actions = mLastPlaybackState.getCustomActions();
+        if (actions.size() > 0) {
+            for (PlaybackStateCompat.CustomAction action : actions) {
+                if (CUSTOM_ACTION_CHANGE_FAVOURITE_STATE.equals(action.getAction())) {
+                    mFavouriteBtn.setImageDrawable(getResources().getDrawable(action.getIcon()));
+
+                    boolean isFavourite =
+                            action.getExtras().getBoolean(CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE);
+
+                    mFavouritesBtn.setVisibility(isFavourite ? VISIBLE : GONE);
+
+                    if (isFavourite) {
+                        mPresenter.addFavouriteMusicToSharedPreferences(
+                                MediaControllerCompat.getMediaController(this).getMetadata().getDescription().getMediaId());
+                    } else {
+                        mPresenter.removeFavouriteMusicToSharedPreferences(
+                                MediaControllerCompat.getMediaController(this).getMetadata().getDescription().getMediaId());
+                    }
+                }
+            }
+        }
     }
 
     private void updateProgress() {
@@ -451,7 +523,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         mSeekbar.setProgress((int) currentPosition);
     }
 
-    private void initBannerAd() {
+    private void initAd() {
         adMobAd.initAd(findViewById(R.id.ads_container));
         adMobAd.showAd(Settings.isAdsActive);
     }

@@ -419,6 +419,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     private void initAd() {
         adMobAd.initAd(findViewById(R.id.ads_container));
+        adMobAd.showAd(Settings.isAdsActive);
     }
 
     @Override

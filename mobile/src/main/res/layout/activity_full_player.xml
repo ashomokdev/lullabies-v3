@@ -25,19 +25,100 @@ limitations under the License.
         android:layout_height="fill_parent"
         android:contentDescription="@string/background_image_str"
         android:scaleType="centerCrop"
-        android:layout_above="@id/ads_container"/>
+        android:layout_above="@id/controllers"/>
+
+    <LinearLayout
+        android:id="@+id/controllers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/ads_container_wrapper"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <RelativeLayout
+            android:id="@+id/controllers_seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/startText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="@dimen/text_view_margin"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textColor="@color/white" />
+
+            <SeekBar
+                android:id="@+id/seekBar1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toStartOf="@+id/endText"
+                android:layout_toEndOf="@+id/startText" />
+
+            <TextView
+                android:id="@+id/endText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/end_text_margin"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/controllers_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/prev"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/skip_prev"
+                android:src="@drawable/ic_skip_previous_white_48dp" />
+
+            <ImageView
+                android:id="@+id/play_pause"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/play_pause"
+                android:src="@drawable/uamp_ic_play_arrow_white_48dp" />
+
+            <ImageView
+                android:id="@+id/next"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/skip_next"
+                android:src="@drawable/ic_skip_next_white_48dp" />
+        </LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/media_info"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@id/ads_container"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/controllers"
         android:background="@drawable/fullscreen_bg_gradient">
 
         <TextView
             android:id="@+id/line1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/line2"
             android:ellipsize="end"
             android:gravity="center_horizontal"
             android:maxLines="1"
@@ -50,7 +131,7 @@ limitations under the License.
             android:id="@+id/line2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/line3"
+            android:layout_below="@id/line1"
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center_horizontal"
@@ -64,7 +145,7 @@ limitations under the License.
             android:id="@+id/line3"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/controllers"
+            android:layout_below="@id/line2"
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center_horizontal"
@@ -75,88 +156,39 @@ limitations under the License.
             android:textColor="@color/fullscreen_secondary_line_color" />
 
         <LinearLayout
-            android:id="@+id/controllers"
-            android:layout_width="match_parent"
+            android:layout_below="@id/line3"
+            android:id="@+id/favorites_btn"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:visibility="invisible">
+            android:orientation="horizontal"
+            android:gravity="center">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp">
+            <ImageButton
+                android:id="@+id/favourite_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_border_white_24dp"
+                android:background="@android:color/transparent"
+                android:scaleType="centerCrop"
+                android:layout_margin="@dimen/image_btn_padding" />
 
-                <TextView
-                    android:id="@+id/startText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="@dimen/text_view_margin"
-                    android:gravity="center_vertical"
-                    android:maxLines="1"
-                    android:textColor="@color/white" />
-
-                <SeekBar
-                    android:id="@+id/seekBar1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_toStartOf="@+id/endText"
-                    android:layout_toEndOf="@+id/startText" />
-
-                <TextView
-                    android:id="@+id/endText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_alignWithParentIfMissing="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="@dimen/end_text_margin"
-                    android:gravity="center_vertical"
-                    android:maxLines="1"
-                    android:textColor="@color/white" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp">
-
-                <ImageView
-                    android:id="@+id/prev"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/skip_prev"
-                    android:src="@drawable/ic_skip_previous_white_48dp" />
-
-                <ImageView
-                    android:id="@+id/play_pause"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/play_pause"
-                    android:src="@drawable/uamp_ic_play_arrow_white_48dp" />
-
-                <ImageView
-                    android:id="@+id/next"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/skip_next"
-                    android:src="@drawable/ic_skip_next_white_48dp" />
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/my_favorites_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@android:color/transparent"
+                android:text="@string/my_favorites"
+                android:textColor="@color/white"
+                android:drawableStart="@drawable/ic_baseline_open_in_new_24"
+                android:padding="5dp"
+                android:visibility="gone"/>
         </LinearLayout>
+
     </RelativeLayout>
 
     <ProgressBar
-        android:id="@+id/progressBar1"
+        android:id="@+id/progressBarMediaLoading"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -173,11 +205,17 @@ limitations under the License.
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+    <!--    todo remove wrapper-->
     <RelativeLayout
-        android:id="@+id/ads_container"
+        android:id="@+id/ads_container_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true">
 
+        <RelativeLayout
+            android:id="@+id/ads_container"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+    </RelativeLayout>
 </RelativeLayout>

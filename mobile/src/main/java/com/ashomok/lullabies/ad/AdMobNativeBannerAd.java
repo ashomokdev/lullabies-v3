@@ -168,13 +168,6 @@ public class AdMobNativeBannerAd extends AdMobAd {
 
             builder.withAdListener(getAdListener());
 
-//            builder.withAdListener(new AdListener() {
-//                @Override
-//                public void onAdFailedToLoad(int errorCode) {
-//                    emitter.onError(new Throwable("onAdFailedToLoad,error code " + errorCode));
-//                    LogHelper.e(TAG, "onAdFailedToLoad,error code " + errorCode);
-//                }
-//            });
             AdLoader adLoader = builder.build();
             adLoader.loadAd(new AdRequest.Builder().build());
         });

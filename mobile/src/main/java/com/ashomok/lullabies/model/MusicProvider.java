@@ -17,6 +17,7 @@
 package com.ashomok.lullabies.model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -31,11 +32,13 @@ import com.ashomok.lullabies.utils.MediaIDHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
@@ -56,7 +59,7 @@ public class MusicProvider {
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
 
-    private final Set<String> mFavoriteTracks;
+    private final ConcurrentLinkedQueue<String> mFavoriteTracks;
 
     enum State {
         NON_INITIALIZED, INITIALIZING, INITIALIZED
@@ -76,7 +79,7 @@ public class MusicProvider {
         mSource = source;
         mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
-        mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        mFavoriteTracks = new ConcurrentLinkedQueue<>();
     }
 
     /**
@@ -112,13 +115,31 @@ public class MusicProvider {
     public List<MediaMetadataCompat> getMusicsByCategory(String category) {
         if (mCurrentState != State.INITIALIZED || !mMusicListByCategory.containsKey(category)) {
             return Collections.emptyList();
-        }
-
-        if (mMusicListByCategory.get(category) != null) {
+        } else if (mMusicListByCategory.get(category) != null) {
             return Stream.of(new ArrayList<>(mMusicListByCategory.get(category)))
                     .sortBy(i -> i.getDescription().getMediaId()).toList();
         } else {
-            return new ArrayList<>();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Get favourite music tracks
+     */
+    public ConcurrentLinkedQueue<String> getFavouriteMusics() {
+        if (mCurrentState != State.INITIALIZED || mFavoriteTracks.isEmpty()) {
+            return new ConcurrentLinkedQueue<>();
+        } else {
+            return mFavoriteTracks;
+        }
+    }
+
+    public void setFavorite(String musicId, boolean favorite) {
+
+        if (favorite) {
+            mFavoriteTracks.add(musicId);
+        } else {
+            mFavoriteTracks.remove(musicId);
         }
     }
 
@@ -203,14 +224,6 @@ public class MusicProvider {
         mutableMetadata.metadata = metadata;
     }
 
-    public void setFavorite(String musicId, boolean favorite) {
-        if (favorite) {
-            mFavoriteTracks.add(musicId);
-        } else {
-            mFavoriteTracks.remove(musicId);
-        }
-    }
-
     public boolean isInitialized() {
         return mCurrentState == State.INITIALIZED;
     }
@@ -218,6 +231,7 @@ public class MusicProvider {
     public boolean isFavorite(String musicId) {
         return mFavoriteTracks.contains(musicId);
     }
+
 
     /**
      * Get the list of music tracks from a server and caches the track information

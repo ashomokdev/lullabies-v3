@@ -6,7 +6,7 @@ import android.content.Context;
 import androidx.multidex.MultiDex;
 
 import dagger.android.AndroidInjector;
-import dagger.android.DaggerApplication;
+import dagger.android.support.DaggerApplication;
 
 /**
  * We create a custom {@link Application} class that extends  {@link DaggerApplication}.

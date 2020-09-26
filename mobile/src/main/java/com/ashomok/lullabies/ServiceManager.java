@@ -44,7 +44,6 @@ public class ServiceManager {
     public void updateNotificationForPause(PlaybackStateCompat state,
                                            MediaDescriptionCompat mediaDescriptionCompat) {
         LogHelper.d(TAG, "updateNotificationForPause");
-//        musicService.stopForeground(false); //todo remove after testing
         Notification notification =
                 mMediaNotificationManager.getNotification(
                         mediaDescriptionCompat, state,
