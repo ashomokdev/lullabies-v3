@@ -22,18 +22,15 @@ public class FullScreenPlayerPresenter implements FullScreenPlayerContract.Prese
     public FullScreenPlayerContract.View view;
 
     private Context context;
-    private SharedPreferences sharedPreferences;
-    private LinkedHashSet<String> mSavedFavouriteMusics;
-    private static final String sharedPreferencesKey = "favourite_musics";
+
 
     /**
      * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
      * with {@code @Nullable} values.
      */
     @Inject
-    FullScreenPlayerPresenter(Context context, SharedPreferences sharedPreferences) {
+    FullScreenPlayerPresenter(Context context) {
         this.context = context;
-        this.sharedPreferences = sharedPreferences;
     }
 
     @Override
@@ -42,43 +39,11 @@ public class FullScreenPlayerPresenter implements FullScreenPlayerContract.Prese
         init();
     }
 
-    private void init() {
-        mSavedFavouriteMusics = new LinkedHashSet<>(
-                sharedPreferences.getStringSet(sharedPreferencesKey, new HashSet<>()));
-    }
+    private void init() { }
 
     @Override
     public void dropView() {
         view = null;
     }
 
-    @Override
-    public void addFavouriteMusicToSharedPreferences(String mediaId) {
-        //todo add synchronize keyword fot thread save
-        LinkedHashSet<String> savedFavouriteMusicsUpdated = new LinkedHashSet<>();
-        savedFavouriteMusicsUpdated.add(mediaId);
-
-        if (!mSavedFavouriteMusics.equals(savedFavouriteMusicsUpdated)) {
-            mSavedFavouriteMusics = savedFavouriteMusicsUpdated;
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mSavedFavouriteMusics));
-            LogHelper.d(TAG, "SharedPreferences updated with new data");
-            editor.apply();
-        }
-    }
-
-    @Override
-    public void removeFavouriteMusicToSharedPreferences(String mediaId) {
-        //todo add synchronize keyword fot thread save
-        LinkedHashSet<String> savedFavouriteMusicsUpdated = new LinkedHashSet<>();
-        savedFavouriteMusicsUpdated.remove(mediaId);
-
-        if (!mSavedFavouriteMusics.equals(savedFavouriteMusicsUpdated)) {
-            mSavedFavouriteMusics = savedFavouriteMusicsUpdated;
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mSavedFavouriteMusics));
-            LogHelper.d(TAG, "SharedPreferences updated with new data");
-            editor.apply();
-        }
-    }
 }

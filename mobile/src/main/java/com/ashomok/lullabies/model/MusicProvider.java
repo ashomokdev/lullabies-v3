@@ -34,12 +34,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.inject.Inject;
 
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_ROOT;
@@ -59,7 +61,11 @@ public class MusicProvider {
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
 
-    private final ConcurrentLinkedQueue<String> mFavoriteTracks;
+    private final ConcurrentLinkedQueue<String> mFavoriteTracks; //todo try to use simple concurentset
+
+    private SharedPreferences mSharedPreferences;
+    //    private LinkedHashSet<String> mSavedFavouriteMusics;
+    private static final String sharedPreferencesKey = "favourite_musics";
 
     enum State {
         NON_INITIALIZED, INITIALIZING, INITIALIZED
@@ -71,15 +77,39 @@ public class MusicProvider {
         void onMusicCatalogReady(boolean success);
     }
 
-    public MusicProvider(Context context) {
-        this(new LocalJSONSource(context));
+    @Inject
+    public MusicProvider(Context context, SharedPreferences sharedPreferences) {
+        this(new LocalJSONSource(context), sharedPreferences);
     }
 
-    public MusicProvider(MusicProviderSource source) {
+    public MusicProvider(MusicProviderSource source, SharedPreferences sharedPreferences) {
         mSource = source;
+        mSharedPreferences = sharedPreferences;
         mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
-        mFavoriteTracks = new ConcurrentLinkedQueue<>();
+        mFavoriteTracks = new ConcurrentLinkedQueue<>(
+                mSharedPreferences.getStringSet(sharedPreferencesKey, new HashSet<>()));
+
+    }
+
+    private void addFavouriteMusic(String mediaId) {
+        if (!mFavoriteTracks.contains(mediaId)) {
+            mFavoriteTracks.add(mediaId);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteTracks));
+            LogHelper.d(TAG, "SharedPreferences updated with new data");
+            editor.apply();
+        }
+    }
+
+    private void removeFavouriteMusic(String mediaId) {
+        if (mFavoriteTracks.contains(mediaId)) {
+            mFavoriteTracks.remove(mediaId);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteTracks));
+            LogHelper.d(TAG, "SharedPreferences updated with new data");
+            editor.apply();
+        }
     }
 
     /**
@@ -134,12 +164,11 @@ public class MusicProvider {
         }
     }
 
-    public void setFavorite(String musicId, boolean favorite) {
-
-        if (favorite) {
-            mFavoriteTracks.add(musicId);
+    public void setFavorite(String musicId, boolean isFavourite) {
+        if (isFavourite) {
+            addFavouriteMusic(musicId);
         } else {
-            mFavoriteTracks.remove(musicId);
+            removeFavouriteMusic(musicId);
         }
     }
 

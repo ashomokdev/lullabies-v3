@@ -19,8 +19,10 @@ import android.util.Log;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
+
+//todo update and check using manual https://firebase.google.com/docs/crashlytics?authuser=1
 public class LogHelper {
 
     private static final String LOG_PREFIX = "uamp_";
@@ -67,12 +69,14 @@ public class LogHelper {
         log(tag, Log.ERROR, null, messages);
         String error = tag + ": " +
                 Stream.of(messages).map(Object::toString).collect(Collectors.joining(", "));
-        Crashlytics.log(error);
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.log(error);
     }
 
     public static void e(String tag, Throwable t, Object... messages) {
         log(tag, Log.ERROR, t, messages);
-        Crashlytics.logException(t);
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.recordException(t);
     }
 
     private static void log(String tag, int level, Throwable t, Object... messages) {
@@ -90,6 +94,7 @@ public class LogHelper {
             }
             message = sb.toString();
         }
-        Crashlytics.log(level, tag, message);
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.log(message);
     }
 }

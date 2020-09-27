@@ -15,6 +15,7 @@
  */
 package com.ashomok.lullabies.playback;
 
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -33,6 +34,7 @@ import com.ashomok.lullabies.utils.SimpleMusicProviderSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +49,7 @@ public class PlaybackManagerTest {
 
     private MusicProvider musicProvider;
     private Resources resources;
+    private SharedPreferences sharedPreferences;
 
     @Before
     public void setUpMusicProvider() throws Exception {
@@ -67,6 +70,8 @@ public class PlaybackManagerTest {
                 return "";
             }
         };
+
+        sharedPreferences = Mockito.mock(SharedPreferences.class);
     }
 
     private void populateMusicSource(SimpleMusicProviderSource source) {
@@ -138,7 +143,7 @@ public class PlaybackManagerTest {
         };
 
         PlaybackManager playbackManager = new PlaybackManager(serviceCallback, resources,
-                musicProvider, queueManager, playback);
+                sharedPreferences, musicProvider, queueManager, playback);
         playbackManager.getMediaSessionCallback().onPlayFromMediaId(expectedMediaId, null);
 
         latch.await(5, TimeUnit.SECONDS);
@@ -201,7 +206,7 @@ public class PlaybackManagerTest {
         };
 
         PlaybackManager playbackManager = new PlaybackManager(serviceCallback, resources,
-                musicProvider, queueManager, playback);
+                sharedPreferences, musicProvider, queueManager, playback);
         playbackManager.getMediaSessionCallback().onPlayFromSearch("Music 3", null);
 
         latch.await(5, TimeUnit.SECONDS);

@@ -16,6 +16,7 @@
 
 package com.ashomok.lullabies.playback;
 
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,6 +32,9 @@ import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * Manage the interactions among the container service, the queue manager and the actual playback.
@@ -48,10 +52,13 @@ public class PlaybackManager implements Playback.Callback {
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
+    private SharedPreferences mSharedPreferences;
+    private LinkedHashSet<String> mSavedFavouriteMusics;
+    private static final String sharedPreferencesKey = "favourite_musics";
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
-                           MusicProvider musicProvider, QueueManager queueManager,
-                           Playback playback) {
+                           SharedPreferences sharedPreferences, MusicProvider musicProvider,
+                           QueueManager queueManager, Playback playback) {
         LogHelper.d(TAG, "on constructor");
 
         mMusicProvider = musicProvider;
@@ -61,6 +68,7 @@ public class PlaybackManager implements Playback.Callback {
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
+        mSharedPreferences = sharedPreferences;
     }
 
     public Playback getPlayback() {
@@ -152,6 +160,11 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     private void setCustomAction(PlaybackStateCompat.Builder stateBuilder) {
+
+
+
+
+
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic == null) {
             return;

@@ -165,7 +165,7 @@
          super.onCreate();
          LogHelper.d(TAG, "onCreate");
 
-         mMusicProvider = new MusicProvider(this);
+         mMusicProvider = new MusicProvider(this, sharedPreferences);
 
          // To make the app more responsive, fetch and cache catalog information now.
          // This can help improve the response time in the method
@@ -202,7 +202,7 @@
 
          LocalPlayback playback = new LocalPlayback(this, mMusicProvider);
          mPlaybackManager = new PlaybackManager(this, getResources(),
-                 mMusicProvider, queueManager, playback);
+                 sharedPreferences,  mMusicProvider, queueManager, playback);
 
          // Start a new MediaSession
          mSession = new MediaSessionCompat(this, "MusicService");

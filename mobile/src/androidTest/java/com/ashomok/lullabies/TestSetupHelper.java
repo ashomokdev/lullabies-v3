@@ -16,20 +16,23 @@
 
 package com.ashomok.lullabies;
 
+import android.content.SharedPreferences;
+
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.model.MusicProviderSource;
+
+import org.mockito.Mockito;
 
 import java.util.concurrent.CountDownLatch;
 
 public class TestSetupHelper {
-
     public static MusicProvider setupMusicProvider(MusicProviderSource source)
             throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-        MusicProvider provider = new MusicProvider(source);
+        SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
+        MusicProvider provider = new MusicProvider(source, sharedPreferences);
         provider.retrieveMediaAsync(success -> signal.countDown());
         signal.await();
         return provider;
     }
-
 }

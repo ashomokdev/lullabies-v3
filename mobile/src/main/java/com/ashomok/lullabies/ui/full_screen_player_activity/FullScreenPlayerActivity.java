@@ -493,14 +493,6 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
                             action.getExtras().getBoolean(CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE);
 
                     mFavouritesBtn.setVisibility(isFavourite ? VISIBLE : GONE);
-
-                    if (isFavourite) {
-                        mPresenter.addFavouriteMusicToSharedPreferences(
-                                MediaControllerCompat.getMediaController(this).getMetadata().getDescription().getMediaId());
-                    } else {
-                        mPresenter.removeFavouriteMusicToSharedPreferences(
-                                MediaControllerCompat.getMediaController(this).getMetadata().getDescription().getMediaId());
-                    }
                 }
             }
         }
