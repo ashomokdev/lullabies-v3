@@ -14,7 +14,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
-
+@Deprecated //if shows low revenue. Plain Old banner shows better revenue
 public class AdMobAdaptiveBannerAd extends AdMobAd {
 
     private static final String TAG = LogHelper.makeLogTag(AdMobAdaptiveBannerAd.class);

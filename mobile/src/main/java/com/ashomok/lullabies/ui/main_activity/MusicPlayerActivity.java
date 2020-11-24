@@ -17,11 +17,7 @@ package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.ActivityOptions;
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
@@ -59,8 +55,6 @@ import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
-import com.ashomok.lullabies.utils.NetworkHelper;
-import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
@@ -163,7 +157,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                 })
                 .subscribeOn(Schedulers.io())
                 .subscribe(mediaItems -> {
-                    browseMedia(mediaId);
+                    initMediaBrowser(mediaId);
                 }, throwable -> {
                     LogHelper.e(TAG, throwable, "Error from loading media");
                     checkForUserVisibleErrors(true);
@@ -209,14 +203,13 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                             break;
                     }
                     //todo add favourites menu item
-                    if (categories != null) {
-                        for (int i = 0; i < categories.size(); i++) {
-                            if (menuItem.getItemId() == i) {
-                                activityClass = MusicPlayerActivity.class;
-                                mediaId = categories.get(i).getMediaId();
-                            }
-                        }
+                    if (categories != null &&
+                            activityClass == null &&
+                            menuItem.getItemId() < categories.size()) { //possible ids for categories is 0, 1, 2 while another menuItemIds is like 2131362328
+                        activityClass = MusicPlayerActivity.class;
+                        mediaId = categories.get(menuItem.getItemId()).getMediaId();
                     }
+
                     if (activityClass != null) {
                         Intent intent = new Intent(this, activityClass);
                         if (mediaId != null) {
@@ -293,15 +286,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     }
 
     @Override
-    public void setToolbarTitle(CharSequence title) {
-        LogHelper.d(TAG, "Setting toolabr_menu title to ", title);
-        if (title == null) {
-            title = getString(R.string.app_name);
-        }
-        setTitle(title);
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);//must store the new intent unless getIntent() will return the old one
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
@@ -353,7 +337,11 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         LogHelper.d(TAG, "initializeFromParams with media " + mediaId);
 
         initMediaBrowserLoader(mediaId);
+
+//        setToolbarTitle(mediaId);
     }
+
+
 
     private void navigateToBrowser(@NonNull String mediaId) {
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
@@ -493,7 +481,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     }
 
     @Override
-    public void browseMedia(String mMediaId) {
+    public void initMediaBrowser(String mMediaId) {
         if (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)
                 || mMediaId.equals(getMediaBrowser().getRoot())) {
             if (categories != null && categories.size() > 0) {

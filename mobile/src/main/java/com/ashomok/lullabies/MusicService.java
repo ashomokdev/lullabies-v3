@@ -136,8 +136,8 @@
 
      // Delay stopSelf by using a handler.
      private static final int STOP_DELAY = 30000;
-
-     private MusicProvider mMusicProvider;
+     @Inject
+      MusicProvider mMusicProvider;
      private PlaybackManager mPlaybackManager;
 
      private MediaSessionCompat mSession;
@@ -151,21 +151,11 @@
 
      private boolean inStartedState; //todo remove & simplify
 
-     @Inject
-     SharedPreferences sharedPreferences;
-
-
-     /*
-      * (non-Javadoc)
-      * @see android.app.Service#onCreate()
-      */
      @Override
      public void onCreate() {
          AndroidInjection.inject(this);
          super.onCreate();
          LogHelper.d(TAG, "onCreate");
-
-         mMusicProvider = new MusicProvider(this, sharedPreferences);
 
          // To make the app more responsive, fetch and cache catalog information now.
          // This can help improve the response time in the method
@@ -207,7 +197,7 @@
          // Start a new MediaSession
          mSession = new MediaSessionCompat(this, "MusicService");
          setSessionToken(mSession.getSessionToken());
-         mSession.setCallback(mPlaybackManager.getMediaSessionCallback()); //todo play from favourites as custom action onCustomAction
+         mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
          mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                  MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 

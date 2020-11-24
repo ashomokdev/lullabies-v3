@@ -28,6 +28,7 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
+@Deprecated //if shows low revenue. Plain Old banner shows better revenue
 public class AdMobNativeBannerAd extends AdMobAd {
 
     private static final String TAG = LogHelper.makeLogTag(AdMobNativeBannerAd.class);

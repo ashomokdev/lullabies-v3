@@ -16,6 +16,7 @@
 
 package com.ashomok.lullabies;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ashomok.lullabies.model.MusicProvider;
@@ -30,7 +31,8 @@ public class TestSetupHelper {
             throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
-        MusicProvider provider = new MusicProvider(source, sharedPreferences);
+        Context context = Mockito.mock(Context.class);
+        MusicProvider provider = new MusicProvider(source, sharedPreferences, context);
         provider.retrieveMediaAsync(success -> signal.countDown());
         signal.await();
         return provider;

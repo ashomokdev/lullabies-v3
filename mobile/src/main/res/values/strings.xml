@@ -31,12 +31,12 @@
     <string name="media_route_menu_title">Play on…</string>
     <string name="get_no_ads_forever">Get no ads forever</string>
     <string name="about_app">About app</string>
-
-    <!-- Notificaiton Channel -->
-    <string name="notification_channel" translatable="false">UAMP_Channel_ID</string>
-    <string name="notification_channel_description" translatable="false">Channel ID for UAMP</string>
+    <string name="notification_channel" translatable="false">Lullabies_Channel_ID</string>
+    <string name="notification_channel_description" translatable="false">Channel ID for Lullabies</string>
     <string name="lullabies_main_activity_base_collection_banner" translatable="false">ca-app-pub-5221781428763224/3093632356</string>
     <string name="full_screen_activity_banner" translatable="false">ca-app-pub-5221781428763224/1164543404</string>
+    <string name="lullabies_main_activity_mom_songs_banner" translatable="false">ca-app-pub-5221781428763224/6789972464</string>
+    <string name="lullabies_main_activity_classic_tones_banner" translatable="false">ca-app-pub-5221781428763224/4035198062</string>
     <string name="test_banner" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
     <string name="cancel">Cancel</string>
     <string name="buy_ads_free">Buy ads free</string>
@@ -68,15 +68,8 @@
     <string name="how_about_rating">How about a rating on the Play Market, then?</string>
     <string name="no_thanks">No, thanks</string>
     <string name="ok_sure">OK, sure</string>
-    <string name="lullabies_main_activity_classic_tones_banner" translatable="false">ca-app-pub-5221781428763224/4035198062</string>
     <string name="classic_key">Classic</string>
-    <string name="lullabies_main_activity_classic_tones_native" translatable="false">ca-app-pub-5221781428763224/7479904468</string>
     <string name="ad_attribution" translatable="false">AD</string>
-    <string name="native_ad_test_banner" translatable="false">ca-app-pub-3940256099942544/2247696110</string>
     <string name="mom_songs_key">Mom</string>
-    <string name="lullabies_main_activity_mom_songs_native" translatable="false">ca-app-pub-5221781428763224/3892346385</string>
-    <string name="lullabies_main_activity_mom_songs_banner" translatable="false">ca-app-pub-5221781428763224/6789972464</string>
-    <string name="lullabies_main_activity_classic_tones_adaptive_banner" translatable="false">ca-app-pub-5221781428763224/3545715659</string>
-    <string name="lullabies_main_activity_mom_songs_adaptive_banner" translatable="false">ca-app-pub-5221781428763224/1494267385</string>
     <string name="my_favorites">My favourites</string>
 </resources>

@@ -252,7 +252,8 @@ public class MediaBrowserFragment extends DaggerFragment {
         if (mMediaId == null) {
             mMediaId = mMediaFragmentListener.getMediaBrowser().getRoot();
         }
-        updateTitle();
+
+        setToolbarTitle(mMediaId);
 
         loadMediaComplatable
                 .doOnSubscribe(disposable -> {
@@ -310,22 +311,6 @@ public class MediaBrowserFragment extends DaggerFragment {
                 " showError=", showError);
     }
 
-    private void updateTitle() {
-        if (MediaIDHelper.MEDIA_ID_ROOT.equals(mMediaId)) {
-            mMediaFragmentListener.setToolbarTitle(null);
-            return;
-        }
-
-        MediaBrowserCompat mediaBrowser = mMediaFragmentListener.getMediaBrowser();
-        mediaBrowser.getItem(mMediaId, new MediaBrowserCompat.ItemCallback() {
-            @Override
-            public void onItemLoaded(MediaBrowserCompat.MediaItem item) {
-                mMediaFragmentListener.setToolbarTitle(
-                        item.getDescription().getTitle());
-            }
-        });
-    }
-
     public ClickableViewPager getViewPager() {
         return viewPager;
     }
@@ -339,6 +324,17 @@ public class MediaBrowserFragment extends DaggerFragment {
             default:
                 progressBar.setVisibility(View.GONE);
                 break;
+        }
+    }
+
+    private void setToolbarTitle(String mediaId) {
+        String appName = getString(R.string.app_name);
+
+        String title = MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId);
+        if (title != null && !title.isEmpty()) {
+            mMediaFragmentListener.setTitle(appName + " - " + title);
+        } else {
+            mMediaFragmentListener.setTitle(appName);
         }
     }
 }

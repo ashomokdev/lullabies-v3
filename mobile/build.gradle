@@ -68,7 +68,6 @@ android {
 
             buildConfigField "String", "CATALOG_URL", "\"https://lullabies-android-app.s3.us-east-2.amazonaws.com/v34/json/music.json\""
             buildConfigField "String", "CATALOG_RU_URL", "\"https://lullabies-android-app.s3.us-east-2.amazonaws.com/v34/json/music_ru.json\""
-            buildConfigField "boolean", "IS_NATIVE_AD_ACTIVE", "true"
         }
     }
 

@@ -57,6 +57,7 @@ public class MusicProvider {
     private static final String sharedPreferencesKey = "favourite_musics";
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
     private final ConcurrentLinkedQueue<String> mFavoriteMusicIds;
+    private final Context mContext;
     private MusicProviderSource mSource;
     // Categorized caches for music track data:
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
@@ -65,17 +66,18 @@ public class MusicProvider {
 
     @Inject
     public MusicProvider(Context context, SharedPreferences sharedPreferences) {
-        this(new LocalJSONSource(context), sharedPreferences);
+        this(new LocalJSONSource(context), sharedPreferences, context);
     }
 
-    public MusicProvider(MusicProviderSource source, SharedPreferences sharedPreferences) {
+    public MusicProvider(
+            MusicProviderSource source, SharedPreferences sharedPreferences, Context context) {
+        mContext = context;
         mSource = source;
         mSharedPreferences = sharedPreferences;
         mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
         mFavoriteMusicIds = new ConcurrentLinkedQueue<>(
                 mSharedPreferences.getStringSet(sharedPreferencesKey, new HashSet<>()));
-
     }
 
     private void addFavouriteMusic(String musicId) {
@@ -396,7 +398,8 @@ public class MusicProvider {
         // when we get a onPlayFromMusicID call, so we can create the proper queue based
         // on where the music was selected from (by artist, by genre, random, etc)
 
-        String favouriteCategoryTitle ="Favourites";//todo get translateble resourse string using android cintext
+
+        String favouriteCategoryTitle = mContext.getResources().getString(R.string.my_favorites);
 
         String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
                 metadata.getDescription().getMediaId(), MEDIA_ID_FAVOURITES, favouriteCategoryTitle);
