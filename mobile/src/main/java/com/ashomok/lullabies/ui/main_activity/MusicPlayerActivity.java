@@ -58,6 +58,7 @@ import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActi
 import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 import com.google.android.material.navigation.NavigationView;
@@ -81,9 +82,9 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
-    private static final String SAVED_MEDIA_ID = "com.ashomok.lullabies.MEDIA_ID";
+    public static final String SAVED_MEDIA_ID = "com.ashomok.lullabies.MEDIA_ID";
     private static final String FRAGMENT_TAG = "lullabies_list_container";
-    private static final String INIT_MEDIA_ID_VALUE_ROOT = "__BY_CATEGORY__";
+    private static final String INIT_MEDIA_ID_VALUE_ROOT = MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
     public static final String EXTRA_START_FULLSCREEN = "com.ashomok.lullabies.EXTRA_START_FULLSCREEN";
 
     /**
@@ -207,6 +208,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                         default:
                             break;
                     }
+                    //todo add favourites menu item
                     if (categories != null) {
                         for (int i = 0; i < categories.size(); i++) {
                             if (menuItem.getItemId() == i) {
@@ -387,7 +389,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                 mediaId = getIntent().getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
             }
         } else {
-            mediaId = fragment.getMediaId(); //category mediaId
+            mediaId = fragment.getMediaId(); //hierarchy mediaId
             Log.d(TAG, "getMediaId for non null fragment returned " + mediaId);
         }
         if (mediaId == null) {
@@ -500,7 +502,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
             }
         }
 
-        LogHelper.d(TAG, "browse media " + mMediaId);
+        LogHelper.d(TAG, "browse mediaId " + mMediaId);
         navigateToBrowser(mMediaId);
     }
 

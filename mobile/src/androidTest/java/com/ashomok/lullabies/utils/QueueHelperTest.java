@@ -90,7 +90,7 @@ public class QueueHelperTest {
         // assert they are all of the expected genre
         for (MediaSessionCompat.QueueItem item : queue) {
             String musicId = MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId());
-            MediaMetadataCompat metadata = provider.getMusic(musicId);
+            MediaMetadataCompat metadata = provider.getMusicByMusicId(musicId);
             assertEquals(selectedGenre, metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE));
         }
 
@@ -110,7 +110,7 @@ public class QueueHelperTest {
         // assert they all contain "Romantic" in the title
         for (MediaSessionCompat.QueueItem item : queue) {
             String musicId = MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId());
-            MediaMetadataCompat metadata = provider.getMusic(musicId);
+            MediaMetadataCompat metadata = provider.getMusicByMusicId(musicId);
             assertTrue(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE).contains("Romantic"));
         }
     }
@@ -128,7 +128,7 @@ public class QueueHelperTest {
         // assert they all contain "Joe" in the artist
         for (MediaSessionCompat.QueueItem item : queue) {
             String musicId = MediaIDHelper.extractMusicIDFromMediaID(item.getDescription().getMediaId());
-            MediaMetadataCompat metadata = provider.getMusic(musicId);
+            MediaMetadataCompat metadata = provider.getMusicByMusicId(musicId);
             assertTrue(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST).contains("Joe"));
         }
     }

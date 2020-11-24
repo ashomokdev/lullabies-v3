@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +42,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
 
+import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_ROOT;
 import static com.ashomok.lullabies.utils.MediaIDHelper.createMediaID;
@@ -54,28 +54,14 @@ import static com.ashomok.lullabies.utils.MediaIDHelper.createMediaID;
 public class MusicProvider {
 
     private static final String TAG = LogHelper.makeLogTag(MusicProvider.class);
-
+    private static final String sharedPreferencesKey = "favourite_musics";
+    private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
+    private final ConcurrentLinkedQueue<String> mFavoriteMusicIds;
     private MusicProviderSource mSource;
-
     // Categorized caches for music track data:
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
-    private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
-
-    private final ConcurrentLinkedQueue<String> mFavoriteTracks; //todo try to use simple concurentset
-
     private SharedPreferences mSharedPreferences;
-    //    private LinkedHashSet<String> mSavedFavouriteMusics;
-    private static final String sharedPreferencesKey = "favourite_musics";
-
-    enum State {
-        NON_INITIALIZED, INITIALIZING, INITIALIZED
-    }
-
     private volatile State mCurrentState = State.NON_INITIALIZED;
-
-    public interface Callback {
-        void onMusicCatalogReady(boolean success);
-    }
 
     @Inject
     public MusicProvider(Context context, SharedPreferences sharedPreferences) {
@@ -87,26 +73,26 @@ public class MusicProvider {
         mSharedPreferences = sharedPreferences;
         mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
-        mFavoriteTracks = new ConcurrentLinkedQueue<>(
+        mFavoriteMusicIds = new ConcurrentLinkedQueue<>(
                 mSharedPreferences.getStringSet(sharedPreferencesKey, new HashSet<>()));
 
     }
 
-    private void addFavouriteMusic(String mediaId) {
-        if (!mFavoriteTracks.contains(mediaId)) {
-            mFavoriteTracks.add(mediaId);
+    private void addFavouriteMusic(String musicId) {
+        if (!mFavoriteMusicIds.contains(musicId)) {
+            mFavoriteMusicIds.add(musicId);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteTracks));
+            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
             LogHelper.d(TAG, "SharedPreferences updated with new data");
             editor.apply();
         }
     }
 
     private void removeFavouriteMusic(String mediaId) {
-        if (mFavoriteTracks.contains(mediaId)) {
-            mFavoriteTracks.remove(mediaId);
+        if (mFavoriteMusicIds.contains(mediaId)) {
+            mFavoriteMusicIds.remove(mediaId);
             SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteTracks));
+            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
             LogHelper.d(TAG, "SharedPreferences updated with new data");
             editor.apply();
         }
@@ -156,12 +142,13 @@ public class MusicProvider {
     /**
      * Get favourite music tracks
      */
-    public ConcurrentLinkedQueue<String> getFavouriteMusics() {
-        if (mCurrentState != State.INITIALIZED || mFavoriteTracks.isEmpty()) {
-            return new ConcurrentLinkedQueue<>();
-        } else {
-            return mFavoriteTracks;
+    public List<MediaMetadataCompat> getFavouriteMusics() {
+        ArrayList<MediaMetadataCompat> result = new ArrayList<>();
+        if (mCurrentState == State.INITIALIZED || !mFavoriteMusicIds.isEmpty()) {
+            for (String favouriteMusicId : mFavoriteMusicIds)
+                result.add(getMusicByMusicId(favouriteMusicId));
         }
+        return result;
     }
 
     public void setFavorite(String musicId, boolean isFavourite) {
@@ -219,18 +206,17 @@ public class MusicProvider {
         return result;
     }
 
-
     /**
      * Return the MediaMetadataCompat for the given musicID.
      *
      * @param musicId The unique, non-hierarchical music ID.
      */
-    public MediaMetadataCompat getMusic(String musicId) {
+    public MediaMetadataCompat getMusicByMusicId(String musicId) {
         return mMusicListById.containsKey(musicId) ? mMusicListById.get(musicId).metadata : null;
     }
 
     public synchronized void updateMusicArt(String musicId, Bitmap albumArt, Bitmap icon) {
-        MediaMetadataCompat metadata = getMusic(musicId);
+        MediaMetadataCompat metadata = getMusicByMusicId(musicId);
         metadata = new MediaMetadataCompat.Builder(metadata)
 
                 // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
@@ -258,9 +244,8 @@ public class MusicProvider {
     }
 
     public boolean isFavorite(String musicId) {
-        return mFavoriteTracks.contains(musicId);
+        return mFavoriteMusicIds.contains(musicId);
     }
-
 
     /**
      * Get the list of music tracks from a server and caches the track information
@@ -353,6 +338,11 @@ public class MusicProvider {
             for (MediaMetadataCompat metadata : getMusicsByCategory(category)) {
                 mediaItems.add(createMediaItem(metadata));
             }
+        } else if (MEDIA_ID_FAVOURITES.equals(mediaId)) {
+            List<MediaMetadataCompat> favouriteMusic = getFavouriteMusics();
+            for (MediaMetadataCompat mediaMetadataCompat : favouriteMusic) {
+                mediaItems.add(createFavouriteMediaItem(mediaMetadataCompat));
+            }
 
         } else {
             LogHelper.w(TAG, "Skipping unmatched mediaId: ", mediaId);
@@ -374,7 +364,7 @@ public class MusicProvider {
     private MediaBrowserCompat.MediaItem createBrowsableMediaItemForCategory(String category,
                                                                              Resources resources) {
         String subtitle = resources.getString(
-                R.string.browse_musics_by_category_subtitle, category);
+                R.string.browse_musics_by_hierarchy_subtitle, category);
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
                 .setMediaId(createMediaID(null, MEDIA_ID_MUSICS_BY_CATEGORY, category))
                 .setTitle(category)
@@ -400,4 +390,28 @@ public class MusicProvider {
 
     }
 
+    private MediaBrowserCompat.MediaItem createFavouriteMediaItem(MediaMetadataCompat metadata) {
+        // Since mediaMetadata fields are immutable, we need to create a copy, so we
+        // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
+        // when we get a onPlayFromMusicID call, so we can create the proper queue based
+        // on where the music was selected from (by artist, by genre, random, etc)
+
+        String favouriteCategoryTitle ="Favourites";//todo get translateble resourse string using android cintext
+
+        String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
+                metadata.getDescription().getMediaId(), MEDIA_ID_FAVOURITES, favouriteCategoryTitle);
+        MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
+                .build();
+        return new MediaBrowserCompat.MediaItem(copy.getDescription(),
+                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+    }
+
+    enum State {
+        NON_INITIALIZED, INITIALIZING, INITIALIZED
+    }
+
+    public interface Callback {
+        void onMusicCatalogReady(boolean success);
+    }
 }

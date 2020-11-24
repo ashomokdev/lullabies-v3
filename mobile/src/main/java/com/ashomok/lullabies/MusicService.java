@@ -202,12 +202,12 @@
 
          LocalPlayback playback = new LocalPlayback(this, mMusicProvider);
          mPlaybackManager = new PlaybackManager(this, getResources(),
-                 sharedPreferences,  mMusicProvider, queueManager, playback);
+                 mMusicProvider, queueManager, playback);
 
          // Start a new MediaSession
          mSession = new MediaSessionCompat(this, "MusicService");
          setSessionToken(mSession.getSessionToken());
-         mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
+         mSession.setCallback(mPlaybackManager.getMediaSessionCallback()); //todo play from favourites as custom action onCustomAction
          mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                  MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 

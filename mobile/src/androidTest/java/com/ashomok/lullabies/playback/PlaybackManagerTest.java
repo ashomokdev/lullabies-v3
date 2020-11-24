@@ -143,7 +143,7 @@ public class PlaybackManagerTest {
         };
 
         PlaybackManager playbackManager = new PlaybackManager(serviceCallback, resources,
-                sharedPreferences, musicProvider, queueManager, playback);
+                musicProvider, queueManager, playback);
         playbackManager.getMediaSessionCallback().onPlayFromMediaId(expectedMediaId, null);
 
         latch.await(5, TimeUnit.SECONDS);
@@ -206,7 +206,7 @@ public class PlaybackManagerTest {
         };
 
         PlaybackManager playbackManager = new PlaybackManager(serviceCallback, resources,
-                sharedPreferences, musicProvider, queueManager, playback);
+                musicProvider, queueManager, playback);
         playbackManager.getMediaSessionCallback().onPlayFromSearch("Music 3", null);
 
         latch.await(5, TimeUnit.SECONDS);

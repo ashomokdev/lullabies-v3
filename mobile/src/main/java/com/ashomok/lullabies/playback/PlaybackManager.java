@@ -44,7 +44,7 @@ public class PlaybackManager implements Playback.Callback {
     private static final String TAG = LogHelper.makeLogTag(PlaybackManager.class);
     // Action to thumbs up a media item
     public static final String CUSTOM_ACTION_CHANGE_FAVOURITE_STATE = "com.ashomok.lullabies.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE";
-    public static final String CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE = "com.ashomok.lullabies.CUSTOM_ACTION_EXTRAS_KEY";
+  public static final String CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE = "com.ashomok.lullabies.CUSTOM_ACTION_EXTRAS_KEY";
 
     private MusicProvider mMusicProvider;
     private QueueManager mQueueManager;
@@ -52,12 +52,9 @@ public class PlaybackManager implements Playback.Callback {
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
-    private SharedPreferences mSharedPreferences;
-    private LinkedHashSet<String> mSavedFavouriteMusics;
-    private static final String sharedPreferencesKey = "favourite_musics";
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
-                           SharedPreferences sharedPreferences, MusicProvider musicProvider,
+                           MusicProvider musicProvider,
                            QueueManager queueManager, Playback playback) {
         LogHelper.d(TAG, "on constructor");
 
@@ -68,7 +65,6 @@ public class PlaybackManager implements Playback.Callback {
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
         mPlayback.setCallback(this);
-        mSharedPreferences = sharedPreferences;
     }
 
     public Playback getPlayback() {
@@ -161,16 +157,13 @@ public class PlaybackManager implements Playback.Callback {
 
     private void setCustomAction(PlaybackStateCompat.Builder stateBuilder) {
 
-
-
-
-
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic == null) {
             return;
         }
         // Set appropriate "Favorite" icon on Custom action:
         String mediaId = currentMusic.getDescription().getMediaId();
+
         if (mediaId == null) {
             return;
         }
@@ -353,7 +346,7 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
             if (CUSTOM_ACTION_CHANGE_FAVOURITE_STATE.equals(action)) {
-                LogHelper.i(TAG, "onCustomAction: favorite for current track");
+                LogHelper.i(TAG, "onCustomAction: favorite state changed for current track");
                 MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
                 if (currentMusic != null) {
                     String mediaId = currentMusic.getDescription().getMediaId();
@@ -366,7 +359,8 @@ public class PlaybackManager implements Playback.Callback {
                 // custom action will change to reflect the new favorite state.
                 updatePlaybackState(null);
 
-            } else {
+            }
+            else {
                 LogHelper.e(TAG, "Unsupported action: ", action);
             }
         }

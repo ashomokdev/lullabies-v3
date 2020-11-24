@@ -129,10 +129,10 @@ public class QueueManagerTest {
         queueManager.setCurrentQueue("Queue genre 1", queueGenre1);
 
         // the current music cannot be of same browsing category as one with genre 2
-        assertFalse(queueManager.isSameBrowsingCategory(queueGenre2.get(0).getDescription().getMediaId()));
+        assertFalse(queueManager.isSameBrowsingHierarchy(queueGenre2.get(0).getDescription().getMediaId()));
 
         // the current music needs to be of same browsing category as one with genre 1
-        assertTrue(queueManager.isSameBrowsingCategory(queueGenre1.get(0).getDescription().getMediaId()));
+        assertTrue(queueManager.isSameBrowsingHierarchy(queueGenre1.get(0).getDescription().getMediaId()));
    }
 
     @Test
@@ -273,7 +273,7 @@ public class QueueManagerTest {
             MediaSessionCompat.QueueItem item = queueManager.getCurrentMusic();
             String musicId = MediaIDHelper.extractMusicIDFromMediaID(
                     item.getDescription().getMediaId());
-            String itemGenre = provider.getMusic(musicId).getString(
+            String itemGenre = provider.getMusicByMusicId(musicId).getString(
                     MediaMetadataCompat.METADATA_KEY_GENRE);
             assertEquals(genre, itemGenre);
             queueManager.skipQueuePosition(1);

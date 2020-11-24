@@ -15,6 +15,7 @@
  */
 package com.ashomok.lullabies.ui.full_screen_player_activity;
 
+import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -68,6 +69,7 @@ import static android.view.View.VISIBLE;
 import static android.view.View.GONE;
 import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
 import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
+import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 
 /**
  * A full screen player that shows the current playing music with a background image
@@ -239,7 +241,12 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     }
 
     private void openMyFavouritesActivity() {
-//        todo
+        Bundle bundle = ActivityOptions.makeCustomAnimation(
+                this, R.anim.fade_in, R.anim.fade_out).toBundle();
+        Intent intent = new Intent(this, MusicPlayerActivity.class);
+        intent.putExtra(MusicPlayerActivity.SAVED_MEDIA_ID, MEDIA_ID_FAVOURITES);
+
+        startActivity(intent, bundle);
     }
 
     private void onPlayPauseClicked() {
@@ -281,13 +288,13 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
     }
 
     private void onFavouriteClicked() {
-        MediaControllerCompat.TransportControls controls =
-                MediaControllerCompat.getMediaController(this).getTransportControls();
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
 
-        PlaybackStateCompat state =
-                MediaControllerCompat.getMediaController(this).getPlaybackState();
-        controls.sendCustomAction(CUSTOM_ACTION_CHANGE_FAVOURITE_STATE, state.getExtras());
+        MediaControllerCompat.TransportControls controls = mediaController.getTransportControls();
+        controls.sendCustomAction(CUSTOM_ACTION_CHANGE_FAVOURITE_STATE,
+                mediaController.getPlaybackState().getExtras());
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
