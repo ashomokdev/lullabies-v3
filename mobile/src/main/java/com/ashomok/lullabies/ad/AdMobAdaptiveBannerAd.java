@@ -74,7 +74,7 @@ public class AdMobAdaptiveBannerAd extends AdMobAd {
                 layoutParams.height = heightInPixels;
             }
         } else {
-            Log.e(TAG, "Ads can not been loaded programmaticaly. " +
+            LogHelper.e(TAG, "Ads can not been loaded programmaticaly. " +
                     "RelativeLayout and LinearLayout are supported as parent.");
         }
     }

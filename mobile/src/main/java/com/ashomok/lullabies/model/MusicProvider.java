@@ -57,7 +57,6 @@ public class MusicProvider {
     private static final String sharedPreferencesKey = "favourite_musics";
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
     private final ConcurrentLinkedQueue<String> mFavoriteMusicIds;
-    private final Context mContext;
     private MusicProviderSource mSource;
     // Categorized caches for music track data:
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
@@ -66,12 +65,11 @@ public class MusicProvider {
 
     @Inject
     public MusicProvider(Context context, SharedPreferences sharedPreferences) {
-        this(new LocalJSONSource(context), sharedPreferences, context);
+        this(new LocalJSONSource(context), sharedPreferences);
     }
 
     public MusicProvider(
-            MusicProviderSource source, SharedPreferences sharedPreferences, Context context) {
-        mContext = context;
+            MusicProviderSource source, SharedPreferences sharedPreferences) {
         mSource = source;
         mSharedPreferences = sharedPreferences;
         mMusicListByCategory = new ConcurrentHashMap<>();
@@ -341,11 +339,12 @@ public class MusicProvider {
                 mediaItems.add(createMediaItem(metadata));
             }
         } else if (MEDIA_ID_FAVOURITES.equals(mediaId)) {
+            mediaItems.add(createBrowsableMediaItemForFavourites( resources));
+        } else if (mediaId.startsWith(MEDIA_ID_FAVOURITES)) {
             List<MediaMetadataCompat> favouriteMusic = getFavouriteMusics();
             for (MediaMetadataCompat mediaMetadataCompat : favouriteMusic) {
-                mediaItems.add(createFavouriteMediaItem(mediaMetadataCompat));
+                mediaItems.add(createFavouriteMediaItem(mediaMetadataCompat, resources));
             }
-
         } else {
             LogHelper.w(TAG, "Skipping unmatched mediaId: ", mediaId);
         }
@@ -376,6 +375,19 @@ public class MusicProvider {
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
+    private MediaBrowserCompat.MediaItem createBrowsableMediaItemForFavourites(Resources resources) {
+        String categoryTitle = MediaIDHelper.getFavouritesCategoryTitle(resources);
+        String subtitle = resources.getString(
+                R.string.browse_musics_by_hierarchy_subtitle, categoryTitle);
+        MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
+                .setMediaId(createMediaID(null, MEDIA_ID_FAVOURITES, categoryTitle))
+                .setTitle(categoryTitle)
+                .setSubtitle(subtitle)
+                .build();
+        return new MediaBrowserCompat.MediaItem(description,
+                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+    }
+
     private MediaBrowserCompat.MediaItem createMediaItem(MediaMetadataCompat metadata) {
         // Since mediaMetadata fields are immutable, we need to create a copy, so we
         // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
@@ -392,14 +404,13 @@ public class MusicProvider {
 
     }
 
-    private MediaBrowserCompat.MediaItem createFavouriteMediaItem(MediaMetadataCompat metadata) {
+    private MediaBrowserCompat.MediaItem createFavouriteMediaItem(
+            MediaMetadataCompat metadata, Resources resources) {
         // Since mediaMetadata fields are immutable, we need to create a copy, so we
         // can set a hierarchy-aware mediaID. We will need to know the media hierarchy
         // when we get a onPlayFromMusicID call, so we can create the proper queue based
         // on where the music was selected from (by artist, by genre, random, etc)
-
-
-        String favouriteCategoryTitle = mContext.getResources().getString(R.string.my_favorites);
+        String favouriteCategoryTitle = MediaIDHelper.getFavouritesCategoryTitle(resources);
 
         String hierarchyAwareMediaID = MediaIDHelper.createMediaID(
                 metadata.getDescription().getMediaId(), MEDIA_ID_FAVOURITES, favouriteCategoryTitle);

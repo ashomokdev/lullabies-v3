@@ -16,11 +16,6 @@
 package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -34,7 +29,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.tools.CirclesViewPagerPageIndicatorView;
@@ -42,15 +36,12 @@ import com.ashomok.lullabies.tools.ClickableViewPager;
 import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
-import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjection;
-import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
@@ -178,7 +169,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         viewPager.setAdapter(mBrowserAdapter);
 
         viewPager.setOnItemClickListener(position -> {
-            Log.d(TAG, "onPageClicked, position " + position);
+            LogHelper.d(TAG, "onPageClicked, position " + position);
             checkForUserVisibleErrors(false);
 
             MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
@@ -332,9 +323,9 @@ public class MediaBrowserFragment extends DaggerFragment {
 
         String title = MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId);
         if (title != null && !title.isEmpty()) {
-            mMediaFragmentListener.setTitle(appName + " - " + title);
+            mMediaFragmentListener.setToolbarTitle(appName + " - " + title);
         } else {
-            mMediaFragmentListener.setTitle(appName);
+            mMediaFragmentListener.setToolbarTitle(appName);
         }
     }
 }

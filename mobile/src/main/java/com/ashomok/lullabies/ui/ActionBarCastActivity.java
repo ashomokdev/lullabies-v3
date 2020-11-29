@@ -107,7 +107,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
                 mCastContext = CastContext.getSharedInstance(this);
             }
             catch (Exception e){
-                Log.e(TAG, "CastContext.getSharedInstance(this) failed", e);
+                LogHelper.e(TAG, "CastContext.getSharedInstance(this) failed", e);
                 // probably LoadingException: Failed to get module context
             }
         }
@@ -152,8 +152,7 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public void setTitle(CharSequence title) {
+    public void setToolbarTitle(CharSequence title) {
         super.setTitle(title);
         mToolbar.setTitle(title);
     }

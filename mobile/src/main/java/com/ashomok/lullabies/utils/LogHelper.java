@@ -96,5 +96,7 @@ public class LogHelper {
         }
         FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
         crashlytics.log(message);
+
+        Log.println(level, tag, message);
     }
 }

@@ -106,7 +106,7 @@ public class AboutActivity extends BaseActivity implements AboutContract.View {
                 v.vibrate(300);
             }
         }catch (Exception e){
-            Log.w(TAG, "error with Vibrator");
+            LogHelper.w(TAG, "error with Vibrator");
         }
     }
 

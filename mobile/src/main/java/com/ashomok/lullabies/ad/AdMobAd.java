@@ -33,7 +33,7 @@ public abstract class AdMobAd {
         public void onAdLoaded() {
             // Code to be executed when an ad finishes loading.
             adFailedToLoad = false;
-            Log.d(TAG, "onAdLoaded");
+            LogHelper.d(TAG, "onAdLoaded");
         }
 
         @Override
@@ -41,7 +41,7 @@ public abstract class AdMobAd {
             // Code to be executed when an ad request fails.
             adFailedToLoad = true;
             parentLayout.setVisibility(View.GONE); //hide ad layout room
-            Log.d(TAG, "onAdFailedToLoad with code " + errorCode);
+            LogHelper.d(TAG, "onAdFailedToLoad with code " + errorCode);
         }
     };
 
@@ -60,7 +60,7 @@ public abstract class AdMobAd {
     protected abstract void init();
 
     public void showAd(boolean isAdsActive) {
-        Log.d(TAG, "showAd with " + isAdsActive + ", failed to load " + adFailedToLoad);
+        LogHelper.d(TAG, "showAd with " + isAdsActive + ", failed to load " + adFailedToLoad);
         if (!adFailedToLoad) {
             parentLayout.setVisibility(isAdsActive ? View.VISIBLE : View.GONE);
         }

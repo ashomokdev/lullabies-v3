@@ -15,13 +15,16 @@
  */
 package com.ashomok.lullabies.utils;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -99,4 +102,10 @@ public class MediaIDHelperTest {
         fail(MediaIDHelper.getParentMediaID(null));
     }
 
+    @Test
+    public void isBrowseable() {
+        assertTrue(MediaIDHelper.isBrowseable(MediaIDHelper.MEDIA_ID_ROOT));
+        assertTrue(MediaIDHelper.isBrowseable(" __BY_CATEGORY__/Base Collection"));
+
+    }
 }

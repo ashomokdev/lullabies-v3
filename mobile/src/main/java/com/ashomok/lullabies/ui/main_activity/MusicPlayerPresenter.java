@@ -93,10 +93,10 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
                         @Override
                         public void onChanged(List<AugmentedSkuDetails> augmentedSkuDetails) {
                             if (augmentedSkuDetails != null) {
-                                if (augmentedSkuDetails.size() > 0 ) {
-                                    for (AugmentedSkuDetails item : augmentedSkuDetails){
+                                if (augmentedSkuDetails.size() > 0) {
+                                    for (AugmentedSkuDetails item : augmentedSkuDetails) {
                                         if (item.getSku().equals(
-                                                BillingRepository.AppSku.INSTANCE.getADS_FREE_FOREVER_SKU_ID())){
+                                                BillingRepository.AppSku.INSTANCE.getADS_FREE_FOREVER_SKU_ID())) {
                                             removeAdsSkuRow = item;
                                             LogHelper.d(TAG, "init sku row "
                                                     + removeAdsSkuRow.toString());
@@ -115,35 +115,32 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     public Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
             String rootMediaId, MediaBrowserCompat mediaBrowser) {
         return Single.create(emitter -> mediaBrowser.subscribe(rootMediaId,
-                        new MediaBrowserCompat.SubscriptionCallback() {
-                            @Override
-                            public void onChildrenLoaded(@NonNull String parentId,
-                                                         @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                                try {
-                                    LogHelper.d(TAG, "onChildrenLoaded, parentId=" + parentId +
-                                            "  count=" + children.size());
-                                    checkForUserVisibleErrors(children.isEmpty());
-                                    if (view != null) {
-                                        view.addMenuItems(children);
-                                    }
-                                    emitter.onSuccess(children);
-                                } catch (Throwable t) {
-                                    LogHelper.e(TAG, "Error on childrenloaded ", t);
-                                    emitter.onError(t);
-                                }
-                            }
-                            @Override
-                            public void onError(@NonNull String id) {
-                                LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
-                                emitter.onError(new Exception(id));
-                            }
-                        }));
+                new MediaBrowserCompat.SubscriptionCallback() {
+                    @Override
+                    public void onChildrenLoaded(@NonNull String parentId,
+                                                 @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                        if (children.isEmpty()) {
+                            LogHelper.e(TAG, "Error on childrenloaded ");
+                            emitter.onError(new Throwable("Error on childrenloaded"));
+                        } else {
+                            LogHelper.d(TAG, "onChildrenLoaded, parentId=" + parentId +
+                                    "  count=" + children.size());
+                            emitter.onSuccess(children);
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull String id) {
+                        LogHelper.e(TAG, "onChildrenLoaded onError, id=" + id);
+                        emitter.onError(new Exception(id));
+                    }
+                }));
     }
 
     @Override
     public void rateApp() {
         checkConnection();
-        if (NetworkHelper.isOnline(activity)){
+        if (NetworkHelper.isOnline(activity)) {
             RateAppUtil rateAppUtil = new RateAppUtil();
             rateAppUtil.rate(activity);
         }

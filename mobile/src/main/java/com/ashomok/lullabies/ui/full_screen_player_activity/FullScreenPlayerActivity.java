@@ -18,7 +18,6 @@ package com.ashomok.lullabies.ui.full_screen_player_activity;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -53,10 +52,9 @@ import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.ui.ActionBarCastActivity;
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.MediaIDHelper;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -69,7 +67,6 @@ import static android.view.View.VISIBLE;
 import static android.view.View.GONE;
 import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
 import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
-import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 
 /**
  * A full screen player that shows the current playing music with a background image
@@ -152,7 +149,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "on Create");
+        LogHelper.d(TAG, "on Create");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_player);
         initializeToolbar();
@@ -244,7 +241,8 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         Bundle bundle = ActivityOptions.makeCustomAnimation(
                 this, R.anim.fade_in, R.anim.fade_out).toBundle();
         Intent intent = new Intent(this, MusicPlayerActivity.class);
-        intent.putExtra(MusicPlayerActivity.SAVED_MEDIA_ID, MEDIA_ID_FAVOURITES);
+        intent.putExtra(MusicPlayerActivity.SAVED_MEDIA_ID,
+                MediaIDHelper.getFavouritesHierarchyAwareMediaID(getResources()));
 
         startActivity(intent, bundle);
     }

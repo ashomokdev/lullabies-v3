@@ -6,5 +6,5 @@ import com.ashomok.lullabies.ui.MediaBrowserProvider;
 
 public interface MediaFragmentListener extends MediaBrowserProvider {
     void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
-    void setTitle(CharSequence title);
+    void setToolbarTitle(CharSequence title);
 }

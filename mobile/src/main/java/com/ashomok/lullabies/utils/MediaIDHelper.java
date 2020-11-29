@@ -17,11 +17,14 @@
 package com.ashomok.lullabies.utils;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+
+import com.ashomok.lullabies.R;
 
 import java.util.Arrays;
 
@@ -74,6 +77,16 @@ public class MediaIDHelper {
             sb.append(LEAF_SEPARATOR).append(musicID);
         }
         return sb.toString();
+    }
+
+    public static String getFavouritesHierarchyAwareMediaID(Resources resources){
+        return  MEDIA_ID_FAVOURITES +
+                CATEGORY_SEPARATOR +
+                getFavouritesCategoryTitle(resources);
+    }
+
+    public static String getFavouritesCategoryTitle(Resources resources) {
+        return resources.getString(R.string.my_favorites);
     }
 
     private static boolean isValidCategory(String category) {
