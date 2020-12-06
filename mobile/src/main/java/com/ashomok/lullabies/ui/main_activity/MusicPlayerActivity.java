@@ -55,6 +55,7 @@ import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
+import com.ashomok.lullabies.utils.Result;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
@@ -63,8 +64,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.schedulers.Schedulers;
+import kotlinx.coroutines.CoroutineScope;
+import kotlinx.coroutines.Dispatchers;
+import kotlinx.coroutines.Job;
 
 import static android.view.Menu.NONE;
+import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 
 /**
  * Main activity for the music player.
@@ -140,57 +145,42 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         initAd();
     }
 
+    //todo
     private void loadChildrenMediaItems(String mediaId) {
-        //todo add kotlin korutines here
-        //todo  java.util.ConcurrentModificationException here
+        MediaBrowserLoader.loadChildrenMediaItems(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser(), result -> {
+            if (result instanceof Result.Success) {
+                List<MediaBrowserCompat.MediaItem> mediaItems =
+                        ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
+                addMenuItems(mediaItems);
+                initMediaBrowser(mediaId, mediaItems);
+            } else if (result instanceof Result.Error) {
 
+                LogHelper.e(TAG, ((Result.Error) result).getException(),
+                        "Error from loading media");
+                checkForUserVisibleErrors(true);
+            } else {
+                LogHelper.e(TAG, "Unknown error, unexpected result.");
+            }
 
-        mPresenter.initMediaBrowserLoader(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser())
-                .doOnSubscribe(disposable -> {
-                    // Unsubscribing before subscribing is required if this mediaId already has a subscriber
-                    // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
-                    // the callback, but won't trigger the initial callback.onChildrenLoaded.
-                    //
-                    // This is temporary: A bug is being fixed that will make subscribe
-                    // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
-                    // subscriber or not. Currently this only happens if the mediaID has no previous
-                    // subscriber or if the media content changes on the service side, so we need to
-                    // unsubscribe first.
-                    getMediaBrowser().unsubscribe(INIT_MEDIA_ID_VALUE_ROOT);
-                })
-                .subscribeOn(Schedulers.io())
-                .subscribe(categoriesMediaItems -> {
-                    addMenuItems(categoriesMediaItems);
-                    initMediaBrowser(mediaId, categoriesMediaItems);
+            return null;
+        });
 
-                    mPresenter.initMediaBrowserLoader(MediaIDHelper.MEDIA_ID_FAVOURITES, getMediaBrowser())
-                            .doOnSubscribe(disposable -> {
-                                // Unsubscribing before subscribing is required if this mediaId already has a subscriber
-                                // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
-                                // the callback, but won't trigger the initial callback.onChildrenLoaded.
-                                //
-                                // This is temporary: A bug is being fixed that will make subscribe
-                                // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
-                                // subscriber or not. Currently this only happens if the mediaID has no previous
-                                // subscriber or if the media content changes on the service side, so we need to
-                                // unsubscribe first.
-                                getMediaBrowser().unsubscribe(MediaIDHelper.MEDIA_ID_FAVOURITES);
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(mediaItems -> {
-                                addMenuItems(mediaItems);
-                            }, throwable -> {
-                                LogHelper.e(TAG, throwable, "Error from loading media");
-                                checkForUserVisibleErrors(true);
-                            });
+        MediaBrowserLoader.loadChildrenMediaItems(MEDIA_ID_FAVOURITES, getMediaBrowser(), result -> {
+            if (result instanceof Result.Success) {
+                List<MediaBrowserCompat.MediaItem> mediaItems =
+                        ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
+                addMenuItems(mediaItems);
+            } else if (result instanceof Result.Error) {
 
-                }, throwable -> {
-                    LogHelper.e(TAG, throwable, "Error from loading media");
-                    checkForUserVisibleErrors(true);
-                })
-        ;
+                LogHelper.e(TAG, ((Result.Error) result).getException(),
+                        "Error from loading media");
+                checkForUserVisibleErrors(true);
+            } else {
+                LogHelper.e(TAG, "Unknown error, unexpected result.");
+            }
 
-
+            return null;
+        });
     }
 
     @Override

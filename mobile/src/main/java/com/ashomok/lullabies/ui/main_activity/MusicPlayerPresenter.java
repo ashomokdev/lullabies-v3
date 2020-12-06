@@ -33,6 +33,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     private BillingViewModel billingViewModel;
     private AugmentedSkuDetails removeAdsSkuRow;
     private AppCompatActivity activity; //todo why not simple Activity?
+    private MediaBrowserLoader mediaBrowserLoader;
 
     @Inject
     MusicPlayerPresenter() {
@@ -111,31 +112,33 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
         }
     }
 
-    @Override
-    public Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
-            String rootMediaId, MediaBrowserCompat mediaBrowser) {
-        return Single.create(emitter -> mediaBrowser.subscribe(rootMediaId,
-                new MediaBrowserCompat.SubscriptionCallback() {
-                    @Override
-                    public void onChildrenLoaded(@NonNull String parentId,
-                                                 @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                        if (children.isEmpty()) {
-                            LogHelper.e(TAG, "Error on childrenloaded ");
-                            emitter.onError(new Throwable("Error on childrenloaded"));
-                        } else {
-                            LogHelper.d(TAG, "onChildrenLoaded, parentId=" + parentId +
-                                    "  count=" + children.size());
-                            emitter.onSuccess(children);
-                        }
-                    }
 
-                    @Override
-                    public void onError(@NonNull String id) {
-                        LogHelper.e(TAG, "onChildrenLoaded onError, id=" + id);
-                        emitter.onError(new Exception(id));
-                    }
-                }));
-    }
+
+//    @Override
+//    public Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
+//            String rootMediaId, MediaBrowserCompat mediaBrowser) {
+//        return Single.create(emitter -> mediaBrowser.subscribe(rootMediaId,
+//                new MediaBrowserCompat.SubscriptionCallback() {
+//                    @Override
+//                    public void onChildrenLoaded(@NonNull String parentId,
+//                                                 @NonNull List<MediaBrowserCompat.MediaItem> children) {
+//                        if (children.isEmpty()) {
+//                            LogHelper.e(TAG, "Error on childrenloaded ");
+//                            emitter.onError(new Throwable("Error on childrenloaded"));
+//                        } else {
+//                            LogHelper.d(TAG, "onChildrenLoaded, parentId=" + parentId +
+//                                    "  count=" + children.size());
+//                            emitter.onSuccess(children);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(@NonNull String id) {
+//                        LogHelper.e(TAG, "onChildrenLoaded onError, id=" + id);
+//                        emitter.onError(new Exception(id));
+//                    }
+//                }));
+//    }
 
     @Override
     public void rateApp() {
@@ -143,15 +146,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
         if (NetworkHelper.isOnline(activity)) {
             RateAppUtil rateAppUtil = new RateAppUtil();
             rateAppUtil.rate(activity);
-        }
-    }
-
-    private void checkForUserVisibleErrors(boolean emptyResult) {
-        if (emptyResult) {
-            if (view != null) {
-                view.checkForUserVisibleErrors(true);
-            }
-            LogHelper.e(TAG, "Loading media returns empty result");
         }
     }
 
