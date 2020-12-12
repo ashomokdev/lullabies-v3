@@ -1,16 +1,28 @@
 package com.ashomok.lullabies.ui.main_activity
 
 import android.support.v4.media.MediaBrowserCompat
-import androidx.annotation.WorkerThread
 import com.ashomok.lullabies.utils.LogHelper
 import com.ashomok.lullabies.utils.Result
 import kotlinx.coroutines.*
-import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.resume
 
 class MediaBrowserLoader {
     companion object {
         val TAG = LogHelper.makeLogTag(MusicPlayerPresenter::class.java)
+
+        @JvmStatic
+        @ExperimentalCoroutinesApi
+        fun loadChildrenMediaItems(mediaBrowser: MediaBrowserCompat,
+                                   vararg mediaRoots: String,
+                                   callback: (Result<List<MediaBrowserCompat.MediaItem>>?) -> Unit) {
+            CoroutineScope(Job() + Dispatchers.Main).launch { //mediaBrowser is not thread-safe and should be used from thread when it was constructed
+                for (root in mediaRoots) {
+                    mediaBrowser.unsubscribe(root)
+
+                    callback(initMediaBrowserLoader(root, mediaBrowser))
+                }
+            }
+        }
 
         //idea taken here https://medium.com/swlh/coroutines-tips-and-tricks-callbacks-synchronous-way-to-work-with-asynchronous-code-b9fb840fb793
         @ExperimentalCoroutinesApi
@@ -18,8 +30,7 @@ class MediaBrowserLoader {
                 rootMediaId: String,
                 mediaBrowser: MediaBrowserCompat):
                 Result<List<MediaBrowserCompat.MediaItem>>? {
-            return suspendCancellableCoroutine {
-                cont: CancellableContinuation<Result<List<MediaBrowserCompat.MediaItem>>?> ->
+            return suspendCancellableCoroutine { cont: CancellableContinuation<Result<List<MediaBrowserCompat.MediaItem>>?> ->
                 mediaBrowser.subscribe(rootMediaId,
                         object : MediaBrowserCompat.SubscriptionCallback() {
                             override fun onChildrenLoaded(
@@ -38,16 +49,6 @@ class MediaBrowserLoader {
                                 }
                             }
                         })
-            }
-        }
-
-        @JvmStatic
-        @ExperimentalCoroutinesApi
-        fun loadChildrenMediaItems(rootMediaId: String, mediaBrowser: MediaBrowserCompat,
-                                   callback: (Result<List<MediaBrowserCompat.MediaItem>>?) -> Unit) {
-            mediaBrowser.unsubscribe(rootMediaId)
-            CoroutineScope(Job() + Dispatchers.Main).launch {
-                callback(initMediaBrowserLoader(rootMediaId, mediaBrowser))
             }
         }
     }

@@ -10,8 +10,6 @@ import com.ashomok.lullabies.di_dagger.BasePresenter;
 
 import java.util.List;
 
-import io.reactivex.Single;
-
 public class MusicPlayerContract {
 
     interface View {
@@ -30,8 +28,6 @@ public class MusicPlayerContract {
 
         void addMenuItems(List<MediaBrowserCompat.MediaItem> menuTitles);
 
-        void initMediaBrowser(String mMediaId, List<MediaBrowserCompat.MediaItem> categoriesMediaItems);
-
         void checkForUserVisibleErrors(boolean forceError);
     }
 
@@ -39,9 +35,6 @@ public class MusicPlayerContract {
         void onRemoveAdsClicked();
 
         void proposeRemoveAds();
-
-//        Single<List<MediaBrowserCompat.MediaItem>> initMediaBrowserLoader(
-//                String rootMediaId, MediaBrowserCompat mediaBrowser);
 
         void rateApp();
     }

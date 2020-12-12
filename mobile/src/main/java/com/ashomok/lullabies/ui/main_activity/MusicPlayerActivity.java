@@ -27,7 +27,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,13 +62,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.schedulers.Schedulers;
-import kotlinx.coroutines.CoroutineScope;
-import kotlinx.coroutines.Dispatchers;
-import kotlinx.coroutines.Job;
+import kotlin.Unit;
 
 import static android.view.Menu.NONE;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
+import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 
 /**
  * Main activity for the music player.
@@ -131,7 +128,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
         emptyResultView = findViewById(R.id.empty_result_layout);
         mErrorMessage = emptyResultView.findViewById(R.id.error_message);
-        mPresenter.takeView(this); //todo move to the end of method?
 
         initializeToolbar();
         initializeNavigationDrawer();
@@ -141,46 +137,54 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         if (savedInstanceState == null) {
             startFullScreenActivityIfNeeded(getIntent());
         }
-
-        initAd();
+        adMobAd.initAd(findViewById(R.id.ads_container));
+        mPresenter.takeView(this);
     }
 
-    //todo
+
     private void loadChildrenMediaItems(String mediaId) {
-        MediaBrowserLoader.loadChildrenMediaItems(INIT_MEDIA_ID_VALUE_ROOT, getMediaBrowser(), result -> {
-            if (result instanceof Result.Success) {
-                List<MediaBrowserCompat.MediaItem> mediaItems =
-                        ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
-                addMenuItems(mediaItems);
-                initMediaBrowser(mediaId, mediaItems);
-            } else if (result instanceof Result.Error) {
 
-                LogHelper.e(TAG, ((Result.Error) result).getException(),
-                        "Error from loading media");
-                checkForUserVisibleErrors(true);
-            } else {
-                LogHelper.e(TAG, "Unknown error, unexpected result.");
+        String[] mediaRootsToInit = new String[]{MEDIA_ID_FAVOURITES, INIT_MEDIA_ID_VALUE_ROOT};
+
+        MediaBrowserLoader.loadChildrenMediaItems(
+                getMediaBrowser(),
+                mediaRootsToInit,
+                result -> processResult(mediaId, result));
+    }
+
+    @Nullable
+    private Unit processResult(
+            String mMediaId,
+            Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
+
+        if (result instanceof Result.Success) {
+            List<MediaBrowserCompat.MediaItem> mediaItems =
+                    ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
+            if (mediaItems != null && mediaItems.size() > 0) {
+                addMenuItems(mediaItems);
+
+                //on root and categories obtained
+                if (mediaItems.get(0).getMediaId().contains(MEDIA_ID_MUSICS_BY_CATEGORY) &&
+                        (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || mMediaId.equals(getMediaBrowser().getRoot()))
+                ) {
+                    //browse first category as default
+                    mMediaId = mediaItems.get(0).getMediaId();
+                }
+
+                LogHelper.d(TAG, "browse mediaId " + mMediaId);
+                navigateToBrowser(mMediaId);
             }
 
-            return null;
-        });
+        } else if (result instanceof Result.Error) {
 
-        MediaBrowserLoader.loadChildrenMediaItems(MEDIA_ID_FAVOURITES, getMediaBrowser(), result -> {
-            if (result instanceof Result.Success) {
-                List<MediaBrowserCompat.MediaItem> mediaItems =
-                        ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
-                addMenuItems(mediaItems);
-            } else if (result instanceof Result.Error) {
+            LogHelper.e(TAG, ((Result.Error) result).getException(),
+                    "Error from loading media");
+            checkForUserVisibleErrors(true);
+        } else {
+            LogHelper.e(TAG, "Unknown error, unexpected result.");
+        }
 
-                LogHelper.e(TAG, ((Result.Error) result).getException(),
-                        "Error from loading media");
-                checkForUserVisibleErrors(true);
-            } else {
-                LogHelper.e(TAG, "Unknown error, unexpected result.");
-            }
-
-            return null;
-        });
+        return null;
     }
 
     @Override
@@ -221,32 +225,15 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                         default:
                             break;
                     }
-                    //todo add favourites menu item
-
                     if (musicMenuRoots != null) {
                         for (int i = 0; i < musicMenuRoots.size(); i++) {
-                            if (musicMenuRoots.get(i).getDescription().getMediaId().contains(menuItem.getTitle())) {
+                            String categoryTitle = musicMenuRoots.get(i).getDescription().getMediaId();
+                            if (categoryTitle.contains(menuItem.getTitle())) {
                                 activityClass = MusicPlayerActivity.class;
-                                mediaId = musicMenuRoots.get(i).getDescription().getMediaId();
+                                mediaId = categoryTitle;
                             }
                         }
                     }
-
-//                    if (categories != null) {
-//                        for (int i = 0; i < categories.size(); i++) {
-//                            if (menuItem.getItemId() == i) {
-//                                activityClass = MusicPlayerActivity.class;
-//                                mediaId = categories.get(i).getMediaId();
-//                            }
-//                        }
-//                    }
-
-//                    if (categories != null &&
-//                            activityClass == null &&
-//                            menuItem.getItemId() < categories.size()) { //possible ids for categories is 0, 1, 2 while another menuItemIds is like 2131362328
-//                        activityClass = MusicPlayerActivity.class;
-//                        mediaId = categories.get(menuItem.getItemId()).getMediaId();
-//                    }
 
                     if (activityClass != null) {
                         Intent intent = new Intent(this, activityClass);
@@ -441,10 +428,10 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         }
     }
 
-    private void initAd() {
-        adMobAd.initAd(findViewById(R.id.ads_container));
-        adMobAd.showAd(Settings.isAdsActive);
-    }
+//    private void initAd() {
+//
+////        adMobAd.showAd(Settings.isAdsActive);
+//    }
 
     @Override
     public void showError(int errorMessageRes) {
@@ -499,8 +486,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     @Override
     public void addMenuItems(List<MediaBrowserCompat.MediaItem> mediaItems) {
-
-        musicMenuRoots.addAll(mediaItems); //todo add set here to prevent duplicates?
+        musicMenuRoots.addAll(mediaItems);
         LogHelper.d(TAG, "addMenuItems called with size " + mediaItems.size()
                 + ", menu size is " + musicMenuRoots.size());
 
@@ -511,42 +497,13 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                 MediaBrowserCompat.MediaItem item = mediaItems.get(i);
                 MenuItem menuItem = navigationView.getMenu().add(NONE, i, i,
                         item.getDescription().getTitle());
-                menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));
-                //todo update navigation draw here?
+                if (item.getMediaId().contains(MEDIA_ID_FAVOURITES)) {
+                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_star_black_24dp));
+                } else {
+                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));
+                }
             }
         }
-    }
-
-    //todo remove next
-//    @Override
-//    public void addMenuItems(List<MediaBrowserCompat.MediaItem> mediaItems) {
-//        if (musicMenuRoots == null || musicMenuRoots.size() != mediaItems.size()) {
-//            musicMenuRoots = mediaItems;
-//            if (navigationView == null) {
-//                LogHelper.e(TAG, "navigationView == null - unexpected");
-//            } else {
-//                for (int i = 0; i < musicMenuRoots.size(); i++) {
-//                    MediaBrowserCompat.MediaItem item = musicMenuRoots.get(i);
-//                    MenuItem menuItem = navigationView.getMenu().add(NONE, i, i,
-//                            item.getDescription().getTitle());
-//                    menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));
-//                }
-//            }
-//        }
-//    }
-
-    @Override
-    public void initMediaBrowser(String mMediaId, List<MediaBrowserCompat.MediaItem> categoriesMediaItems) {
-        if (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)
-                || mMediaId.equals(getMediaBrowser().getRoot())) {
-            if (categoriesMediaItems != null && categoriesMediaItems.size() > 0) {
-                //browse first call only
-                mMediaId = categoriesMediaItems.get(0).getMediaId();
-            }
-        }
-
-        LogHelper.d(TAG, "browse mediaId " + mMediaId);
-        navigateToBrowser(mMediaId);
     }
 
     @Override
