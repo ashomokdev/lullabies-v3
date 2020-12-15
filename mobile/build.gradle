@@ -113,10 +113,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
 
-    //rx todo replace rx to coroutines
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.16'
-    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.0.1'
-
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.28.2'
     // required if you want to use Mockito for Android tests

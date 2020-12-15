@@ -24,10 +24,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
 @Deprecated //if shows low revenue. Plain Old banner shows better revenue
 public class AdMobNativeBannerAd extends AdMobAd {
 
@@ -40,17 +36,28 @@ public class AdMobNativeBannerAd extends AdMobAd {
 
     @Override
     protected void init() {
-        loadNativeAd()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        ad -> {
-                            if (parentLayout != null) {
-                                populateUnifiedNativeAdView(parentLayout, ad);
-                            }
-                        }, throwable -> {
-                            LogHelper.e(TAG, throwable.getMessage());
-                        });
+        AdLoader.Builder builder = new AdLoader.Builder(context, context.getString(adid));
+
+        builder.forUnifiedNativeAd(ad -> {
+            if (parentLayout != null) {
+                populateUnifiedNativeAdView(parentLayout, ad);
+            }
+        });
+
+        VideoOptions videoOptions = new VideoOptions.Builder()
+                .setStartMuted(true)
+                .build();
+
+        NativeAdOptions adOptions = new NativeAdOptions.Builder()
+                .setVideoOptions(videoOptions)
+                .build();
+
+        builder.withNativeAdOptions(adOptions);
+
+        builder.withAdListener(getAdListener());
+
+        AdLoader adLoader = builder.build();
+        adLoader.loadAd(new AdRequest.Builder().build());
     }
 
     private void populateUnifiedNativeAdView(View adView, UnifiedNativeAd nativeAd) {
@@ -143,34 +150,5 @@ public class AdMobNativeBannerAd extends AdMobAd {
         AdLoader adLoader = builder.build();
         adLoader.loadAds(new AdRequest.Builder().build(), 5);
         return result;
-    }
-
-    private Single<UnifiedNativeAd> loadNativeAd() {
-
-        return Single.create(emitter -> {
-
-            AdLoader.Builder builder = new AdLoader.Builder(context, context.getString(adid));
-
-            builder.forUnifiedNativeAd(ad -> {
-                        emitter.onSuccess(ad);
-                        LogHelper.d(TAG, "Native ad loaded: " + ad.toString());
-                    }
-            );
-
-            VideoOptions videoOptions = new VideoOptions.Builder()
-                    .setStartMuted(true)
-                    .build();
-
-            NativeAdOptions adOptions = new NativeAdOptions.Builder()
-                    .setVideoOptions(videoOptions)
-                    .build();
-
-            builder.withNativeAdOptions(adOptions);
-
-            builder.withAdListener(getAdListener());
-
-            AdLoader adLoader = builder.build();
-            adLoader.loadAd(new AdRequest.Builder().build());
-        });
     }
 }

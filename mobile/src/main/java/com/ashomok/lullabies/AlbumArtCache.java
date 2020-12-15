@@ -22,13 +22,7 @@ import android.util.LruCache;
 import com.ashomok.lullabies.utils.BitmapHelper;
 import com.ashomok.lullabies.utils.LogHelper;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
-
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Implements a basic cache of album arts, with async loading support.
@@ -96,39 +90,30 @@ public final class AlbumArtCache {
         }
         LogHelper.d(TAG, "getOrFetch: starting asynctask to fetch ", artUrl);
 
-        fetchImageSingle(artUrl)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(bitmaps -> {
-                    if (bitmaps == null) {
-                    listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
-                } else {
-                    listener.onFetched(artUrl,
-                        bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
-                    LogHelper.d(TAG, "onFetched");
-                }
-                }, throwable -> {
-                    LogHelper.e(TAG, throwable.getMessage());
-                });
+        fetchImage(artUrl, listener);
     }
 
-    Single<Bitmap[]> fetchImageSingle(final String artUrl) {
-        return Single.create(emitter -> {
-            Bitmap[] bitmaps = null;
-            try {
-                Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl,
-                        MAX_ART_WIDTH, MAX_ART_HEIGHT);
-                Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
-                        MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
-                bitmaps = new Bitmap[]{bitmap, icon};
-                mCache.put(artUrl, bitmaps);
-            } catch (Exception e) {
-                emitter.onError(e);
-            }
-            LogHelper.d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
-                    mCache.size());
-            emitter.onSuccess(bitmaps);
-        });
+    private void fetchImage(String artUrl, FetchListener listener) {
+        Bitmap[] bitmaps = null;
+        try {
+            Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl, //todo if expensive - move to coroutine in Dispatcher.Default thread pool
+                    MAX_ART_WIDTH, MAX_ART_HEIGHT);
+            Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
+                    MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
+            bitmaps = new Bitmap[]{bitmap, icon};
+            mCache.put(artUrl, bitmaps);
+        } catch (Exception e) {
+            LogHelper.e(TAG, e.getMessage());
+        }
+        LogHelper.d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
+                mCache.size());
+        if (bitmaps == null) {
+            listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
+        } else {
+            listener.onFetched(artUrl,
+                    bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
+            LogHelper.d(TAG, "onFetched");
+        }
     }
 
     public static abstract class FetchListener {
