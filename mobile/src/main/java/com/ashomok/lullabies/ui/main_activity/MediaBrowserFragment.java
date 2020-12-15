@@ -21,7 +21,6 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.tools.CirclesViewPagerPageIndicatorView;
@@ -36,6 +36,7 @@ import com.ashomok.lullabies.tools.ClickableViewPager;
 import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
+import com.ashomok.lullabies.utils.Result;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import java.util.List;
@@ -43,8 +44,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
-import io.reactivex.Completable;
-import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 
 import static android.view.View.VISIBLE;
 
@@ -98,42 +98,6 @@ public class MediaBrowserFragment extends DaggerFragment {
                 }
             };
 
-    //todo replace with couroutine
-    Completable loadMediaComplatable = Completable.create(emitter ->
-            mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId,
-                    new MediaBrowserCompat.SubscriptionCallback() {
-                        @Override
-                        public void onChildrenLoaded(@NonNull String parentId,
-                                                     @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                            try {
-                                LogHelper.d(TAG, "fragment onChildrenLoaded, parentId=" + parentId +
-                                        "  count=" + children.size());
-                                checkForUserVisibleErrors(children.isEmpty());
-
-                                if (mBrowserAdapter == null) {
-                                    LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
-                                }
-
-                                mBrowserAdapter.clear();
-                                for (MediaBrowserCompat.MediaItem item : children) {
-                                    mBrowserAdapter.add(item);
-                                }
-                                mBrowserAdapter.notifyDataSetChanged();
-
-                                emitter.onComplete();
-                            } catch (Throwable t) {
-                                LogHelper.e(TAG, "Error on childrenloaded ", t);
-                                emitter.onError(t);
-                            }
-                        }
-
-                        @Override
-                        public void onError(@NonNull String id) {
-                            LogHelper.e(TAG, "browse fragment subscription onError, id=" + id);
-                            emitter.onError(new Exception(id));
-                        }
-                    }));
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -151,7 +115,6 @@ public class MediaBrowserFragment extends DaggerFragment {
 
         mBrowserAdapter = null;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -247,29 +210,10 @@ public class MediaBrowserFragment extends DaggerFragment {
 
         setToolbarTitle(mMediaId);
 
-        //todo replace with couroutine
-        loadMediaComplatable
-                .doOnSubscribe(disposable -> {
-                    // Unsubscribing before subscribing is required if this mediaId already has a subscriber
-                    // on this MediaBrowser instance. Subscribing to an already subscribed mediaId will replace
-                    // the callback, but won't trigger the initial callback.onChildrenLoaded.
-                    //
-                    // This is temporary: A bug is being fixed that will make subscribe
-                    // consistently call onChildrenLoaded initially, no matter if it is replacing an existing
-                    // subscriber or not. Currently this only happens if the mediaID has no previous
-                    // subscriber or if the media content changes on the service side, so we need to
-                    // unsubscribe first.
-                    mMediaFragmentListener.getMediaBrowser().unsubscribe(mMediaId);
-                })
-                .subscribeOn(Schedulers.io())
-                .subscribe(() -> {
-                    LogHelper.d(TAG, "complatable finished");
-                    progressBar.setVisibility(View.GONE);
-                }, throwable -> {
-                    LogHelper.e(TAG, throwable, "Error from loading media");
-                    progressBar.setVisibility(View.GONE);
-                    checkForUserVisibleErrors(true);
-                });
+        MediaBrowserLoader.loadChildrenMediaItems(
+                mMediaFragmentListener.getMediaBrowser(),
+                new String[]{mMediaId},
+                this::processResult);
 
         // Add MediaController callback so we can redraw the view when metadata changes:
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
@@ -279,6 +223,35 @@ public class MediaBrowserFragment extends DaggerFragment {
             PlaybackStateCompat state = controller.getPlaybackState();
             updateLoadingView(state);
         }
+    }
+
+    @Nullable
+    private Unit processResult(
+            Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
+
+        if (result instanceof Result.Success) {
+            List<MediaBrowserCompat.MediaItem> mediaItems =
+                    ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
+
+            if (mBrowserAdapter == null) {
+                LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+            } else {
+                mBrowserAdapter.clear();
+                for (MediaBrowserCompat.MediaItem item : mediaItems) {
+                    mBrowserAdapter.add(item);
+                }
+                mBrowserAdapter.notifyDataSetChanged();
+            }
+            progressBar.setVisibility(View.GONE);
+        } else if (result instanceof Result.Error) {
+            LogHelper.e(TAG, ((Result.Error) result).getException(),
+                    "Error from loading media");
+            checkForUserVisibleErrors(true);
+            progressBar.setVisibility(View.GONE);
+        } else {
+            LogHelper.e(TAG, "Unknown error, unexpected result.");
+        }
+        return null;
     }
 
     private void checkForUserVisibleErrors(boolean forceError) {

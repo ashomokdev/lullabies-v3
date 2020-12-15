@@ -26,7 +26,7 @@ public class MusicPlayerContract {
 
         AppCompatActivity getActivity();
 
-        void addMenuItems(List<MediaBrowserCompat.MediaItem> menuTitles);
+        void addMenuItems(List<String> mediaIds);
 
         void checkForUserVisibleErrors(boolean forceError);
     }

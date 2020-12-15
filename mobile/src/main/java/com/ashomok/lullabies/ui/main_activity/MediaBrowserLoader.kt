@@ -35,8 +35,8 @@ class MediaBrowserLoader {
                 Flow<Result<List<MediaBrowserCompat.MediaItem>>?> =
 
                 callbackFlow {
-                    mediaBrowser.unsubscribe(rootMediaId)
                     LogHelper.d(TAG, "initMediaBrowserLoader called with $rootMediaId")
+                    mediaBrowser.unsubscribe(rootMediaId)
 
                     val callback: MediaBrowserCompat.SubscriptionCallback =
                             object : MediaBrowserCompat.SubscriptionCallback() {
