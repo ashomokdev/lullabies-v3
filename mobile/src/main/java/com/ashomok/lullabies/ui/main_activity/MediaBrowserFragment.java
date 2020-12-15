@@ -98,6 +98,7 @@ public class MediaBrowserFragment extends DaggerFragment {
                 }
             };
 
+    //todo replace with couroutine
     Completable loadMediaComplatable = Completable.create(emitter ->
             mMediaFragmentListener.getMediaBrowser().subscribe(mMediaId,
                     new MediaBrowserCompat.SubscriptionCallback() {
@@ -246,6 +247,7 @@ public class MediaBrowserFragment extends DaggerFragment {
 
         setToolbarTitle(mMediaId);
 
+        //todo replace with couroutine
         loadMediaComplatable
                 .doOnSubscribe(disposable -> {
                     // Unsubscribing before subscribing is required if this mediaId already has a subscriber

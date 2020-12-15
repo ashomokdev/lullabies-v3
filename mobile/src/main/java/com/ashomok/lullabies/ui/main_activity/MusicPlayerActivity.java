@@ -141,20 +141,18 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         mPresenter.takeView(this);
     }
 
-
-    private void loadChildrenMediaItems(String mediaId) {
-
-        String[] mediaRootsToInit = new String[]{MEDIA_ID_FAVOURITES, INIT_MEDIA_ID_VALUE_ROOT};
+    private void loadChildrenMediaItemsAsync(String currentMediaId) {
+        navigationView.getMenu().clear();
 
         MediaBrowserLoader.loadChildrenMediaItems(
                 getMediaBrowser(),
-                mediaRootsToInit,
-                result -> processResult(mediaId, result));
+                new String[]{MEDIA_ID_FAVOURITES, INIT_MEDIA_ID_VALUE_ROOT},
+                result -> processResult(currentMediaId, result));
     }
 
     @Nullable
     private Unit processResult(
-            String mMediaId,
+            String currentMediaId,
             Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
 
         if (result instanceof Result.Success) {
@@ -163,27 +161,25 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
             if (mediaItems != null && mediaItems.size() > 0) {
                 addMenuItems(mediaItems);
 
-                //on root and categories obtained
+                //currently on root and categories obtained
                 if (mediaItems.get(0).getMediaId().contains(MEDIA_ID_MUSICS_BY_CATEGORY) &&
-                        (mMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || mMediaId.equals(getMediaBrowser().getRoot()))
+                        (currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot()))
                 ) {
                     //browse first category as default
-                    mMediaId = mediaItems.get(0).getMediaId();
+                    currentMediaId = mediaItems.get(0).getMediaId();
                 }
 
-                LogHelper.d(TAG, "browse mediaId " + mMediaId);
-                navigateToBrowser(mMediaId);
+                LogHelper.d(TAG, "browse mediaId " + currentMediaId);
+                navigateToBrowser(currentMediaId);
             }
 
         } else if (result instanceof Result.Error) {
-
             LogHelper.e(TAG, ((Result.Error) result).getException(),
                     "Error from loading media");
             checkForUserVisibleErrors(true);
         } else {
             LogHelper.e(TAG, "Unknown error, unexpected result.");
         }
-
         return null;
     }
 
@@ -361,7 +357,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         }
         LogHelper.d(TAG, "initializeFromParams with media " + mediaId);
 
-        loadChildrenMediaItems(mediaId);
+        loadChildrenMediaItemsAsync(mediaId);
     }
 
     private void navigateToBrowser(@NonNull String mediaId) {
