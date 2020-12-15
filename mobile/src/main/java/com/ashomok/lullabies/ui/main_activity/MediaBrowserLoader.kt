@@ -21,7 +21,8 @@ class MediaBrowserLoader {
                                    callback: (Result<List<MediaBrowserCompat.MediaItem>>?) -> Unit) {
             for (root in mediaRoots) {
                 CoroutineScope(Job() + Dispatchers.Main).launch { //mediaBrowser is not thread-safe and should be used from thread when it was constructed
-                    initMediaBrowserLoader(root, mediaBrowser).onEach { value -> callback(value) }
+                    initMediaBrowserLoader(root, mediaBrowser).onEach {
+                        value -> callback(value) }
                             .catch { e -> LogHelper.e(TAG, e) }
                             .collect()
                 }

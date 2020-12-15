@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import com.ashomok.lullabies.utils.BitmapHelper;
+import com.ashomok.lullabies.utils.BitmapHelperKt;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import javax.inject.Inject;
@@ -52,7 +53,6 @@ public final class AlbumArtCache {
         return sInstance;
     }
 
-    @Inject
     public AlbumArtCache() {
         // Holds no more than MAX_ALBUM_ART_CACHE_SIZE bytes, bounded by maxmemory/4 and
         // Integer.MAX_VALUE:
@@ -94,25 +94,28 @@ public final class AlbumArtCache {
     }
 
     private void fetchImage(String artUrl, FetchListener listener) {
-        Bitmap[] bitmaps = null;
+
         try {
-            Bitmap bitmap = BitmapHelper.fetchAndRescaleBitmap(artUrl, //todo if expensive - move to coroutine in Dispatcher.Default thread pool
-                    MAX_ART_WIDTH, MAX_ART_HEIGHT);
-            Bitmap icon = BitmapHelper.scaleBitmap(bitmap,
-                    MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON);
-            bitmaps = new Bitmap[]{bitmap, icon};
-            mCache.put(artUrl, bitmaps);
+            BitmapHelperKt.fetchAndRescaleBitmap(artUrl,
+                    MAX_ART_WIDTH, MAX_ART_HEIGHT,
+                    MAX_ART_WIDTH_ICON, MAX_ART_HEIGHT_ICON, bitmaps -> {
+
+                        mCache.put(artUrl, bitmaps);
+
+                        LogHelper.d(TAG, "doInBackground: putting bitmap in cache. " +
+                                "cache size=" +  mCache.size());
+                        if (bitmaps == null) {
+                            listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
+                        } else {
+                            listener.onFetched(artUrl,
+                                    bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
+                            LogHelper.d(TAG, "onFetched");
+                        }
+                        return null;
+                    });
+
         } catch (Exception e) {
             LogHelper.e(TAG, e.getMessage());
-        }
-        LogHelper.d(TAG, "doInBackground: putting bitmap in cache. cache size=" +
-                mCache.size());
-        if (bitmaps == null) {
-            listener.onError(artUrl, new IllegalArgumentException("got null bitmaps"));
-        } else {
-            listener.onFetched(artUrl,
-                    bitmaps[BIG_BITMAP_INDEX], bitmaps[ICON_BITMAP_INDEX]);
-            LogHelper.d(TAG, "onFetched");
         }
     }
 

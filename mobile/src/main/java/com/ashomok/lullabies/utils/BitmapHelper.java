@@ -28,8 +28,8 @@ import java.net.URLConnection;
 
 import javax.inject.Inject;
 
+@Deprecated
 public class BitmapHelper {
-
 
     private static final String TAG = LogHelper.makeLogTag(BitmapHelper.class);
 
@@ -66,6 +66,7 @@ public class BitmapHelper {
         return Math.min(actualW / targetW, actualH / targetH);
     }
 
+    //use BitmapHelperKt.fetchAndRescaleBitmap instead for better performance using kotlin coroutine
     public static Bitmap fetchAndRescaleBitmap(String path, int width, int height)
             throws Exception {
         InputStream is = null;
