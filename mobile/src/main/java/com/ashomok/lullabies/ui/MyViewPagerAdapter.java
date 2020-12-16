@@ -2,6 +2,7 @@ package com.ashomok.lullabies.ui;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -18,7 +19,9 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
+
 import com.ashomok.lullabies.utils.LogHelper;
+import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
@@ -26,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.STATE_PLAYING;
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.getMediaItemState;
@@ -35,7 +40,6 @@ import static com.ashomok.lullabies.utils.MediaItemStateHelper.sColorStatePlayin
 
 public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCallback {
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
-    private final RateAppAskerImpl rateAppAsker; //todo better move to another class (music service?)
     private Activity activity;
 
     //pager views by position
@@ -53,11 +57,13 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
      */
     private final Object mLock = new Object();
 
+    RateAppAsker rateAppAsker;
 
-    @Inject
-    public MyViewPagerAdapter(Activity activity, RateAppAskerImpl rateAppAsker) {
+    public MyViewPagerAdapter(Activity activity) {
+        rateAppAsker = new RateAppAskerImpl(
+                activity.getSharedPreferences(activity.getString(R.string.preferences), Context.MODE_PRIVATE),
+                activity);
         this.activity = activity;
-        this.rateAppAsker = rateAppAsker;
         views = new SparseArray<>();
         mObjects = new ArrayList<>();
     }

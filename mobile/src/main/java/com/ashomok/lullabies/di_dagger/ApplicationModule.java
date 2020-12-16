@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
+import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import dagger.Binds;
 import dagger.Module;

@@ -11,12 +11,12 @@ import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.ad.AdMobBannerAd;
+import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
-import dagger.android.ContributesAndroidInjector;
 
 @Module
 public abstract class MusicPlayerModule {
@@ -58,7 +58,4 @@ public abstract class MusicPlayerModule {
 
     @Binds
     abstract MusicPlayerContract.Presenter mainPresenter(MusicPlayerPresenter presenter);
-
-    @ContributesAndroidInjector
-    abstract MediaBrowserFragment mediaBrowserFragment();
 }

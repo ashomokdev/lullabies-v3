@@ -60,7 +60,6 @@ import dagger.android.support.HasSupportFragmentInjector;
  * a {@link android.widget.ListView} with id 'drawerList'.
  */
 public abstract class ActionBarCastActivity extends AppCompatActivity
-//        implements HasSupportFragmentInjector
 {
 
     private static final String TAG = LogHelper.makeLogTag(ActionBarCastActivity.class);
@@ -89,9 +88,6 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
             }
         }
     };
-
-//    @Inject
-//    DispatchingAndroidInjector<Fragment> fragmentInjector;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -208,9 +204,4 @@ public abstract class ActionBarCastActivity extends AppCompatActivity
             overlay.show();
         }
     }
-//
-//    @Override
-//    public AndroidInjector<Fragment> supportFragmentInjector() {
-//        return fragmentInjector;
-//    }
 }

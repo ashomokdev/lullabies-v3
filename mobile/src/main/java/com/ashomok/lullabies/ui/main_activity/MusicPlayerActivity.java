@@ -120,9 +120,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
 
-//    @Nullable
-//    private Set<MediaBrowserCompat.MediaItem> musicMenuRoots = new HashSet<>();
-
     @Nullable
     private Set<String> mediaIdMenuRoots = new HashSet<>();
 
@@ -167,7 +164,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
             List<String> mediaIds = Stream.of(mediaItems)
                     .map(mediaItem -> mediaItem.getDescription().getMediaId()).toList();
 
-            if (mediaItems != null && mediaItems.size() > 0) {
+            if (mediaItems.size() > 0) {
                 addMenuItems(mediaIds);
 
                 //currently on root and categories obtained
@@ -504,7 +501,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         }
     }
 
-    private void setIcon(String mediaId, MenuItem menuItem) {
+    private void setIcon(@NonNull String mediaId, MenuItem menuItem) {
         if (mediaId.contains(MEDIA_ID_FAVOURITES)) {
             menuItem.setIcon(getResources().getDrawable(R.drawable.ic_star_black_24dp));
         } else {

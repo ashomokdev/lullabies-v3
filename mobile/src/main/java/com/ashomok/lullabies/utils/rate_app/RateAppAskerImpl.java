@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import javax.inject.Inject;
-
 
 /**
  * Created by iuliia on 10/5/16.
@@ -21,10 +21,9 @@ public class RateAppAskerImpl implements RateAppAsker {
     public static final int RATE_APP_COUNT = 70;
     public static final int NEVER_ASK = -1;
     private final Context context;
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
     private static final String TAG = LogHelper.makeLogTag(RateAppAskerImpl.class);
-    RateAppAskerCallback callback;
-
+    private RateAppAskerCallback callback;
 
     @Inject
     public RateAppAskerImpl(SharedPreferences sharedPreferences, Context context) {
@@ -32,6 +31,7 @@ public class RateAppAskerImpl implements RateAppAsker {
         this.context = context;
     }
 
+    @Override
     public void init(RateAppAskerCallback callback) {
         this.callback = callback;
 
@@ -44,7 +44,6 @@ public class RateAppAskerImpl implements RateAppAsker {
                 askToRate();
                 editor.putInt(context.getString(R.string.times_app_was_used), 0);
             } else {
-
                 editor.putInt(context.getString(R.string.times_app_was_used), ++timesAppWasUsed);
             }
             editor.apply();
