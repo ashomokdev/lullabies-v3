@@ -11,7 +11,6 @@ import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.ad.AdMobBannerAd;
-import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 
 import dagger.Binds;
@@ -31,7 +30,7 @@ public abstract class MusicPlayerModule {
     @Provides
     static @NonNull
     String provideMediaId(MusicPlayerActivity activity) {
-        return activity.getMediaId();
+        return activity.getMediaId(null, activity.getIntent());
     }
 
     @Provides

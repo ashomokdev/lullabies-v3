@@ -24,6 +24,7 @@ import com.ashomok.lullabies.model.MusicProviderSource;
 
 import org.mockito.Mockito;
 
+import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
 public class TestSetupHelper {
@@ -31,8 +32,10 @@ public class TestSetupHelper {
             throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
         SharedPreferences sharedPreferences = Mockito.mock(SharedPreferences.class);
-        Context context = Mockito.mock(Context.class);
-        MusicProvider provider = new MusicProvider(source, sharedPreferences, context);
+
+        SharedPreferences.Editor editor = Mockito.mock(SharedPreferences.Editor.class);
+        Mockito.when(sharedPreferences.edit()).thenReturn(editor);
+        MusicProvider provider = new MusicProvider(source, sharedPreferences);
         provider.retrieveMediaAsync(success -> signal.countDown());
         signal.await();
         return provider;

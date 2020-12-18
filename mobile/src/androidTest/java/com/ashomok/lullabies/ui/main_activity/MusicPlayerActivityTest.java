@@ -5,12 +5,10 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
-import com.ashomok.lullabies.playback.PlaybackManager;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,8 +83,9 @@ public class MusicPlayerActivityTest {
 
 
         //WHEN
-        onView(withIndex(withId(R.id.tap_me_btn), 0)).check(matches(isDisplayed()));
-        onView(withIndex(withId(R.id.tap_me_btn), 0)).perform(click());
+        onView(withIndex(withId(R.id.tap_me_img), 0)).check(matches(isDisplayed()));
+        onView(withIndex(withId(R.id.image), 0)).check(matches(isDisplayed()));
+        onView(withIndex(withId(R.id.image), 0)).perform(click());
         countDownLatch.await();
 
         //THAN

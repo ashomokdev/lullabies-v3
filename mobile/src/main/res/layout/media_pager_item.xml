@@ -26,7 +26,7 @@
             android:scaleType="centerCrop" />
 
         <com.ashomok.lullabies.tools.TapMeAnimatedImageView
-            android:id="@+id/tap_me_btn"
+            android:id="@+id/tap_me_img"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerInParent="true"

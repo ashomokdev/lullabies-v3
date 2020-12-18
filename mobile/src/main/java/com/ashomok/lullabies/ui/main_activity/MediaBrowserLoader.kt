@@ -2,6 +2,8 @@ package com.ashomok.lullabies.ui.main_activity
 
 import android.support.v4.media.MediaBrowserCompat
 import com.ashomok.lullabies.utils.LogHelper
+import com.ashomok.lullabies.utils.MediaIDHelper
+import com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES
 import com.ashomok.lullabies.utils.Result
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -21,11 +23,44 @@ class MediaBrowserLoader {
                                    callback: (Result<List<MediaBrowserCompat.MediaItem>>?) -> Unit) {
             for (root in mediaRoots) {
                 CoroutineScope(Job() + Dispatchers.Main).launch { //mediaBrowser is not thread-safe and should be used from thread when it was constructed
-                    initMediaBrowserLoader(root, mediaBrowser).onEach {
-                        value -> callback(value) }
+                    initMediaBrowserLoader(root, mediaBrowser).onEach { value ->
+                        run {
+                            val mediaItems = (value as Result.Success<List<MediaBrowserCompat.MediaItem>>).data
+                            if (mediaItems.isNotEmpty()) {
+                                val favouriteCategoryMediaId: String? = tryToGetFavouriteCategoryMediaId(mediaItems)
+                                if (!favouriteCategoryMediaId.isNullOrEmpty()) {
+                                    //next code do not call callback from 'My favourites' if no favourites media
+                                    initMediaBrowserLoader(favouriteCategoryMediaId, mediaBrowser)
+                                            .onEach { favourites ->
+                                                run {
+                                                    if ((favourites as Result.Success<List<MediaBrowserCompat.MediaItem>>)
+                                                                    .data.isNotEmpty()) {
+                                                        callback(value)
+                                                    }
+                                                }
+                                            }.catch { e -> LogHelper.e(TAG, e) }
+                                            .collect()
+                                } else {
+                                    callback(value)
+                                }
+                            }
+                        }
+                    }
                             .catch { e -> LogHelper.e(TAG, e) }
                             .collect()
                 }
+            }
+        }
+
+        private fun tryToGetFavouriteCategoryMediaId(mediaItems: List<MediaBrowserCompat.MediaItem>): String? {
+            return if (mediaItems.size == 1
+                    && mediaItems[0].description.mediaId != null
+                    && MediaIDHelper.isBrowseable(mediaItems[0].description.mediaId!!)
+                    && (mediaItems[0].description.mediaId?.contains(MEDIA_ID_FAVOURITES) == true)) {
+
+                mediaItems[0].description.mediaId
+            } else {
+                null
             }
         }
 

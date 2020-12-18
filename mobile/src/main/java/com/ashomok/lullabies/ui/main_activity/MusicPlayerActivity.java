@@ -61,7 +61,6 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -158,26 +157,10 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
             Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
 
         if (result instanceof Result.Success) {
-            List<MediaBrowserCompat.MediaItem> mediaItems =
-                    ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
+            List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
 
-            List<String> mediaIds = Stream.of(mediaItems)
-                    .map(mediaItem -> mediaItem.getDescription().getMediaId()).toList();
-
-            if (mediaItems.size() > 0) {
-                addMenuItems(mediaIds);
-
-                //currently on root and categories obtained
-                if (mediaItems.get(0).getMediaId().contains(MEDIA_ID_MUSICS_BY_CATEGORY) &&
-                        (currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot()))
-                ) {
-                    //browse first category as default
-                    currentMediaId = mediaItems.get(0).getMediaId();
-                }
-
-                LogHelper.d(TAG, "browse mediaId " + currentMediaId);
-                navigateToBrowser(currentMediaId);
-            }
+            addMenuItems(mediaIds);
+            navigateToDefault(currentMediaId, mediaIds);
 
         } else if (result instanceof Result.Error) {
             LogHelper.e(TAG, ((Result.Error) result).getException(),
@@ -187,6 +170,29 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
             LogHelper.e(TAG, "Unknown error, unexpected result.");
         }
         return null;
+    }
+
+    private void navigateToDefault(String currentMediaId, List<String> mediaIds) {
+        if (mediaIds.size() > 1) { //ignore mediaIds=FAVOURITES (not fits because size==1)
+            //if currently on root and categories obtained
+            if ((currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot()))
+                    && mediaIds.get(0).contains(MEDIA_ID_MUSICS_BY_CATEGORY)
+            ) {
+                //browse first category as default
+                currentMediaId = mediaIds.get(0);
+            }
+
+            if (!currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) {
+                LogHelper.d(TAG, "browse mediaId " + currentMediaId);
+                navigateToBrowser(currentMediaId);
+            }
+        }
+    }
+
+    private List<String> getMediaIds(Result.Success<List<MediaBrowserCompat.MediaItem>> result) {
+        List<MediaBrowserCompat.MediaItem> mediaItems = result.getData();
+        return Stream.of(mediaItems)
+                .map(mediaItem -> mediaItem.getDescription().getMediaId()).toList();
     }
 
     @Override
@@ -227,7 +233,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                             break;
                     }
                     if (mediaIdMenuRoots != null) {
-                        for( String categoryMediaId : mediaIdMenuRoots){
+                        for (String categoryMediaId : mediaIdMenuRoots) {
                             if (categoryMediaId.contains(menuItem.getTitle())) {
                                 activityClass = MusicPlayerActivity.class;
                                 mediaId = categoryMediaId;
@@ -287,7 +293,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        String mediaId = getMediaId();
+        String mediaId = getMediaId(null, getIntent());
         outState.putString(SAVED_MEDIA_ID, mediaId);
         outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
         LogHelper.d(TAG, "onSaveInstanceState with media id " + mediaId);
@@ -332,7 +338,12 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     }
 
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
+        String mediaId = getMediaId(savedInstanceState, intent);
+        loadChildrenMediaItemsAsync(mediaId);
+    }
 
+    @NonNull
+    String getMediaId(@Nullable Bundle savedInstanceState, @NonNull Intent intent) {
         String mediaId = INIT_MEDIA_ID_VALUE_ROOT;
 
         // check if we were started from a "Play XYZ" voice search. If so, we save the extras
@@ -345,29 +356,27 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                     mVoiceSearchParams.getString(SearchManager.QUERY));
         } else if (intent.getStringExtra(SAVED_MEDIA_ID) != null) { //called from menu or from internet broadcast receiver
             mediaId = intent.getStringExtra(SAVED_MEDIA_ID);
-            LogHelper.d(TAG, "initializeFromParams with mediaId from String extra, " +
+            LogHelper.d(TAG, "getMediaId with mediaId from String extra, " +
                     "mediaId = " + mediaId);
         } else if (intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION) != null) { //returned from notification manager
             mediaId = intent.getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
+            LogHelper.d(TAG, "getMediaId with mediaId from notification manager, " +
+                    "mediaId = " + mediaId);
         } else if (savedInstanceState != null) { //screen rotated
             // If there is a saved media ID, use it
             String savedMediaId = savedInstanceState.getString(SAVED_MEDIA_ID);
             if (savedMediaId != null) {
                 mediaId = savedMediaId;
-                LogHelper.d(TAG, "initializeFromParams with savedInstanceState, " +
+                LogHelper.d(TAG, "getMediaId from savedInstanceState, " +
                         "mediaId = " + mediaId);
-
             }
         }
-        LogHelper.d(TAG, "initializeFromParams with media " + mediaId);
-
-        loadChildrenMediaItemsAsync(mediaId);
+        return mediaId;
     }
 
     private void navigateToBrowser(@NonNull String mediaId) {
-        LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
 
-        if (!mediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) { //don't create fragment for categories
+            LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
             MediaBrowserFragment fragment = getBrowseFragment();
             if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
                 fragment = new MediaBrowserFragment();
@@ -377,34 +386,9 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                         R.animator.slide_in_from_right, R.animator.slide_out_to_left,
                         R.animator.slide_in_from_left, R.animator.slide_out_to_right);
                 transaction.replace(R.id.media_browser_container, fragment, FRAGMENT_TAG);
-
                 transaction.commit();
-                LogHelper.d(TAG, "fragment with tag " + FRAGMENT_TAG +
-                        " commited with mediaId " + mediaId);
             }
-        }
-    }
 
-    public @NonNull
-    String getMediaId() {
-        String mediaId = null;
-        MediaBrowserFragment fragment = getBrowseFragment();
-        if (fragment == null) {
-            String savedCategoryMediaId = getIntent().getStringExtra(SAVED_MEDIA_ID);
-
-            if (savedCategoryMediaId != null) {
-                mediaId = savedCategoryMediaId;
-            } else if (getIntent().getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION) != null) { //returned from notification manager
-                mediaId = getIntent().getStringExtra(EXTRA_CURRENT_MEDIA_ID_FROM_NOTIFICATION);
-            }
-        } else {
-            mediaId = fragment.getMediaId(); //hierarchy mediaId
-            LogHelper.d(TAG, "getMediaId for non null fragment returned " + mediaId);
-        }
-        if (mediaId == null) {
-            mediaId = INIT_MEDIA_ID_VALUE_ROOT;
-        }
-        return mediaId;
     }
 
     private MediaBrowserFragment getBrowseFragment() {
@@ -481,8 +465,8 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     @Override
     public void addMenuItems(List<String> mediaIds) {
-        if (navigationView == null) {
-            LogHelper.e(TAG, "navigationView == null - unexpected");
+        if (navigationView == null || mediaIds == null) {
+            LogHelper.e(TAG, "unexpected error when add menu items");
         } else {
             for (int i = 0; i < mediaIds.size(); i++) {
 
@@ -492,7 +476,12 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                     mediaIdMenuRoots.add(mediaId);
                     String categoryTitle =
                             MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId);
-                    MenuItem menuItem = navigationView.getMenu().add(NONE, i, i,categoryTitle);
+                    MenuItem menuItem;
+                    if (mediaId.contains(MEDIA_ID_FAVOURITES)) {
+                        menuItem = navigationView.getMenu().add(NONE, i, i, categoryTitle);
+                    } else {
+                        menuItem = navigationView.getMenu().add(NONE, i, 1, categoryTitle);
+                    }
                     setIcon(mediaId, menuItem);
                 }
             }

@@ -37,13 +37,8 @@ import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.Result;
-import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
-import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
 
 import dagger.android.support.DaggerFragment;
 import kotlin.Unit;
@@ -70,10 +65,10 @@ public class MediaBrowserFragment extends DaggerFragment {
     private View emptyResultView;
     private TextView mErrorMessage;
     private CirclesViewPagerPageIndicatorView circlesViewPagerPageIndicatorView;
-    private ClickableViewPager viewPager; //todo why is it clickable when tap_button exists?
+    private ClickableViewPager viewPager;
     private ProgressBar progressBar;
 
-   private MyViewPagerAdapter mBrowserAdapter;
+    private MyViewPagerAdapter mBrowserAdapter;
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -136,8 +131,6 @@ public class MediaBrowserFragment extends DaggerFragment {
 
             MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
             mMediaFragmentListener.onMediaItemSelected(item);
-
-
         });
 
         //todo possible to add favourite icon here for each mediaid
@@ -244,6 +237,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         } else if (result instanceof Result.Error) {
             LogHelper.e(TAG, ((Result.Error) result).getException(),
                     "Error from loading media");
+
             checkForUserVisibleErrors(true);
             progressBar.setVisibility(View.GONE);
         } else {

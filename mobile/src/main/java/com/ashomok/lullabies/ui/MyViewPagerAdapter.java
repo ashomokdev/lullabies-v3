@@ -28,10 +28,6 @@ import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjection;
-
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.STATE_PLAYING;
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.getMediaItemState;
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.initializeColorStateLists;
@@ -49,10 +45,10 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
      */
-    private List<MediaBrowserCompat.MediaItem> mObjects;
+    private List<MediaBrowserCompat.MediaItem> mediaItems;
 
     /**
-     * Lock used to modify the content of {@link #mObjects}. Any write operation
+     * Lock used to modify the content of {@link #mediaItems}. Any write operation
      * performed on the array should be synchronized on this lock.
      */
     private final Object mLock = new Object();
@@ -65,7 +61,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
                 activity);
         this.activity = activity;
         views = new SparseArray<>();
-        mObjects = new ArrayList<>();
+        mediaItems = new ArrayList<>();
     }
 
     @NonNull
@@ -83,7 +79,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
         TextView textViewName = convertView.findViewById(R.id.name);
         TextView textViewGenre = convertView.findViewById(R.id.genre);
 
-        MediaBrowserCompat.MediaItem mediaItem = mObjects.get(position);
+        MediaBrowserCompat.MediaItem mediaItem = mediaItems.get(position);
         MediaDescriptionCompat description = mediaItem.getDescription();
         fetchImageAsync(description, mBackgroundImage);
 
@@ -109,7 +105,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
 
     @Override
     public int getCount() {
-        return this.mObjects.size();
+        return this.mediaItems.size();
     }
 
     @Override
@@ -125,11 +121,11 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
                 key = views.keyAt(i);
                 View view = views.get(key);
 
-                MediaBrowserCompat.MediaItem mediaItem = mObjects.get(key);
+                MediaBrowserCompat.MediaItem mediaItem = mediaItems.get(key);
                 // If the state of convertView is different, we need to adapt the view to the new state.
                 int state = getMediaItemState(activity, mediaItem);
 
-                final ImageView tapMeImage = view.findViewById(R.id.tap_me_btn);
+                final ImageView tapMeImage = view.findViewById(R.id.tap_me_img);
                 if (state == STATE_PLAYING) {
                     tapMeImage.setVisibility(View.GONE);
                 } else {
@@ -137,14 +133,14 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
                 }
             }
         } catch (Exception e) {
-            //ignore
+            LogHelper.e(TAG, e);
         }
         super.notifyDataSetChanged();
     }
 
     public void add(MediaBrowserCompat.MediaItem item) {
         synchronized (mLock) {
-            mObjects.add(item);
+            mediaItems.add(item);
         }
         notifyDataSetChanged();
     }
@@ -154,13 +150,14 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
      */
     public void clear() {
         synchronized (mLock) {
-            mObjects.clear();
+            mediaItems.clear();
+            views.clear();
         }
         notifyDataSetChanged();
     }
 
     public MediaBrowserCompat.MediaItem getItem(int position) {
-        return mObjects.get(position);
+        return mediaItems.get(position);
     }
 
     private void fetchImageAsync(
