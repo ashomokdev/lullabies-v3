@@ -54,4 +54,5 @@
     <string name="classic_key">Классическая</string>
     <string name="mom_songs_key">Мамины</string>
     <string name="my_favorites">Моё Избранное</string>
+    <string name="empty_collection">Пустая коллекция</string>
 </resources>

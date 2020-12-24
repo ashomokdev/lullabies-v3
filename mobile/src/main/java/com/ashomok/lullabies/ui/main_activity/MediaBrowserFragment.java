@@ -202,9 +202,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         setToolbarTitle(mMediaId);
 
         MediaBrowserLoader.loadChildrenMediaItems(
-                mMediaFragmentListener.getMediaBrowser(),
-                new String[]{mMediaId},
-                this::processResult);
+                mMediaFragmentListener.getMediaBrowser(), mMediaId, this::processResult);
 
         // Add MediaController callback so we can redraw the view when metadata changes:
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
@@ -223,30 +221,30 @@ public class MediaBrowserFragment extends DaggerFragment {
         if (result instanceof Result.Success) {
             List<MediaBrowserCompat.MediaItem> mediaItems =
                     ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
-
-            if (mBrowserAdapter == null) {
-                LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+            if (mediaItems.isEmpty()) {
+                checkForUserVisibleErrors(true, R.string.empty_collection);
             } else {
-                mBrowserAdapter.clear();
-                for (MediaBrowserCompat.MediaItem item : mediaItems) {
-                    mBrowserAdapter.add(item);
+                if (mBrowserAdapter == null) {
+                    LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+                } else {
+                    mBrowserAdapter.clear();
+                    for (MediaBrowserCompat.MediaItem item : mediaItems) {
+                        mBrowserAdapter.add(item);
+                    }
+                    mBrowserAdapter.notifyDataSetChanged();
                 }
-                mBrowserAdapter.notifyDataSetChanged();
             }
-            progressBar.setVisibility(View.GONE);
         } else if (result instanceof Result.Error) {
-            LogHelper.e(TAG, ((Result.Error) result).getException(),
-                    "Error from loading media");
-
+            LogHelper.e(TAG, ((Result.Error) result).getException(), "Error from loading media");
             checkForUserVisibleErrors(true);
-            progressBar.setVisibility(View.GONE);
         } else {
             LogHelper.e(TAG, "Unknown error, unexpected result.");
         }
+        progressBar.setVisibility(View.GONE);
         return null;
     }
 
-    private void checkForUserVisibleErrors(boolean forceError) {
+    private void checkForUserVisibleErrors(boolean forceError, int errorMessageResId) {
         boolean showError = forceError;
 
         //if state is ERROR and metadata!=null, use playback state error message:
@@ -260,13 +258,17 @@ public class MediaBrowserFragment extends DaggerFragment {
             showError = true;
         } else if (forceError) {
             // Finally, if the caller requested to show error, show a generic message:
-            mErrorMessage.setText(R.string.error_loading_media);
+            mErrorMessage.setText(errorMessageResId);
             showError = true;
         }
 
         emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
         LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
                 " showError=", showError);
+    }
+
+    private void checkForUserVisibleErrors(boolean forceError) {
+        checkForUserVisibleErrors(forceError, R.string.error_loading_media);
     }
 
     public ClickableViewPager getViewPager() {

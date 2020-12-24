@@ -19,41 +19,75 @@ class MediaBrowserLoader {
         @JvmStatic
         @ExperimentalCoroutinesApi
         fun loadChildrenMediaItems(mediaBrowser: MediaBrowserCompat,
-                                   vararg mediaRoots: String,
+                                   mediaRoot: String,
                                    callback: (Result<List<MediaBrowserCompat.MediaItem>>?) -> Unit) {
-            for (root in mediaRoots) {
-                CoroutineScope(Job() + Dispatchers.Main).launch { //mediaBrowser is not thread-safe and should be used from thread when it was constructed
-                    initMediaBrowserLoader(root, mediaBrowser).onEach { value ->
-                        run {
-                            val mediaItems = (value as Result.Success<List<MediaBrowserCompat.MediaItem>>).data
-                            if (mediaItems.isNotEmpty()) {
-                                val favouriteCategoryMediaId: String? = tryToGetFavouriteCategoryMediaId(mediaItems)
-                                if (!favouriteCategoryMediaId.isNullOrEmpty()) {
-                                    //next code do not call callback from 'My favourites' if no favourites media
-                                    initMediaBrowserLoader(favouriteCategoryMediaId, mediaBrowser)
+
+            CoroutineScope(Job() + Dispatchers.Main).launch { //mediaBrowser is not thread-safe and should be used from thread when it was constructed
+                initMediaBrowserLoader(mediaRoot, mediaBrowser).onEach { value ->
+                    run {
+                        when (value) {
+                            is Result.Success<List<MediaBrowserCompat.MediaItem>> -> {
+                                callback(value)
+                            }
+                            is Result.Error -> {
+                                callback(value)
+                            }
+                            else -> {
+                                callback(Result.Error(Exception("Unexpected error")))
+                            }
+                        }
+                    }
+                }
+                        .catch { e -> LogHelper.e(TAG, e) }
+                        .collect()
+            }
+
+        }
+
+        @InternalCoroutinesApi
+        @JvmStatic
+        @ExperimentalCoroutinesApi
+        fun loadChildrenMediaItemsForFavourites(mediaBrowser: MediaBrowserCompat,
+                                                callback: (Result<List<MediaBrowserCompat.MediaItem>>?) -> Unit) {
+
+            CoroutineScope(Job() + Dispatchers.Main).launch { //mediaBrowser is not thread-safe and should be used from thread when it was constructed
+                initMediaBrowserLoader(MEDIA_ID_FAVOURITES, mediaBrowser).onEach { value ->
+                    run {
+                        when (value) {
+                            is Result.Success<List<MediaBrowserCompat.MediaItem>> -> {
+                                //next code do not call callback from 'My favourites' if no favourites media
+                                tryToGetFavouriteCategoryMediaId(value.data)?.let {
+                                    initMediaBrowserLoader(it, mediaBrowser)
                                             .onEach { favourites ->
                                                 run {
-                                                    if ((favourites as Result.Success<List<MediaBrowserCompat.MediaItem>>)
-                                                                    .data.isNotEmpty()) {
-                                                        callback(value)
+                                                    if (favourites is Result.Success<List<MediaBrowserCompat.MediaItem>>) {
+                                                        if (favourites.data.isNotEmpty()) {
+                                                            callback(value)
+                                                        }
                                                     }
                                                 }
                                             }.catch { e -> LogHelper.e(TAG, e) }
                                             .collect()
-                                } else {
-                                    callback(value)
                                 }
+                            }
+                            is Result.Error -> {
+                                callback(value)
+                            }
+                            else -> {
+                                callback(Result.Error(Exception("Unexpected error")))
                             }
                         }
                     }
-                            .catch { e -> LogHelper.e(TAG, e) }
-                            .collect()
                 }
+                        .catch { e -> LogHelper.e(TAG, e) }
+                        .collect()
             }
+
         }
 
         private fun tryToGetFavouriteCategoryMediaId(mediaItems: List<MediaBrowserCompat.MediaItem>): String? {
-            return if (mediaItems.size == 1
+            return if (mediaItems.isNotEmpty()
+                    && mediaItems.size == 1
                     && mediaItems[0].description.mediaId != null
                     && MediaIDHelper.isBrowseable(mediaItems[0].description.mediaId!!)
                     && (mediaItems[0].description.mediaId?.contains(MEDIA_ID_FAVOURITES) == true)) {
@@ -79,15 +113,9 @@ class MediaBrowserLoader {
                                 override fun onChildrenLoaded(
                                         parentId: String, children: MutableList<MediaBrowserCompat.MediaItem>) {
                                     super.onChildrenLoaded(parentId, children)
-                                    if (children.isEmpty()) {
-                                        LogHelper.e(TAG, "Error on onChildrenLoaded")
-                                        sendBlocking(Result.Error(Exception("Empty result")))
-
-                                    } else {
-                                        LogHelper.d(TAG, "onChildrenLoaded, parentId="
-                                                + parentId + "  count=" + children.size)
-                                        sendBlocking(Result.Success(children))
-                                    }
+                                    LogHelper.d(TAG, "onChildrenLoaded, parentId="
+                                            + parentId + "  count=" + children.size)
+                                    sendBlocking(Result.Success(children))
                                 }
                             }
 
@@ -101,7 +129,7 @@ class MediaBrowserLoader {
                     awaitClose { mediaBrowser.unsubscribe(rootMediaId) }
                 }
 
-        @Deprecated("It's better to use callbackFlow and Channels for multiple callbacks," +
+        @Deprecated("Not tested - may be broken - It's better to use callbackFlow and Channels for multiple callbacks," +
                 " see https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/callback-flow.html",
                 ReplaceWith("initMediaBrowserLoader"))
         @ExperimentalCoroutinesApi
@@ -135,7 +163,7 @@ class MediaBrowserLoader {
                 }
 
 
-        @Deprecated("It's better to use callbackFlow and Channels for multiple callbacks",
+        @Deprecated("Not tested - may be broken - It's better to use callbackFlow and Channels for multiple callbacks",
                 ReplaceWith("loadChildrenMediaItems"))
         @JvmStatic
         @ExperimentalCoroutinesApi

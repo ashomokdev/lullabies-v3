@@ -147,20 +147,32 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     private void loadChildrenMediaItemsAsync(String currentMediaId) {
         MediaBrowserLoader.loadChildrenMediaItems(
                 getMediaBrowser(),
-                new String[]{MEDIA_ID_FAVOURITES, INIT_MEDIA_ID_VALUE_ROOT},
-                result -> processResult(currentMediaId, result));
+                INIT_MEDIA_ID_VALUE_ROOT,
+                result -> {
+                    if (result instanceof Result.Success) {
+                        List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
+                        navigateToDefault(currentMediaId, mediaIds);
+                    }
+                    return addMenuItems(result);
+                });
+
+        MediaBrowserLoader.loadChildrenMediaItemsForFavourites(
+                getMediaBrowser(),  this::addMenuItems);
     }
 
     @Nullable
-    private Unit processResult(
-            String currentMediaId,
+    private Unit addMenuItems(
             Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
 
         if (result instanceof Result.Success) {
             List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
 
-            addMenuItems(mediaIds);
-            navigateToDefault(currentMediaId, mediaIds);
+            if (mediaIds.isEmpty()) {
+                LogHelper.e(TAG, "Unexpected empty result from loading media");
+                checkForUserVisibleErrors(true);
+            } else {
+                addMenuItems(mediaIds);
+            }
 
         } else if (result instanceof Result.Error) {
             LogHelper.e(TAG, ((Result.Error) result).getException(),
@@ -173,19 +185,17 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     }
 
     private void navigateToDefault(String currentMediaId, List<String> mediaIds) {
-        if (mediaIds.size() > 1) { //ignore mediaIds=FAVOURITES (not fits because size==1)
-            //if currently on root and categories obtained
-            if ((currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot()))
-                    && mediaIds.get(0).contains(MEDIA_ID_MUSICS_BY_CATEGORY)
-            ) {
-                //browse first category as default
-                currentMediaId = mediaIds.get(0);
-            }
+        //if currently on root and categories obtained
+        if ((currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot()))
+                && mediaIds.get(0).contains(MEDIA_ID_MUSICS_BY_CATEGORY)
+        ) {
+            //browse first category as default
+            currentMediaId = mediaIds.get(0);
+        }
 
-            if (!currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) {
-                LogHelper.d(TAG, "browse mediaId " + currentMediaId);
-                navigateToBrowser(currentMediaId);
-            }
+        if (!currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) {
+            LogHelper.d(TAG, "browse mediaId " + currentMediaId);
+            navigateToBrowser(currentMediaId);
         }
     }
 
@@ -376,18 +386,18 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     private void navigateToBrowser(@NonNull String mediaId) {
 
-            LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
-            MediaBrowserFragment fragment = getBrowseFragment();
-            if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
-                fragment = new MediaBrowserFragment();
-                fragment.setMediaId(mediaId);
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(
-                        R.animator.slide_in_from_right, R.animator.slide_out_to_left,
-                        R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-                transaction.replace(R.id.media_browser_container, fragment, FRAGMENT_TAG);
-                transaction.commit();
-            }
+        LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
+        MediaBrowserFragment fragment = getBrowseFragment();
+        if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
+            fragment = new MediaBrowserFragment();
+            fragment.setMediaId(mediaId);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(
+                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
+                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+            transaction.replace(R.id.media_browser_container, fragment, FRAGMENT_TAG);
+            transaction.commit();
+        }
 
     }
 
@@ -479,22 +489,15 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                     MenuItem menuItem;
                     if (mediaId.contains(MEDIA_ID_FAVOURITES)) {
                         menuItem = navigationView.getMenu().add(NONE, i, i, categoryTitle);
+                        menuItem.setIcon(R.drawable.ic_star_black_24dp);
                     } else {
                         menuItem = navigationView.getMenu().add(NONE, i, 1, categoryTitle);
+                        menuItem.setIcon(R.drawable.ic_library_music_black_24dp);
                     }
-                    setIcon(mediaId, menuItem);
                 }
             }
             LogHelper.d(TAG, "addMenuItems called with size " + mediaIds.size()
                     + ", menu size updated to " + mediaIdMenuRoots.size());
-        }
-    }
-
-    private void setIcon(@NonNull String mediaId, MenuItem menuItem) {
-        if (mediaId.contains(MEDIA_ID_FAVOURITES)) {
-            menuItem.setIcon(getResources().getDrawable(R.drawable.ic_star_black_24dp));
-        } else {
-            menuItem.setIcon(getResources().getDrawable(R.drawable.ic_library_music_black_24dp));
         }
     }
 

@@ -72,4 +72,5 @@
     <string name="ad_attribution" translatable="false">AD</string>
     <string name="mom_songs_key">Mom</string>
     <string name="my_favorites">My Favourites</string>
+    <string name="empty_collection">Empty collection</string>
 </resources>

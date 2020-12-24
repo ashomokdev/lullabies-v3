@@ -54,4 +54,5 @@
     <string name="classic_key">Classic</string>
     <string name="mom_songs_key">Mom</string>
     <string name="my_favorites">我的最爱</string>
+    <string name="empty_collection">空集合</string>
 </resources>
