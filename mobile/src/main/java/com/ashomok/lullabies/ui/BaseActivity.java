@@ -35,6 +35,13 @@ import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;
 
+import java.util.List;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
+
 /**
  * Base activity for activities that need to show a playback control fragment when media is playing.
  */
@@ -172,7 +179,6 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
         mMediaController.registerCallback(mMediaControllerCallback);
         setSupportMediaController(mMediaController);
 
-
         if (shouldShowControls()) {
             showPlaybackControls();
         } else {
@@ -238,6 +244,20 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                         LogHelper.e(TAG, e, "could not connect media controller");
                         hidePlaybackControls();
                     }
+                }
+            };
+
+    private final MediaBrowserCompat.CustomActionCallback mCustomActionCallback =
+            new MediaBrowserCompat.CustomActionCallback() {
+                @Override
+                public void onResult(String action, Bundle extras, Bundle resultData) {
+                    //todo
+                    super.onResult(action, extras, resultData);
+                }
+
+                @Override
+                public void onError(String action, Bundle extras, Bundle data) {
+                    super.onError(action, extras, data);
                 }
             };
 }

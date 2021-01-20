@@ -90,6 +90,8 @@ public class MediaBrowserFragment extends DaggerFragment {
                     checkForUserVisibleErrors(false);
                     mBrowserAdapter.notifyDataSetChanged();
                     updateLoadingView(state);
+
+                    //todo check favourites and notify MediaFragmentListener if changes
                 }
             };
 
@@ -204,6 +206,8 @@ public class MediaBrowserFragment extends DaggerFragment {
         MediaBrowserLoader.loadChildrenMediaItems(
                 mMediaFragmentListener.getMediaBrowser(), mMediaId, this::processResult);
 
+        //todo also load favourites here to have start point favoutites collection
+
         // Add MediaController callback so we can redraw the view when metadata changes:
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
@@ -261,10 +265,7 @@ public class MediaBrowserFragment extends DaggerFragment {
             mErrorMessage.setText(errorMessageResId);
             showError = true;
         }
-
         emptyResultView.setVisibility(showError ? View.VISIBLE : View.INVISIBLE);
-        LogHelper.d(TAG, "checkForUserVisibleErrors. forceError=", forceError,
-                " showError=", showError);
     }
 
     private void checkForUserVisibleErrors(boolean forceError) {

@@ -26,7 +26,10 @@ import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.STATE_PLAYING;
 import static com.ashomok.lullabies.utils.MediaItemStateHelper.getMediaItemState;
@@ -38,8 +41,8 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     private static final String TAG = LogHelper.makeLogTag(MyViewPagerAdapter.class);
     private Activity activity;
 
-    //pager views by position
-    private SparseArray<View> views;
+    //pager views
+    private Map<Integer, View> viewsByPosition;
 
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
@@ -60,7 +63,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
                 activity.getSharedPreferences(activity.getString(R.string.preferences), Context.MODE_PRIVATE),
                 activity);
         this.activity = activity;
-        views = new SparseArray<>();
+        viewsByPosition = new HashMap<>();
         mediaItems = new ArrayList<>();
     }
 
@@ -89,7 +92,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
         textViewGenre.setText(category);
 
         collection.addView(convertView);
-        views.put(position, convertView);
+        viewsByPosition.put(position, convertView);
 
         rateAppAsker.init(this);
 
@@ -100,7 +103,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object view) {
         container.removeView((View) view);
-        views.remove(position);
+        viewsByPosition.remove(position);
     }
 
     @Override
@@ -116,12 +119,11 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     @Override
     public void notifyDataSetChanged() {
         try {
-            int key;
-            for (int i = 0; i < views.size(); i++) {
-                key = views.keyAt(i);
-                View view = views.get(key);
+            for (Map.Entry<Integer, View> entry : viewsByPosition.entrySet()) {
+                Integer position = entry.getKey();
+                View view = entry.getValue();
 
-                MediaBrowserCompat.MediaItem mediaItem = mediaItems.get(key);
+                MediaBrowserCompat.MediaItem mediaItem = mediaItems.get(position);
                 // If the state of convertView is different, we need to adapt the view to the new state.
                 int state = getMediaItemState(activity, mediaItem);
 
@@ -151,7 +153,7 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     public void clear() {
         synchronized (mLock) {
             mediaItems.clear();
-            views.clear();
+            viewsByPosition.clear();
         }
         notifyDataSetChanged();
     }

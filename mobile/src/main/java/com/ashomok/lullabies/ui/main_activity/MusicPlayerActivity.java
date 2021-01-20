@@ -67,6 +67,10 @@ import javax.inject.Inject;
 import kotlin.Unit;
 
 import static android.view.Menu.NONE;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 
@@ -119,8 +123,7 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     private DrawerLayout mDrawerLayout;
     private NavigationView navigationView;
 
-    @Nullable
-    private Set<String> mediaIdMenuRoots = new HashSet<>();
+    private final Set<String> mediaIdMenuRoots = new HashSet<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -142,22 +145,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         }
         adMobAd.initAd(findViewById(R.id.ads_container));
         mPresenter.takeView(this);
-    }
-
-    private void loadChildrenMediaItemsAsync(String currentMediaId) {
-        MediaBrowserLoader.loadChildrenMediaItems(
-                getMediaBrowser(),
-                INIT_MEDIA_ID_VALUE_ROOT,
-                result -> {
-                    if (result instanceof Result.Success) {
-                        List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
-                        navigateToDefault(currentMediaId, mediaIds);
-                    }
-                    return addMenuItems(result);
-                });
-
-        MediaBrowserLoader.loadChildrenMediaItemsForFavourites(
-                getMediaBrowser(),  this::addMenuItems);
     }
 
     @Nullable
@@ -310,6 +297,27 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         super.onSaveInstanceState(outState);
     }
 
+    //todo
+//    @Override
+//    public void onFavouritesUpdated() {
+//        //todo implement add call from fragment
+////    see and use CUSTOM_ACTION_EXTRAS_KEY
+//
+//        List<PlaybackStateCompat.CustomAction> actions = mLastPlaybackState.getCustomActions();
+//        if (actions.size() > 0) {
+//            for (PlaybackStateCompat.CustomAction action : actions) {
+//                if (CUSTOM_ACTION_CHANGE_FAVOURITE_STATE.equals(action.getAction())) {
+//                    mFavouriteBtn.setImageDrawable(getResources().getDrawable(action.getIcon()));
+//
+//                    boolean isFavourite =
+//                            action.getExtras().getBoolean(CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE);
+//
+//                    mFavouritesBtn.setVisibility(isFavourite ? VISIBLE : GONE);
+//                }
+//            }
+//        }
+//    }
+
     @Override
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
         LogHelper.d(TAG, "onMediaItemSelected, mediaId=" + item.getMediaId());
@@ -349,7 +357,24 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
         String mediaId = getMediaId(savedInstanceState, intent);
-        loadChildrenMediaItemsAsync(mediaId);
+
+        MediaBrowserLoader.loadChildrenMediaItems(
+                getMediaBrowser(),
+                INIT_MEDIA_ID_VALUE_ROOT,
+                result -> {
+                    if (result instanceof Result.Success) {
+                        List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
+                        navigateToDefault(mediaId, mediaIds);
+                    }
+                    return addMenuItems(result);
+                });
+
+        MediaBrowserLoader.loadChildrenMediaItemsForFavourites(
+                getMediaBrowser(), res -> {
+                    //todo add to favourites collection and chack collection onsatate changed //onPlaybackStateChanged
+                    return addMenuItems(res);
+                }
+        );
     }
 
     @NonNull
@@ -385,7 +410,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
     }
 
     private void navigateToBrowser(@NonNull String mediaId) {
-
         LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
         MediaBrowserFragment fragment = getBrowseFragment();
         if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {

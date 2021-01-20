@@ -243,7 +243,6 @@
      @Override
      public int onStartCommand(Intent startIntent, int flags, int startId) {
 
-
          int result;
          if (startIntent == null) {
              result = START_STICKY_COMPATIBILITY;

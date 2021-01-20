@@ -41,6 +41,10 @@ import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActi
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
 import com.ashomok.lullabies.utils.LogHelper;
 
+import java.util.List;
+
+import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
+
 /**
  * A class that shows the Media Queue to the user.
  */
@@ -136,7 +140,7 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     private void onMetadataChanged(MediaMetadataCompat metadata) {
-        LogHelper.d(TAG, "onMetadataChanged ", metadata);
+        LogHelper.d(TAG, "onMetadataChanged ");
         if (getActivity() == null) {
             LogHelper.w(TAG, "onMetadataChanged called when getActivity null," +
                     "this should not happen if the callback was properly unregistered. Ignoring.");
