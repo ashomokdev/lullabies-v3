@@ -192,7 +192,6 @@ public class MediaBrowserFragment extends DaggerFragment {
     // completes after the onStart()
     public void onConnected() {
         LogHelper.d(TAG, "onConnected");
-
         if (isDetached()) {
             return;
         }
@@ -200,13 +199,11 @@ public class MediaBrowserFragment extends DaggerFragment {
         if (mMediaId == null) {
             mMediaId = mMediaFragmentListener.getMediaBrowser().getRoot();
         }
-
         setToolbarTitle(mMediaId);
 
         MediaBrowserLoader.loadChildrenMediaItems(
-                mMediaFragmentListener.getMediaBrowser(), mMediaId, this::processResult);
+                mMediaFragmentListener.getMediaBrowser(), mMediaId, this::fillAdapter);
 
-        //todo also load favourites here to have start point favoutites collection
 
         // Add MediaController callback so we can redraw the view when metadata changes:
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
@@ -219,7 +216,7 @@ public class MediaBrowserFragment extends DaggerFragment {
     }
 
     @Nullable
-    private Unit processResult(
+    private Unit fillAdapter(
             Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
 
         if (result instanceof Result.Success) {

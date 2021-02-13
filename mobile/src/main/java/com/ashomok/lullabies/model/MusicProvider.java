@@ -29,15 +29,14 @@ import com.annimon.stream.Stream;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
+import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.inject.Inject;
@@ -54,48 +53,25 @@ import static com.ashomok.lullabies.utils.MediaIDHelper.createMediaID;
 public class MusicProvider {
 
     private static final String TAG = LogHelper.makeLogTag(MusicProvider.class);
-    private static final String sharedPreferencesKey = "favourite_musics";
+
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;
-    private final ConcurrentLinkedQueue<String> mFavoriteMusicIds;
     private MusicProviderSource mSource;
     // Categorized caches for music track data:
     private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByCategory;
-    private SharedPreferences mSharedPreferences;
-    private volatile State mCurrentState = State.NON_INITIALIZED;
+    private FavouriteMusicDAO favouriteMusicDAO;
+
+    private State mCurrentState = State.NON_INITIALIZED;
 
     @Inject
     public MusicProvider(Context context, SharedPreferences sharedPreferences) {
         this(new LocalJSONSource(context), sharedPreferences);
     }
 
-    public MusicProvider(
-            MusicProviderSource source, SharedPreferences sharedPreferences) {
+    public MusicProvider(MusicProviderSource source, SharedPreferences sharedPreferences) {
         mSource = source;
-        mSharedPreferences = sharedPreferences;
         mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
-        mFavoriteMusicIds = new ConcurrentLinkedQueue<>(
-                mSharedPreferences.getStringSet(sharedPreferencesKey, new HashSet<>()));
-    }
-
-    private void addFavouriteMusic(String musicId) {
-        if (!mFavoriteMusicIds.contains(musicId)) {
-            mFavoriteMusicIds.add(musicId);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
-            LogHelper.d(TAG, "SharedPreferences updated with new data");
-            editor.apply();
-        }
-    }
-
-    private void removeFavouriteMusic(String mediaId) {
-        if (mFavoriteMusicIds.contains(mediaId)) {
-            mFavoriteMusicIds.remove(mediaId);
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
-            LogHelper.d(TAG, "SharedPreferences updated with new data");
-            editor.apply();
-        }
+       favouriteMusicDAO = FavouriteMusicDAO.getInstance(sharedPreferences);
     }
 
     /**
@@ -144,18 +120,18 @@ public class MusicProvider {
      */
     public List<MediaMetadataCompat> getFavouriteMusics() {
         ArrayList<MediaMetadataCompat> result = new ArrayList<>();
-        if (mCurrentState == State.INITIALIZED || !mFavoriteMusicIds.isEmpty()) {
-            for (String favouriteMusicId : mFavoriteMusicIds)
-                result.add(getMusicByMusicId(favouriteMusicId));
+        if (mCurrentState == State.INITIALIZED || !favouriteMusicDAO.isFavouriteCollectionEmpty()) {
+            for (String favouriteMusicId : favouriteMusicDAO.getFavoriteMusicIds())
+                result.add(getMediaMetadataCompatFromMusicId(favouriteMusicId));
         }
         return result;
     }
 
     public void setFavorite(String musicId, boolean isFavourite) {
         if (isFavourite) {
-            addFavouriteMusic(musicId);
+            favouriteMusicDAO.addFavouriteMusic(musicId);
         } else {
-            removeFavouriteMusic(musicId);
+            favouriteMusicDAO.removeFavouriteMusic(musicId);
         }
     }
 
@@ -211,12 +187,12 @@ public class MusicProvider {
      *
      * @param musicId The unique, non-hierarchical music ID.
      */
-    public MediaMetadataCompat getMusicByMusicId(String musicId) {
+    public MediaMetadataCompat getMediaMetadataCompatFromMusicId(String musicId) {
         return mMusicListById.containsKey(musicId) ? mMusicListById.get(musicId).metadata : null;
     }
 
     public synchronized void updateMusicArt(String musicId, Bitmap albumArt, Bitmap icon) {
-        MediaMetadataCompat metadata = getMusicByMusicId(musicId);
+        MediaMetadataCompat metadata = getMediaMetadataCompatFromMusicId(musicId);
         metadata = new MediaMetadataCompat.Builder(metadata)
 
                 // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
@@ -244,7 +220,7 @@ public class MusicProvider {
     }
 
     public boolean isFavorite(String musicId) {
-        return mFavoriteMusicIds.contains(musicId);
+        return favouriteMusicDAO.isFavorite(musicId);
     }
 
     /**

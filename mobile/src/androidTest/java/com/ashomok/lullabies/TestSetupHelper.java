@@ -35,7 +35,9 @@ public class TestSetupHelper {
 
         SharedPreferences.Editor editor = Mockito.mock(SharedPreferences.Editor.class);
         Mockito.when(sharedPreferences.edit()).thenReturn(editor);
+
         MusicProvider provider = new MusicProvider(source, sharedPreferences);
+
         provider.retrieveMediaAsync(success -> signal.countDown());
         signal.await();
         return provider;

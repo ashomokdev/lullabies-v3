@@ -273,7 +273,7 @@ public class QueueManagerTest {
             MediaSessionCompat.QueueItem item = queueManager.getCurrentMusic();
             String musicId = MediaIDHelper.extractMusicIDFromMediaID(
                     item.getDescription().getMediaId());
-            String itemGenre = provider.getMusicByMusicId(musicId).getString(
+            String itemGenre = provider.getMediaMetadataCompatFromMusicId(musicId).getString(
                     MediaMetadataCompat.METADATA_KEY_GENRE);
             assertEquals(genre, itemGenre);
             queueManager.skipQueuePosition(1);

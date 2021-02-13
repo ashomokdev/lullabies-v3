@@ -159,7 +159,7 @@ public class MusicProviderTest {
         assertNotEquals(bIcon, metadata.getBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON));
 
         provider.updateMusicArt(musicId, bArt, bIcon);
-        MediaMetadataCompat newMetadata = provider.getMusicByMusicId(musicId);
+        MediaMetadataCompat newMetadata = provider.getMediaMetadataCompatFromMusicId(musicId);
         assertEquals(bArt, newMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART));
         assertEquals(bIcon, newMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON));
     }
@@ -218,7 +218,7 @@ public class MusicProviderTest {
         for (MediaBrowserCompat.MediaItem mediaItem: level3) {
             assertTrue(mediaItem.isPlayable());
             assertFalse(mediaItem.isBrowsable());
-            MediaMetadataCompat metadata = provider.getMusicByMusicId(
+            MediaMetadataCompat metadata = provider.getMediaMetadataCompatFromMusicId(
                     MediaIDHelper.extractMusicIDFromMediaID(mediaItem.getMediaId()));
             assertEquals(genre, metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE));
         }

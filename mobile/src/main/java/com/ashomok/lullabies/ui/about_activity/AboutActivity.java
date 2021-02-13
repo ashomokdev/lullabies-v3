@@ -18,19 +18,16 @@ package com.ashomok.lullabies.ui.about_activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.Html;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashomok.lullabies.BuildConfig;
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.ui.BaseActivity;
+import com.ashomok.lullabies.ui.PlaybackControlActivity;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 
@@ -38,7 +35,7 @@ import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
 
-public class AboutActivity extends BaseActivity implements AboutContract.View {
+public class AboutActivity extends PlaybackControlActivity implements AboutContract.View {
     private static final String TAG = LogHelper.makeLogTag(AboutActivity.class);
 
     @Inject

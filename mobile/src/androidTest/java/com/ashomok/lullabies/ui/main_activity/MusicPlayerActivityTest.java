@@ -49,12 +49,10 @@ public class MusicPlayerActivityTest {
 
     @Test
     public void testMediaInitialized() throws Exception {
-        assertFalse(mMusicPlayerActivityTestRule.getActivity()
-                .getMediaId().isEmpty());
-        assertTrue(mMusicPlayerActivityTestRule.getActivity()
-                .getSupportMediaController().getQueue().size()>0);
-        assertTrue(  mMusicPlayerActivityTestRule.getActivity()
-                .getSupportMediaController().isSessionReady());
+        MusicPlayerActivity activity = mMusicPlayerActivityTestRule.getActivity();
+        assertFalse(activity.getMediaId(null, activity.getIntent()).isEmpty());
+        assertTrue(activity.getSupportMediaController().getQueue().size()>0);
+        assertTrue(  activity.getSupportMediaController().isSessionReady());
     }
 
     @Test

@@ -7,8 +7,12 @@ import android.content.SharedPreferences;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
+import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
 import com.ashomok.lullabies.utils.rate_app.RateAppAskerImpl;
+
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import dagger.Binds;
 import dagger.Module;
@@ -27,8 +31,7 @@ import dagger.Provides;
 public abstract class ApplicationModule {
     @Provides
     static SharedPreferences provideSharedPrefs(Context context) {
-        return context.getSharedPreferences(
-                context.getString(R.string.preferences), Context.MODE_PRIVATE);
+        return context.getSharedPreferences( context.getString(R.string.preferences), Context.MODE_PRIVATE);
     }
 
     @Provides

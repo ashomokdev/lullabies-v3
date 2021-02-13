@@ -18,6 +18,7 @@ package com.ashomok.lullabies.ui.main_activity;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
@@ -47,7 +48,7 @@ import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
-import com.ashomok.lullabies.ui.BaseActivity;
+import com.ashomok.lullabies.ui.PlaybackControlActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
 import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
@@ -56,8 +57,10 @@ import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.Result;
+import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,10 +70,6 @@ import javax.inject.Inject;
 import kotlin.Unit;
 
 import static android.view.Menu.NONE;
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
-import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 
@@ -80,8 +79,15 @@ import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEG
  * when it is created and connect/disconnect on start/stop. Thus, a MediaBrowser will be always
  * connected while this activity is running.
  */
+//todo chech sharedpreferances to get info about favourites!!!
+//todo it is not very good to know about favourites using custom action. Custom action may be used to add|remove track from favourites. Write and use another code here instead.
+//todo this activity MUST know about favourites changes.
+// It must check favourites size before every menu opening and hide/show My Favourites row.
+//MediaBrowserFragment must be customized for favourites collection.
+// I must receive favourites media from  MusicPlayerActivity insted
+// of loading it again inside customized MediaBrowserFragment
 
-public class MusicPlayerActivity extends BaseActivity implements MediaFragmentListener,
+public class MusicPlayerActivity extends PlaybackControlActivity implements MediaFragmentListener,
         MusicPlayerContract.View {
 
     private static final String TAG = LogHelper.makeLogTag(MusicPlayerActivity.class);
@@ -116,6 +122,9 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
 
     @Inject
     FirebaseAnalyticsHelper firebaseAnalyticsHelper;
+
+    @Inject
+    SharedPreferences sharedPreferences;
 
     private View emptyResultView;
     private TextView mErrorMessage;
@@ -206,6 +215,18 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         setupDrawerContent();
+
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+                Collection<String> favoriteMusicIds =
+                        FavouriteMusicDAO.getInstance(sharedPreferences).getFavoriteMusicIds();
+                showInfo("invalidate, size = " + favoriteMusicIds.size());
+
+                super.onDrawerOpened(drawerView);
+            }
+        });
     }
 
     private void setupDrawerContent() {
@@ -297,27 +318,6 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
         super.onSaveInstanceState(outState);
     }
 
-    //todo
-//    @Override
-//    public void onFavouritesUpdated() {
-//        //todo implement add call from fragment
-////    see and use CUSTOM_ACTION_EXTRAS_KEY
-//
-//        List<PlaybackStateCompat.CustomAction> actions = mLastPlaybackState.getCustomActions();
-//        if (actions.size() > 0) {
-//            for (PlaybackStateCompat.CustomAction action : actions) {
-//                if (CUSTOM_ACTION_CHANGE_FAVOURITE_STATE.equals(action.getAction())) {
-//                    mFavouriteBtn.setImageDrawable(getResources().getDrawable(action.getIcon()));
-//
-//                    boolean isFavourite =
-//                            action.getExtras().getBoolean(CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE);
-//
-//                    mFavouritesBtn.setVisibility(isFavourite ? VISIBLE : GONE);
-//                }
-//            }
-//        }
-//    }
-
     @Override
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
         LogHelper.d(TAG, "onMediaItemSelected, mediaId=" + item.getMediaId());
@@ -369,9 +369,8 @@ public class MusicPlayerActivity extends BaseActivity implements MediaFragmentLi
                     return addMenuItems(result);
                 });
 
-        MediaBrowserLoader.loadChildrenMediaItemsForFavourites(
+        MediaBrowserLoader.loadChildrenMediaItemsForFavourites( //todo use FavouriteMusicDAO instead
                 getMediaBrowser(), res -> {
-                    //todo add to favourites collection and chack collection onsatate changed //onPlaybackStateChanged
                     return addMenuItems(res);
                 }
         );

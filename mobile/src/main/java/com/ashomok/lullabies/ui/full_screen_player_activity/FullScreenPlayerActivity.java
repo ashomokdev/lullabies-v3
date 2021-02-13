@@ -488,7 +488,7 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         mSkipPrev.setVisibility((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) == 0
                 ? INVISIBLE : VISIBLE);
 
-        List<PlaybackStateCompat.CustomAction> actions = mLastPlaybackState.getCustomActions();
+        List<PlaybackStateCompat.CustomAction> actions = mLastPlaybackState.getCustomActions(); //todo it is not very good to know about favourites using custom action. Custom action may be used to add|remove track from favourites. Write and use another code here instead. Update: Use DAO class for this
         if (actions.size() > 0) {
             for (PlaybackStateCompat.CustomAction action : actions) {
                 if (CUSTOM_ACTION_CHANGE_FAVOURITE_STATE.equals(action.getAction())) {

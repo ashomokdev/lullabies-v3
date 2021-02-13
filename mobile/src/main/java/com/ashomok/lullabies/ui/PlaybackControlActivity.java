@@ -32,22 +32,14 @@ import androidx.annotation.NonNull;
 import com.ashomok.lullabies.MusicService;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.NetworkHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;
-
-import java.util.List;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE;
-import static com.ashomok.lullabies.playback.PlaybackManager.CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE;
 
 /**
  * Base activity for activities that need to show a playback control fragment when media is playing.
  */
-public abstract class BaseActivity extends ActionBarCastActivity implements MediaBrowserProvider {
+public abstract class PlaybackControlActivity extends ActionBarCastActivity implements MediaBrowserProvider {
 
-    private static final String TAG = LogHelper.makeLogTag(BaseActivity.class);
+    private static final String TAG = LogHelper.makeLogTag(PlaybackControlActivity.class);
 
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
@@ -244,20 +236,6 @@ public abstract class BaseActivity extends ActionBarCastActivity implements Medi
                         LogHelper.e(TAG, e, "could not connect media controller");
                         hidePlaybackControls();
                     }
-                }
-            };
-
-    private final MediaBrowserCompat.CustomActionCallback mCustomActionCallback =
-            new MediaBrowserCompat.CustomActionCallback() {
-                @Override
-                public void onResult(String action, Bundle extras, Bundle resultData) {
-                    //todo
-                    super.onResult(action, extras, resultData);
-                }
-
-                @Override
-                public void onError(String action, Bundle extras, Bundle data) {
-                    super.onError(action, extras, data);
                 }
             };
 }

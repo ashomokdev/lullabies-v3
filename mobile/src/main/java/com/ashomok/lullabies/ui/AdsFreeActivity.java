@@ -23,7 +23,7 @@ import com.ashomok.lullabies.R;
  * Placeholder activity for features that are not implemented in this sample, but
  * are in the navigation drawer_actions.
  */
-public class AdsFreeActivity extends BaseActivity {
+public class AdsFreeActivity extends PlaybackControlActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

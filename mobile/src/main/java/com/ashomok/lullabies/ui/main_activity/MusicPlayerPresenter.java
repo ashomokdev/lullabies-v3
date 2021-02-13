@@ -1,5 +1,7 @@
 package com.ashomok.lullabies.ui.main_activity;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -13,6 +15,7 @@ import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
+import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 
 import java.util.List;
@@ -27,7 +30,7 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     private BillingViewModel billingViewModel;
     private AugmentedSkuDetails removeAdsSkuRow;
     private AppCompatActivity activity; //todo why not simple Activity?
-    private MediaBrowserLoader mediaBrowserLoader;
+
 
     @Inject
     MusicPlayerPresenter() {

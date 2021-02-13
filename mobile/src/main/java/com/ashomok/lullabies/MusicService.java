@@ -137,7 +137,7 @@
      // Delay stopSelf by using a handler.
      private static final int STOP_DELAY = 30000;
      @Inject
-      MusicProvider mMusicProvider;
+     MusicProvider mMusicProvider;
      private PlaybackManager mPlaybackManager;
 
      private MediaSessionCompat mSession;
