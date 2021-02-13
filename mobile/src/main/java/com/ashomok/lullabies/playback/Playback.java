@@ -15,7 +15,7 @@
  */
 package com.ashomok.lullabies.playback;
 
-import com.ashomok.lullabies.MusicService;
+import com.ashomok.lullabies.music_service.MusicService;
 
 import static android.support.v4.media.session.MediaSessionCompat.QueueItem;
 

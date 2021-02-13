@@ -29,7 +29,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.ashomok.lullabies.MusicService;
+import com.ashomok.lullabies.music_service.MusicService;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.ResourceHelper;

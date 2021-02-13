@@ -18,7 +18,6 @@ package com.ashomok.lullabies.ui.main_activity;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
@@ -60,7 +59,6 @@ import com.ashomok.lullabies.utils.Result;
 import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -124,7 +122,7 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
     FirebaseAnalyticsHelper firebaseAnalyticsHelper;
 
     @Inject
-    SharedPreferences sharedPreferences;
+    FavouriteMusicDAO favouriteMusicDAO;
 
     private View emptyResultView;
     private TextView mErrorMessage;
@@ -219,11 +217,8 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerOpened(View drawerView) {
-
-                Collection<String> favoriteMusicIds =
-                        FavouriteMusicDAO.getInstance(sharedPreferences).getFavoriteMusicIds();
-                showInfo("invalidate, size = " + favoriteMusicIds.size());
-
+                Menu navigationMenu = navigationView.getMenu();
+                updateMyFavouritesMenuItem(navigationMenu);
                 super.onDrawerOpened(drawerView);
             }
         });
@@ -246,6 +241,10 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
                             break;
                         case R.id.navigation_exit:
                             exit();
+                            break;
+                        case R.id.navigation_my_favorites:
+                            activityClass = MusicPlayerActivity.class;
+                            mediaId = MediaIDHelper.getFavouritesHierarchyAwareMediaID(getResources());
                             break;
                         default:
                             break;
@@ -293,6 +292,11 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
                 spannableString.length(),
                 0);
         rateAppMenuItem.setTitle(spannableString);
+    }
+
+    private void updateMyFavouritesMenuItem(Menu navigationMenu) {
+        navigationMenu.findItem(R.id.navigation_my_favorites)
+                .setVisible(favouriteMusicDAO.getFavoriteMusicIds().size() > 0);
     }
 
     @Override
@@ -368,12 +372,6 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
                     }
                     return addMenuItems(result);
                 });
-
-        MediaBrowserLoader.loadChildrenMediaItemsForFavourites( //todo use FavouriteMusicDAO instead
-                getMediaBrowser(), res -> {
-                    return addMenuItems(res);
-                }
-        );
     }
 
     @NonNull
@@ -468,6 +466,7 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        LogHelper.d(TAG, "onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.toolbar_menu, menu);
@@ -477,8 +476,10 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
         return true;
     }
 
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        LogHelper.d(TAG, "onPrepareOptionsMenu");
         menu.findItem(R.id.remove_ads).setVisible(Settings.isAdsActive);
         return super.onPrepareOptionsMenu(menu);
     }
@@ -509,14 +510,9 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
                     mediaIdMenuRoots.add(mediaId);
                     String categoryTitle =
                             MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId);
-                    MenuItem menuItem;
-                    if (mediaId.contains(MEDIA_ID_FAVOURITES)) {
-                        menuItem = navigationView.getMenu().add(NONE, i, i, categoryTitle);
-                        menuItem.setIcon(R.drawable.ic_star_black_24dp);
-                    } else {
-                        menuItem = navigationView.getMenu().add(NONE, i, 1, categoryTitle);
-                        menuItem.setIcon(R.drawable.ic_library_music_black_24dp);
-                    }
+                    MenuItem menuItem =
+                            navigationView.getMenu().add(R.id.group_1, i, 2, categoryTitle);
+                    menuItem.setIcon(R.drawable.ic_library_music_black_24dp);
                 }
             }
             LogHelper.d(TAG, "addMenuItems called with size " + mediaIds.size()

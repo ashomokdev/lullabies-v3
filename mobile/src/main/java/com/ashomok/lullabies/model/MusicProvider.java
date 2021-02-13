@@ -63,15 +63,11 @@ public class MusicProvider {
     private State mCurrentState = State.NON_INITIALIZED;
 
     @Inject
-    public MusicProvider(Context context, SharedPreferences sharedPreferences) {
-        this(new LocalJSONSource(context), sharedPreferences);
-    }
-
     public MusicProvider(MusicProviderSource source, SharedPreferences sharedPreferences) {
         mSource = source;
         mMusicListByCategory = new ConcurrentHashMap<>();
         mMusicListById = new ConcurrentHashMap<>();
-       favouriteMusicDAO = FavouriteMusicDAO.getInstance(sharedPreferences);
+        favouriteMusicDAO = FavouriteMusicDAO.getInstance(sharedPreferences);
     }
 
     /**

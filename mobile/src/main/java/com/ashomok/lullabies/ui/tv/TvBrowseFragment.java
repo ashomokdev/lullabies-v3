@@ -36,6 +36,7 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.music_service.MusicService;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.QueueHelper;
 
@@ -60,7 +61,7 @@ import static android.support.v4.media.MediaBrowserCompat.MediaItem;
  * it is not the same.
  * <p/>
  * <p/>
- * It uses a {@link android.support.v4.media.MediaBrowserCompat} to connect to the {@link com.ashomok.lullabies.MusicService}.
+ * It uses a {@link android.support.v4.media.MediaBrowserCompat} to connect to the {@link MusicService}.
  * Once connected, the fragment subscribes to get the children of level 1 and then, for each
  * children, it adds a ListRow and subscribes for its children, which, when received, are
  * added to the ListRow. These items (like "Rock"), when clicked, will open a

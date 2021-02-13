@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ashomok.lullabies.R;
+import com.ashomok.lullabies.music_service.MusicService;
 import com.ashomok.lullabies.tools.CirclesViewPagerPageIndicatorView;
 import com.ashomok.lullabies.tools.ClickableViewPager;
 import com.ashomok.lullabies.ui.MyViewPagerAdapter;
@@ -49,7 +50,7 @@ import static android.view.View.VISIBLE;
  * A Fragment that lists all the various browsable queues available
  * from a {@link android.service.media.MediaBrowserService}.
  * <p/>
- * It uses a {@link MediaBrowserCompat} to connect to the {@link com.ashomok.lullabies.MusicService}.
+ * It uses a {@link MediaBrowserCompat} to connect to the {@link MusicService}.
  * Once connected, the fragment subscribes to get all the children.
  * All {@link MediaBrowserCompat.MediaItem}'s that can be browsed are shown in a ListView.
  */

@@ -26,7 +26,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.ashomok.lullabies.MusicService;
+import com.ashomok.lullabies.music_service.MusicService;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.utils.LogHelper;
 

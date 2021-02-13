@@ -1,13 +1,8 @@
 package com.ashomok.lullabies.di_dagger;
 
 
-import com.ashomok.lullabies.MusicService;
-import com.ashomok.lullabies.ui.about_activity.AboutActivity;
-import com.ashomok.lullabies.ui.about_activity.AboutModule;
-import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
-import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerModule;
-import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity;
-import com.ashomok.lullabies.ui.main_activity.MusicPlayerModule;
+import com.ashomok.lullabies.music_service.MusicService;
+import com.ashomok.lullabies.music_service.MusicServiceModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -26,6 +21,6 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class ServiceBindingModule {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = MusicServiceModule.class)
     abstract MusicService musicService();
 }

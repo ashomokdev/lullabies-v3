@@ -15,7 +15,18 @@
   -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
-        android:id="@+id/menu_group"
+        android:id="@+id/group_1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_my_favorites"
+            android:icon="@drawable/ic_star_black_24dp"
+            android:orderInCategory="1"
+            android:title="@string/my_favorites" />
+
+    </group>
+
+    <group
+        android:id="@+id/group_2"
         android:checkableBehavior="single">
 
         <item
@@ -37,7 +48,9 @@
             android:title="@string/about_app" />
     </group>
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/group_3"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_exit"
             android:icon="@drawable/ic_arrow_back_black_24dp"

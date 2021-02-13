@@ -1,7 +1,8 @@
 package com.ashomok.lullabies.di_dagger;
 
 
-import com.ashomok.lullabies.MusicService;
+import com.ashomok.lullabies.music_service.MusicService;
+import com.ashomok.lullabies.music_service.MusicServiceModule;
 import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.about_activity.AboutModule;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;

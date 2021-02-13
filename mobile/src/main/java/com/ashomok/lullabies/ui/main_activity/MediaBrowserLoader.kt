@@ -44,6 +44,7 @@ class MediaBrowserLoader {
 
         }
 
+        @Deprecated ("redundant after FavouriteMusicDAO class added")
         @InternalCoroutinesApi
         @JvmStatic
         @ExperimentalCoroutinesApi

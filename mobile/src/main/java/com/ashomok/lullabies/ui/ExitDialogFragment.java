@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
 
-import com.ashomok.lullabies.MusicService;
+import com.ashomok.lullabies.music_service.MusicService;
 import com.ashomok.lullabies.R;
 
 /**

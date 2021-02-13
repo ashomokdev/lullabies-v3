@@ -14,13 +14,12 @@
   * limitations under the License.
   */
 
- package com.ashomok.lullabies;
+ package com.ashomok.lullabies.music_service;
 
  import android.app.PendingIntent;
  import android.app.Service;
  import android.content.Context;
  import android.content.Intent;
- import android.content.SharedPreferences;
  import android.media.MediaMetadata;
  import android.media.MediaPlayer;
  import android.media.session.MediaSession;
@@ -41,6 +40,9 @@
  import androidx.media.session.MediaButtonReceiver;
  import androidx.mediarouter.media.MediaRouter;
 
+ import com.ashomok.lullabies.PackageValidator;
+ import com.ashomok.lullabies.R;
+ import com.ashomok.lullabies.ServiceManager;
  import com.ashomok.lullabies.model.MusicProvider;
  import com.ashomok.lullabies.playback.CastPlayback;
  import com.ashomok.lullabies.playback.LocalPlayback;
@@ -138,6 +140,7 @@
      private static final int STOP_DELAY = 30000;
      @Inject
      MusicProvider mMusicProvider;
+
      private PlaybackManager mPlaybackManager;
 
      private MediaSessionCompat mSession;

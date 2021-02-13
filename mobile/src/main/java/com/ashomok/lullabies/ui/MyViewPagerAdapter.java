@@ -159,7 +159,10 @@ public class MyViewPagerAdapter extends PagerAdapter implements RateAppAskerCall
     }
 
     public MediaBrowserCompat.MediaItem getItem(int position) {
-        return mediaItems.get(position);
+        return mediaItems.get(position); //todo error if it were 2 favouirited and remove last favourites
+//        java.lang.IndexOutOfBoundsException: Index: 1, Size: 1
+//        at java.util.ArrayList.get(ArrayList.java:437)
+//        at com.ashomok.lullabies.ui.MyViewPagerAdapter.getItem(MyViewPagerAdapter.java:162)
     }
 
     private void fetchImageAsync(
