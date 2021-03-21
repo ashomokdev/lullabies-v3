@@ -8,10 +8,13 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 /**
  * Created by iuliia on 16.05.16.
@@ -33,66 +36,45 @@ public class CirclesViewPagerPageIndicatorView extends View {
 
     public CirclesViewPagerPageIndicatorView(Context context, AttributeSet attrs) throws Exception {
         super(context, attrs);
-
         colorBase = Color.GRAY;
         colorAccent = Color.WHITE;
-
-
         init();
     }
 
-    public void setViewPager(ViewPager viewPager) {
-
-        DataSetObserver dataSetObserver = new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                updateView(viewPager);
-            }
-        };
-
-        viewPager.addOnAdapterChangeListener((viewPager1, oldAdapter, newAdapter) -> {
-            updateView(viewPager1);
-
-            if (newAdapter != null){
-                newAdapter.registerDataSetObserver( dataSetObserver);
-            }
-        });
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
+    public void setViewPager(ViewPager2 viewPager) {
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                super.onPageSelected(position);
                 setCurrentItem(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
             }
         });
 
-        PagerAdapter adapter = viewPager.getAdapter();
-        if (adapter != null){
-            adapter.registerDataSetObserver( dataSetObserver);
-            updateView(viewPager);
+        if (viewPager.getAdapter() != null) {
+            viewPager.getAdapter().registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    updateView(viewPager);
+                }
+            });
+
         }
+
+        updateView(viewPager);
     }
 
-    private void updateView(ViewPager viewPager) {
-        int mNewCount = viewPager.getAdapter().getCount();
+    private void updateView(ViewPager2 viewPager) {
+        int mNewCount = viewPager.getAdapter().getItemCount();
         mCurrentItem = viewPager.getCurrentItem();
 
         if (mOldItem != mCurrentItem || mItemCount != mNewCount) {
-            mItemCount = viewPager.getAdapter().getCount();
+            mItemCount = viewPager.getAdapter().getItemCount();
             mOldItem = mCurrentItem;
             invalidate();
             requestLayout();
         }
     }
-
 
     /**
      * Set the current item by index. Optionally, scroll the current item into view. This version
@@ -177,7 +159,7 @@ public class CirclesViewPagerPageIndicatorView extends View {
         int cx = circleRadius;
         for (int i = 0; i < mItemCount; i++) {
 
-            if (i == mCurrentItem) //should have more light color
+            if (i == mCurrentItem) //should have another color
             {
                 canvas.drawCircle(cx, circleRadius, circleRadius, paintAccent);
             } else {

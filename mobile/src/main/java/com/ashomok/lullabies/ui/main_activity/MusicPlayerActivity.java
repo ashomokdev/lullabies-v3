@@ -40,18 +40,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.annimon.stream.Stream;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.Settings;
 import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
-import com.ashomok.lullabies.ui.PlaybackControlActivity;
 import com.ashomok.lullabies.ui.ExitDialogFragment;
+import com.ashomok.lullabies.ui.PlaybackControlActivity;
 import com.ashomok.lullabies.ui.about_activity.AboutActivity;
 import com.ashomok.lullabies.ui.full_screen_player_activity.FullScreenPlayerActivity;
-import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
+import com.ashomok.lullabies.ui.main_activity.media_browser.MediaBrowserFragment;
+import com.ashomok.lullabies.ui.main_activity.media_browser.MediaBrowserFragmentFavourites;
+import com.ashomok.lullabies.ui.main_activity.media_browser.MediaBrowserLoader;
+import com.ashomok.lullabies.ui.main_activity.media_browser.MediaFragmentListener;
 import com.ashomok.lullabies.utils.InfoSnackbarUtil;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
@@ -65,11 +68,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import kotlin.Unit;
-
-import static android.view.Menu.NONE;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
-import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 
 /**
  * Main activity for the music player.
@@ -77,14 +76,6 @@ import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEG
  * when it is created and connect/disconnect on start/stop. Thus, a MediaBrowser will be always
  * connected while this activity is running.
  */
-//todo chech sharedpreferances to get info about favourites!!!
-//todo it is not very good to know about favourites using custom action. Custom action may be used to add|remove track from favourites. Write and use another code here instead.
-//todo this activity MUST know about favourites changes.
-// It must check favourites size before every menu opening and hide/show My Favourites row.
-//MediaBrowserFragment must be customized for favourites collection.
-// I must receive favourites media from  MusicPlayerActivity insted
-// of loading it again inside customized MediaBrowserFragment
-
 public class MusicPlayerActivity extends PlaybackControlActivity implements MediaFragmentListener,
         MusicPlayerContract.View {
 
@@ -119,9 +110,6 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
     AdMobAd adMobAd;
 
     @Inject
-    FirebaseAnalyticsHelper firebaseAnalyticsHelper;
-
-    @Inject
     FavouriteMusicDAO favouriteMusicDAO;
 
     private View emptyResultView;
@@ -152,45 +140,6 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
         }
         adMobAd.initAd(findViewById(R.id.ads_container));
         mPresenter.takeView(this);
-    }
-
-    @Nullable
-    private Unit addMenuItems(
-            Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
-
-        if (result instanceof Result.Success) {
-            List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
-
-            if (mediaIds.isEmpty()) {
-                LogHelper.e(TAG, "Unexpected empty result from loading media");
-                checkForUserVisibleErrors(true);
-            } else {
-                addMenuItems(mediaIds);
-            }
-
-        } else if (result instanceof Result.Error) {
-            LogHelper.e(TAG, ((Result.Error) result).getException(),
-                    "Error from loading media");
-            checkForUserVisibleErrors(true);
-        } else {
-            LogHelper.e(TAG, "Unknown error, unexpected result.");
-        }
-        return null;
-    }
-
-    private void navigateToDefault(String currentMediaId, List<String> mediaIds) {
-        //if currently on root and categories obtained
-        if ((currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot()))
-                && mediaIds.get(0).contains(MEDIA_ID_MUSICS_BY_CATEGORY)
-        ) {
-            //browse first category as default
-            currentMediaId = mediaIds.get(0);
-        }
-
-        if (!currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT)) {
-            LogHelper.d(TAG, "browse mediaId " + currentMediaId);
-            navigateToBrowser(currentMediaId);
-        }
     }
 
     private List<String> getMediaIds(Result.Success<List<MediaBrowserCompat.MediaItem>> result) {
@@ -323,22 +272,6 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
     }
 
     @Override
-    public void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
-        LogHelper.d(TAG, "onMediaItemSelected, mediaId=" + item.getMediaId());
-        firebaseAnalyticsHelper.trackContentSelected(item);
-
-        if (item.isPlayable()) {
-            MediaControllerCompat.getMediaController(MusicPlayerActivity.this).getTransportControls()
-                    .playFromMediaId(item.getMediaId(), null);
-        } else if (item.isBrowsable()) {
-            navigateToBrowser(item.getMediaId());
-        } else {
-            LogHelper.w(TAG, "Ignoring MediaItem that is neither browsable nor playable: ",
-                    "mediaId=", item.getMediaId());
-        }
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);//must store the new intent unless getIntent() will return the old one
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
@@ -360,17 +293,29 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
     }
 
     protected void initializeFromParams(Bundle savedInstanceState, Intent intent) {
-        String mediaId = getMediaId(savedInstanceState, intent);
-
         MediaBrowserLoader.loadChildrenMediaItems(
                 getMediaBrowser(),
                 INIT_MEDIA_ID_VALUE_ROOT,
                 result -> {
-                    if (result instanceof Result.Success) {
+                    if (result instanceof Result.Error) {
+                        LogHelper.e(TAG, ((Result.Error) result).getException(),
+                                "Error from loading media");
+                        checkForUserVisibleErrors(true);
+                    } else if (result instanceof Result.Success) {
                         List<String> mediaIds = getMediaIds((Result.Success<List<MediaBrowserCompat.MediaItem>>) result);
-                        navigateToDefault(mediaId, mediaIds);
+                        addMenuItems(mediaIds);
+
+                        String currentMediaId = getMediaId(savedInstanceState, intent);
+                        //if currently on root and categories obtained
+                        if (currentMediaId.equals(INIT_MEDIA_ID_VALUE_ROOT) || currentMediaId.equals(getMediaBrowser().getRoot())) {
+                            if (mediaIds.get(0) != null) {
+                                //browse first category as default
+                                currentMediaId = mediaIds.get(0);
+                            }
+                        }
+                        navigateToBrowser(currentMediaId);
                     }
-                    return addMenuItems(result);
+                    return null;
                 });
     }
 
@@ -407,17 +352,28 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
     }
 
     private void navigateToBrowser(@NonNull String mediaId) {
-        LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
         MediaBrowserFragment fragment = getBrowseFragment();
         if (fragment == null || !TextUtils.equals(fragment.getMediaId(), mediaId)) {
-            fragment = new MediaBrowserFragment();
-            fragment.setMediaId(mediaId);
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.setCustomAnimations(
-                    R.animator.slide_in_from_right, R.animator.slide_out_to_left,
-                    R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-            transaction.replace(R.id.media_browser_container, fragment, FRAGMENT_TAG);
-            transaction.commit();
+
+            if (mediaId.contains(MEDIA_ID_FAVOURITES)) {
+                fragment = new MediaBrowserFragmentFavourites();
+            } else if (mediaId.contains(INIT_MEDIA_ID_VALUE_ROOT)) {
+                fragment = new MediaBrowserFragment();
+            } else {
+                LogHelper.e(TAG, "navigateToBrowser with unknown mediaId " + mediaId);
+            }
+
+            if (fragment != null) {
+                LogHelper.d(TAG, "navigateToBrowser, mediaId=" + mediaId);
+
+                fragment.setMediaId(mediaId);
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(
+                        R.animator.slide_in_from_right, R.animator.slide_out_to_left,
+                        R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+                transaction.replace(R.id.media_browser_container, fragment, FRAGMENT_TAG);
+                transaction.commit();
+            }
         }
 
     }
@@ -499,7 +455,7 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
 
     @Override
     public void addMenuItems(List<String> mediaIds) {
-        if (navigationView == null || mediaIds == null) {
+        if (navigationView == null || mediaIds == null || mediaIds.size() == 0) {
             LogHelper.e(TAG, "unexpected error when add menu items");
         } else {
             for (int i = 0; i < mediaIds.size(); i++) {
@@ -528,7 +484,7 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
         if (fragment != null
                 && fragment.getViewPager() != null
                 && fragment.getViewPager().getCurrentItem() != 0) {
-            ViewPager viewPager = fragment.getViewPager();
+            ViewPager2 viewPager = fragment.getViewPager();
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
         } else {
             if (getFragmentManager().getBackStackEntryCount() > 0) {

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ashomok.lullabies.R;
-import com.ashomok.lullabies.ui.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -18,7 +20,7 @@ public class RateAppAskerImpl implements RateAppAsker {
     /**
      * Ask to rate app if the app was used RATE_APP_COUNT times
      */
-    public static final int RATE_APP_COUNT = 70;
+    public static final int RATE_APP_COUNT = 30;
     public static final int NEVER_ASK = -1;
     private final Context context;
     private final SharedPreferences sharedPreferences;
@@ -32,7 +34,7 @@ public class RateAppAskerImpl implements RateAppAsker {
     }
 
     @Override
-    public void init(RateAppAskerCallback callback) {
+    public void count(RateAppAskerCallback callback) {
         this.callback = callback;
 
         int timesAppWasUsed = sharedPreferences.getInt(context.getString(R.string.times_app_was_used), 0);
@@ -53,7 +55,14 @@ public class RateAppAskerImpl implements RateAppAsker {
     private void askToRate() {
         RateAppDialog1Fragment rateAppDialog1Fragment = RateAppDialog1Fragment.newInstance();
         rateAppDialog1Fragment.setRateAppAsker(this);
-        callback.showDialogFragment(rateAppDialog1Fragment);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // this code will be executed after 5 seconds
+                callback.showDialogFragment(rateAppDialog1Fragment);
+            }
+        }, 5000);
     }
 
     @Override

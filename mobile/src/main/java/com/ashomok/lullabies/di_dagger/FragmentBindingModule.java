@@ -1,7 +1,9 @@
 package com.ashomok.lullabies.di_dagger;
 
 
-import com.ashomok.lullabies.ui.main_activity.MediaBrowserFragment;
+import com.ashomok.lullabies.ui.main_activity.media_browser.MediaBrowserFragment;
+import com.ashomok.lullabies.ui.main_activity.media_browser.MediaBrowserFragmentFavourites;
+import com.ashomok.lullabies.ui.main_activity.media_item_view.ViewPagerFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -22,4 +24,11 @@ public abstract class FragmentBindingModule {
 
     @ContributesAndroidInjector
     abstract MediaBrowserFragment mediaBrowserFragment();
+
+    @ContributesAndroidInjector
+    abstract MediaBrowserFragmentFavourites mediaBrowserFragmentFavourites();
+
+    @ContributesAndroidInjector
+    abstract ViewPagerFragment viewPagerFragment();
+
 }

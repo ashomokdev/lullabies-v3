@@ -41,6 +41,8 @@ android {
         abortOnError true
     }
 
+    kotlinOptions { jvmTarget = "1.8" }
+
     flavorDimensions "version"
     productFlavors {
         common {
@@ -122,6 +124,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.espresso.idling:idling-concurrent:3.2.0'
+
+    androidTestImplementation 'androidx.test:core-ktx:1.1.0'
+
     implementation 'androidx.test.espresso:espresso-idling-resource:3.2.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

@@ -2,7 +2,6 @@ package com.ashomok.lullabies.ui.main_activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -13,7 +12,6 @@ import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.ad.AdMobAd;
 import com.ashomok.lullabies.ad.AdMobBannerAd;
 import com.ashomok.lullabies.utils.LogHelper;
-import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 
 import dagger.Binds;
 import dagger.Module;
@@ -33,12 +31,6 @@ public abstract class MusicPlayerModule {
     static @NonNull
     String provideMediaId(MusicPlayerActivity activity) {
         return activity.getMediaId(null, activity.getIntent());
-    }
-
-    @Provides
-    static @NonNull
-    FavouriteMusicDAO provideFavouriteMusicDAO(SharedPreferences sharedPreferences) {
-        return FavouriteMusicDAO.getInstance(sharedPreferences);
     }
 
     @Provides

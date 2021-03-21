@@ -1,6 +1,6 @@
 package com.ashomok.lullabies.ui.main_activity;
 
-import android.content.SharedPreferences;
+import android.app.DialogFragment;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,14 +15,15 @@ import com.ashomok.lullabies.billing_kotlin.localdb.AugmentedSkuDetails;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.NetworkHelper;
-import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
+import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
+import com.ashomok.lullabies.utils.rate_app.RateAppAskerCallback;
 import com.ashomok.lullabies.utils.rate_app.RateAppUtil;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
+public class MusicPlayerPresenter implements MusicPlayerContract.Presenter, RateAppAskerCallback {
     public static final String TAG = LogHelper.makeLogTag(MusicPlayerPresenter.class);
 
     @Nullable
@@ -31,9 +32,11 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     private AugmentedSkuDetails removeAdsSkuRow;
     private AppCompatActivity activity; //todo why not simple Activity?
 
+    RateAppAsker rateAppAsker;
 
     @Inject
-    MusicPlayerPresenter() {
+    MusicPlayerPresenter(RateAppAsker rateAppAsker) {
+        this.rateAppAsker = rateAppAsker;
     }
 
     @Override
@@ -71,7 +74,13 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
 
     private void init() {
         if (view != null) {
+
             activity = view.getActivity();
+
+//            rateAppAsker = new RateAppAskerImpl(
+//                    activity.getSharedPreferences(activity.getString(R.string.preferences), Context.MODE_PRIVATE),
+//                    activity);
+            rateAppAsker.count(this);
 
             billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class); //todo fix deprecated https://startandroid.ru/ru/courses/architecture-components/27-course/architecture-components/527-urok-4-viewmodel.html
 
@@ -121,5 +130,17 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter {
     @Override
     public void dropView() {
         view = null;
+    }
+
+    @Override
+    public void showDialogFragment(DialogFragment dialogFragment) {
+        if (activity != null) {
+            try {
+                dialogFragment.show(activity.getFragmentManager(), "dialog");
+            } catch (IllegalStateException exception) {
+                //IllegalStateException “Can not perform this action after onSaveInstanceState” because of Timer here ignore
+                LogHelper.d(TAG, "showDialogFragment failed because of IllegalStateException");
+            }
+        }
     }
 }

@@ -1,12 +1,15 @@
 package com.ashomok.lullabies.utils.favourite_music;
 
 import android.content.SharedPreferences;
+import android.telecom.Call;
 
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaItemStateHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FavouriteMusicDAO {
@@ -16,12 +19,21 @@ public class FavouriteMusicDAO {
     private final ConcurrentLinkedQueue<String> mFavoriteMusicIds;
     private static final String sharedPreferencesKey = "favourite_musics";
     private static FavouriteMusicDAO instance = null;
+    private Callback callback;
 
     public static FavouriteMusicDAO getInstance(SharedPreferences sharedPreferences) {
         if (instance == null) {
             instance = new FavouriteMusicDAO(sharedPreferences);
         }
         return instance;
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
+    public void removeCallback(){
+        this.callback = null;
     }
 
     private FavouriteMusicDAO(SharedPreferences sharedPreferences) {
@@ -37,6 +49,9 @@ public class FavouriteMusicDAO {
             editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
             LogHelper.d(TAG, "SharedPreferences updated with new data");
             editor.apply();
+            if (callback != null) {
+                callback.onFavouriteListUpdated();
+            }
         }
     }
 
@@ -47,18 +62,25 @@ public class FavouriteMusicDAO {
             editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
             LogHelper.d(TAG, "SharedPreferences updated with new data");
             editor.apply();
+            if (callback != null) {
+                callback.onFavouriteListUpdated();
+            }
         }
     }
 
-    public Collection<String> getFavoriteMusicIds(){
+    public Collection<String> getFavoriteMusicIds() {
         return mFavoriteMusicIds;
     }
 
-    public boolean isFavouriteCollectionEmpty(){
+    public boolean isFavouriteCollectionEmpty() {
         return !(mFavoriteMusicIds.size() > 0);
     }
 
     public boolean isFavorite(String musicId) {
         return mFavoriteMusicIds.contains(musicId);
+    }
+
+    public interface Callback {
+        void onFavouriteListUpdated();
     }
 }

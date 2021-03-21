@@ -4,8 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.billing_kotlin.viewmodels.BillingViewModel;
+import com.ashomok.lullabies.ui.main_activity.MusicPlayerContract;
+import com.ashomok.lullabies.ui.main_activity.MusicPlayerPresenter;
 import com.ashomok.lullabies.utils.FirebaseAnalyticsHelper;
 import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO;
 import com.ashomok.lullabies.utils.rate_app.RateAppAsker;
@@ -38,6 +42,16 @@ public abstract class ApplicationModule {
     static FirebaseAnalyticsHelper provideFirebaseAnalyticsHelper(Context context) {
         return FirebaseAnalyticsHelper.getInstance(context);
     }
+
+    @Provides
+    static @NonNull
+    FavouriteMusicDAO provideFavouriteMusicDAO(SharedPreferences sharedPreferences) {
+        return FavouriteMusicDAO.getInstance(sharedPreferences);
+    }
+
+    @Binds
+    abstract RateAppAsker provideRateAppAsker(RateAppAskerImpl rateAppAsker);
+
 
     @Binds
     abstract Context bindContext(Application application);

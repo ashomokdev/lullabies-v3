@@ -170,7 +170,7 @@ limitations under the License.
                 android:src="@drawable/ic_star_border_white_24dp"
                 android:background="@android:color/transparent"
                 android:scaleType="centerCrop"
-                android:layout_margin="@dimen/image_btn_padding" />
+                android:padding="@dimen/image_btn_padding"/>
 
             <Button
                 android:id="@+id/my_favorites_btn"

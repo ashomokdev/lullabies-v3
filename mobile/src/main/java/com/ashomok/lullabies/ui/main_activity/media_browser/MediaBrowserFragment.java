@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ashomok.lullabies.ui.main_activity;
+package com.ashomok.lullabies.ui.main_activity.media_browser;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -29,12 +29,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.music_service.MusicService;
 import com.ashomok.lullabies.tools.CirclesViewPagerPageIndicatorView;
-import com.ashomok.lullabies.tools.ClickableViewPager;
-import com.ashomok.lullabies.ui.MyViewPagerAdapter;
+import com.ashomok.lullabies.ui.main_activity.media_item_view.MyViewPagerAdapter;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 import com.ashomok.lullabies.utils.Result;
@@ -60,15 +60,14 @@ public class MediaBrowserFragment extends DaggerFragment {
 
     private static final String ARG_MEDIA_ID = "media_id";
 
-    private String mMediaId;
-    private MediaFragmentListener mMediaFragmentListener;
+    String mMediaId;
+    MediaFragmentListener mMediaFragmentListener;
 
     private View emptyResultView;
     private TextView mErrorMessage;
     private CirclesViewPagerPageIndicatorView circlesViewPagerPageIndicatorView;
-    private ClickableViewPager viewPager;
+    private ViewPager2 viewPager;
     private ProgressBar progressBar;
-
     private MyViewPagerAdapter mBrowserAdapter;
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
@@ -88,11 +87,8 @@ public class MediaBrowserFragment extends DaggerFragment {
                 @Override
                 public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
                     LogHelper.d(TAG, "Received state change: ", state);
-                    checkForUserVisibleErrors(false);
                     mBrowserAdapter.notifyDataSetChanged();
                     updateLoadingView(state);
-
-                    //todo check favourites and notify MediaFragmentListener if changes
                 }
             };
 
@@ -102,7 +98,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         // If used on an activity that doesn't implement MediaFragmentListener, it
         // will throw an exception as expected:
         mMediaFragmentListener = (MediaFragmentListener) activity;
-        mBrowserAdapter = new MyViewPagerAdapter(activity);
+        mBrowserAdapter = new MyViewPagerAdapter(this);
     }
 
     @Override
@@ -127,14 +123,6 @@ public class MediaBrowserFragment extends DaggerFragment {
         //init pager
         viewPager = rootView.findViewById(R.id.pager);
         viewPager.setAdapter(mBrowserAdapter);
-
-        viewPager.setOnItemClickListener(position -> {
-            LogHelper.d(TAG, "onPageClicked, position " + position);
-            checkForUserVisibleErrors(false);
-
-            MediaBrowserCompat.MediaItem item = mBrowserAdapter.getItem(position);
-            mMediaFragmentListener.onMediaItemSelected(item);
-        });
 
         //todo possible to add favourite icon here for each mediaid
 
@@ -184,7 +172,7 @@ public class MediaBrowserFragment extends DaggerFragment {
 
     public void setMediaId(String mediaId) {
         Bundle args = new Bundle(1);
-        args.putString(MediaBrowserFragment.ARG_MEDIA_ID, mediaId);
+        args.putString(ARG_MEDIA_ID, mediaId);
         setArguments(args);
     }
 
@@ -205,7 +193,6 @@ public class MediaBrowserFragment extends DaggerFragment {
         MediaBrowserLoader.loadChildrenMediaItems(
                 mMediaFragmentListener.getMediaBrowser(), mMediaId, this::fillAdapter);
 
-
         // Add MediaController callback so we can redraw the view when metadata changes:
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
@@ -217,30 +204,31 @@ public class MediaBrowserFragment extends DaggerFragment {
     }
 
     @Nullable
-    private Unit fillAdapter(
+    Unit fillAdapter(
             Result<? extends List<? extends MediaBrowserCompat.MediaItem>> result) {
+        if (mBrowserAdapter == null) {
+            LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+        } else {
+            mBrowserAdapter.clear();
 
-        if (result instanceof Result.Success) {
-            List<MediaBrowserCompat.MediaItem> mediaItems =
-                    ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
-            if (mediaItems.isEmpty()) {
-                checkForUserVisibleErrors(true, R.string.empty_collection);
-            } else {
-                if (mBrowserAdapter == null) {
-                    LogHelper.e(TAG, "mBrowserAdapter == null - unexpected");
+            if (result instanceof Result.Success) {
+                List<MediaBrowserCompat.MediaItem> mediaItems =
+                        ((Result.Success<List<MediaBrowserCompat.MediaItem>>) result).getData();
+                if (mediaItems.isEmpty()) {
+                    checkForUserVisibleErrors(true, R.string.empty_collection);
                 } else {
-                    mBrowserAdapter.clear();
                     for (MediaBrowserCompat.MediaItem item : mediaItems) {
                         mBrowserAdapter.add(item);
                     }
                     mBrowserAdapter.notifyDataSetChanged();
                 }
+
+            } else if (result instanceof Result.Error) {
+                LogHelper.e(TAG, ((Result.Error) result).getException(), "Error from loading media");
+                checkForUserVisibleErrors(true);
+            } else {
+                LogHelper.e(TAG, "Unknown error, unexpected result.");
             }
-        } else if (result instanceof Result.Error) {
-            LogHelper.e(TAG, ((Result.Error) result).getException(), "Error from loading media");
-            checkForUserVisibleErrors(true);
-        } else {
-            LogHelper.e(TAG, "Unknown error, unexpected result.");
         }
         progressBar.setVisibility(View.GONE);
         return null;
@@ -270,7 +258,7 @@ public class MediaBrowserFragment extends DaggerFragment {
         checkForUserVisibleErrors(forceError, R.string.error_loading_media);
     }
 
-    public ClickableViewPager getViewPager() {
+    public ViewPager2 getViewPager() {
         return viewPager;
     }
 
