@@ -28,11 +28,11 @@ public class FavouriteMusicDAO {
         return instance;
     }
 
-    public void setCallback(Callback callback){
+    public void setCallback(Callback callback) {
         this.callback = callback;
     }
 
-    public void removeCallback(){
+    public void removeCallback() {
         this.callback = null;
     }
 
@@ -65,6 +65,17 @@ public class FavouriteMusicDAO {
             if (callback != null) {
                 callback.onFavouriteListUpdated();
             }
+        }
+    }
+
+    public void cleanFavouriteMusicList() {
+        mFavoriteMusicIds.clear();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putStringSet(sharedPreferencesKey, new HashSet<>(mFavoriteMusicIds));
+        LogHelper.d(TAG, "SharedPreferences updated with new data");
+        editor.apply();
+        if (callback != null) {
+            callback.onFavouriteListUpdated();
         }
     }
 

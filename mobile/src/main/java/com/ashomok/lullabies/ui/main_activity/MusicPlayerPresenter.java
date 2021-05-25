@@ -77,9 +77,6 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter, Rate
 
             activity = view.getActivity();
 
-//            rateAppAsker = new RateAppAskerImpl(
-//                    activity.getSharedPreferences(activity.getString(R.string.preferences), Context.MODE_PRIVATE),
-//                    activity);
             rateAppAsker.count(this);
 
             billingViewModel = ViewModelProviders.of(activity).get(BillingViewModel.class); //todo fix deprecated https://startandroid.ru/ru/courses/architecture-components/27-course/architecture-components/527-urok-4-viewmodel.html

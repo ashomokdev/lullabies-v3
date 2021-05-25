@@ -275,9 +275,15 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
     protected void onNewIntent(Intent intent) {
         setIntent(intent);//must store the new intent unless getIntent() will return the old one
         LogHelper.d(TAG, "onNewIntent, intent=" + intent);
-        initializeFromParams(null, intent);
+        initializeFromParams(null, intent); //todo issue comes from here - null here
         startFullScreenActivityIfNeeded(intent);
         super.onNewIntent(intent);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        String currentMediaId = getMediaId(savedInstanceState, getIntent());
+        getIntent().putExtra(currentMediaId, SAVED_MEDIA_ID);
     }
 
     private void startFullScreenActivityIfNeeded(Intent intent) {

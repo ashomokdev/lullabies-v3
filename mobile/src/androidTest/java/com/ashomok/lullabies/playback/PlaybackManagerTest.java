@@ -49,7 +49,6 @@ public class PlaybackManagerTest {
 
     private MusicProvider musicProvider;
     private Resources resources;
-    private SharedPreferences sharedPreferences;
 
     @Before
     public void setUpMusicProvider() throws Exception {
@@ -70,8 +69,6 @@ public class PlaybackManagerTest {
                 return "";
             }
         };
-
-        sharedPreferences = Mockito.mock(SharedPreferences.class);
     }
 
     private void populateMusicSource(SimpleMusicProviderSource source) {

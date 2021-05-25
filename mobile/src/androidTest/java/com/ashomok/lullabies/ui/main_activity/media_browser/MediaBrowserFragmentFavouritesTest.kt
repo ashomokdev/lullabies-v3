@@ -1,5 +1,8 @@
 package com.ashomok.lullabies.ui.main_activity.media_browser
 
+import android.content.Context
+import android.preference.PreferenceManager
+import android.view.KeyEvent
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.leanback.widget.Presenter
 import androidx.lifecycle.Lifecycle
@@ -14,18 +17,43 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.ashomok.lullabies.R
 import com.ashomok.lullabies.ui.main_activity.MusicPlayerActivity
+import com.ashomok.lullabies.utils.favourite_music.FavouriteMusicDAO
 import org.hamcrest.Matchers.*
+import org.junit.After
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class MediaBrowserFragmentFavouritesTest {
 
+    @Before
+    fun emptyFavouritesListBefore() {
+        val targetContext = getInstrumentation().targetContext
+        FavouriteMusicDAO.getInstance(
+                targetContext.getSharedPreferences(
+                        targetContext.getString(R.string.preferences),
+                        Context.MODE_PRIVATE)
+        ).cleanFavouriteMusicList()
+    }
+
+    @After
+    fun emptyFavouritesListAfter() {
+        val targetContext = getInstrumentation().targetContext
+        FavouriteMusicDAO.getInstance(
+                targetContext.getSharedPreferences(
+                        targetContext.getString(R.string.preferences),
+                        Context.MODE_PRIVATE)
+        ).cleanFavouriteMusicList()
+    }
+
     @Test
-    fun testEvent() {
+    //https://github.com/ashomokdev/lullabies-v3/issues/91
+    fun testEvent91_NoEmptyViewWhenExpectedDeprecated() {
         //GIVEN
         val scenario = launchActivity<MusicPlayerActivity>()
         scenario.moveToState(Lifecycle.State.RESUMED)
@@ -104,13 +132,11 @@ class MediaBrowserFragmentFavouritesTest {
                 instanceOf(AppCompatImageButton::class.java), withParent(withId(R.id.toolbar))
         )).perform(click())
 
-        onView(allOf(isDisplayed(),withId(R.id.empty_result_layout))).check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.empty_result_layout))).check(matches(isDisplayed()))
 
         onView(withId(R.id.play_pause)).perform(click())
 
-        onView(allOf(isDisplayed(),withId(R.id.empty_result_layout))).check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.empty_result_layout))).check(matches(isDisplayed()))
         onView(withId(R.id.tap_me_img)).check(doesNotExist())
-
-        Thread.sleep(3000)
     }
 }
