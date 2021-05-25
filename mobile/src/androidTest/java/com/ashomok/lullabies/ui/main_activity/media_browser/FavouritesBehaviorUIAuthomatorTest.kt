@@ -25,9 +25,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val PACKAGE = "com.ashomok.lullabies"
-private const val LAUNCH_TIMEOUT = 5000L
-
+/**
+ * UI Automator test
+ * doc: https://developer.android.com/training/testing/ui-testing/uiautomator-testing
+ */
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 18)
 class FavouritesBehaviorUIAuthomatorTest {
@@ -43,28 +44,6 @@ class FavouritesBehaviorUIAuthomatorTest {
 
         // Start from the home screen
         device.pressHome()
-
-//        // Wait for launcher
-//        val launcherPackage: String = device.launcherPackageName
-//        assertThat(launcherPackage, notNullValue())
-//        device.wait(
-//                Until.hasObject(By.pkg(launcherPackage).depth(0)),
-//                LAUNCH_TIMEOUT
-//        )
-//
-//        // Launch the app
-//        val context = ApplicationProvider.getApplicationContext<Context>()
-//        val intent = context.packageManager.getLaunchIntentForPackage(PACKAGE)?.apply {
-//            // Clear out any previous instances
-//            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//        }
-//        context.startActivity(intent)
-//
-//        // Wait for the app to appear
-//        device.wait(
-//                Until.hasObject(By.pkg(PACKAGE).depth(0)),
-//                LAUNCH_TIMEOUT
-//        )
     }
 
     fun emptyFavouritesListBefore() {
