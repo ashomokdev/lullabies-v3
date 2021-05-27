@@ -16,10 +16,11 @@
 
 package com.ashomok.lullabies.model;
 
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.test.mock.MockResources;
 
 import androidx.annotation.NonNull;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -31,6 +32,7 @@ import com.ashomok.lullabies.utils.SimpleMusicProviderSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -178,18 +180,8 @@ public class MusicProviderTest {
 
     @Test
     public void testGetChildren() throws Exception {
-        MockResources resources = new MockResources() {
-            @NonNull
-            @Override
-            public String getString(int id) throws NotFoundException {
-                return "";
-            }
-            @NonNull
-            @Override
-            public String getString(int id, Object... formatArgs) throws NotFoundException {
-                return "";
-            }
-        };
+
+        Resources resources = Mockito.mock(Resources.class);
 
         // test an invalid root
         List<MediaBrowserCompat.MediaItem> invalid = provider.getChildren(

@@ -68,6 +68,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import static androidx.drawerlayout.widget.DrawerLayout.STATE_DRAGGING;
+import static androidx.drawerlayout.widget.DrawerLayout.STATE_IDLE;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 
 /**
@@ -165,10 +167,12 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
 
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
-            public void onDrawerOpened(View drawerView) {
-                Menu navigationMenu = navigationView.getMenu();
-                updateMyFavouritesMenuItem(navigationMenu);
-                super.onDrawerOpened(drawerView);
+            public void onDrawerStateChanged(int newState) {
+                if (newState == STATE_IDLE) {
+                    Menu navigationMenu = navigationView.getMenu();
+                    updateMyFavouritesMenuItem(navigationMenu);
+                }
+                super.onDrawerStateChanged(newState);
             }
         });
     }
@@ -381,7 +385,6 @@ public class MusicPlayerActivity extends PlaybackControlActivity implements Medi
                 transaction.commit();
             }
         }
-
     }
 
     private MediaBrowserFragment getBrowseFragment() {

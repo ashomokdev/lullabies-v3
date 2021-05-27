@@ -16,25 +16,26 @@
 
 package com.ashomok.lullabies.playback;
 
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.annimon.stream.Stream;
 import com.ashomok.lullabies.R;
 import com.ashomok.lullabies.model.MusicProvider;
 import com.ashomok.lullabies.utils.LogHelper;
 import com.ashomok.lullabies.utils.MediaIDHelper;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 
 /**
  * Manage the interactions among the container service, the queue manager and the actual playback.
@@ -42,9 +43,10 @@ import java.util.LinkedHashSet;
 public class PlaybackManager implements Playback.Callback {
 
     private static final String TAG = LogHelper.makeLogTag(PlaybackManager.class);
-    // Action to thumbs up a media item
+
     public static final String CUSTOM_ACTION_CHANGE_FAVOURITE_STATE = "com.ashomok.lullabies.CUSTOM_ACTION_CHANGE_FAVOURITE_STATE";
-  public static final String CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE = "com.ashomok.lullabies.CUSTOM_ACTION_EXTRAS_KEY";
+    public static final String CUSTOM_ACTION_FAVOURITES_LIST_OPENED = "com.ashomok.lullabies.CUSTOM_ACTION_ON_FAVOURITES";
+    public static final String CUSTOM_ACTION_EXTRAS_KEY_IS_FAVOURITE = "com.ashomok.lullabies.CUSTOM_ACTION_EXTRAS_KEY";
 
     private MusicProvider mMusicProvider;
     private QueueManager mQueueManager;
@@ -359,6 +361,23 @@ public class PlaybackManager implements Playback.Callback {
                 // custom action will change to reflect the new favorite state.
                 updatePlaybackState(null);
 
+            }
+            else if (CUSTOM_ACTION_FAVOURITES_LIST_OPENED.equals(action)){
+                try {
+                    MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
+                    if (currentMusic != null) {
+                        String currentMediaId = currentMusic.getDescription().getMediaId();
+                        if (currentMediaId != null) {
+                            String musicId = MediaIDHelper.extractMusicIDFromMediaID(currentMediaId);
+                            if (mMusicProvider.isFavorite(musicId)) {
+                                mQueueManager.setFavouriteQueue(musicId);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e){
+                    //ignore
+                }
             }
             else {
                 LogHelper.e(TAG, "Unsupported action: ", action);

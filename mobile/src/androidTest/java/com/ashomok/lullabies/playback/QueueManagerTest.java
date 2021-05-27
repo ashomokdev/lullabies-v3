@@ -15,9 +15,9 @@
  */
 package com.ashomok.lullabies.playback;
 
+import android.content.res.Resources;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.test.mock.MockResources;
 
 import androidx.annotation.NonNull;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -31,6 +31,7 @@ import com.ashomok.lullabies.utils.SimpleMusicProviderSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.Iterator;
 import java.util.List;
@@ -71,18 +72,10 @@ public class QueueManagerTest {
 
     private QueueManager createQueueManagerWithValidation(final CountDownLatch latch,
             final int expectedQueueIndex, final List<MediaSessionCompat.QueueItem> expectedNewQueue) {
-        MockResources resources = new MockResources() {
-            @NonNull
-            @Override
-            public String getString(int id) throws NotFoundException {
-                return "";
-            }
-            @NonNull
-            @Override
-            public String getString(int id, Object... formatArgs) throws NotFoundException {
-                return "";
-            }
-        };
+
+        Resources resources = Mockito.mock(Resources.class);
+        Mockito.when(resources.getString(Mockito.anyInt())).thenReturn("");
+
         return new QueueManager(provider, resources,
                 new QueueManager.MetadataUpdateListener() {
                     @Override

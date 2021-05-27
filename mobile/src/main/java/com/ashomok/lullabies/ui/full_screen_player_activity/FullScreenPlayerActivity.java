@@ -307,28 +307,6 @@ public class FullScreenPlayerActivity extends ActionBarCastActivity
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        LogHelper.d(TAG, "onBackPressed()" + getFragmentManager().getBackStackEntryCount());
-//
-//        MediaBrowserFragment fragment = getBrowseFragment();
-//        if (fragment != null
-//                && fragment.getViewPager() != null
-//                && fragment.getViewPager().getCurrentItem() != 0) {
-//            ViewPager2 viewPager = fragment.getViewPager();
-//            viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
-//        } else {
-//            if (getFragmentManager().getBackStackEntryCount() > 0) {
-//                super.onBackPressed();
-//            } else {
-//                ExitDialogFragment exitDialogFragment = ExitDialogFragment.newInstance(
-//                        R.string.exit_dialog_title);
-//
-//                exitDialogFragment.show(getFragmentManager(), "dialog");
-//            }
-//        }
-//    }
-
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = getSupportMediaController();
         if (mediaController == null) {

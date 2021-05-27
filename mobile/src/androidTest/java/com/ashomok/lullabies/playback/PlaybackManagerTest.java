@@ -21,7 +21,6 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.test.mock.MockResources;
 
 import androidx.annotation.NonNull;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -56,19 +55,9 @@ public class PlaybackManagerTest {
         populateMusicSource(source);
         musicProvider = TestSetupHelper.setupMusicProvider(source);
 
-        resources = new MockResources() {
-            @NonNull
-            @Override
-            public String getString(int id) throws NotFoundException {
-                return "";
-            }
+        resources = Mockito.mock(Resources.class);
+        Mockito.when(resources.getString(Mockito.anyInt())).thenReturn("");
 
-            @NonNull
-            @Override
-            public String getString(int id, Object... formatArgs) throws NotFoundException {
-                return "";
-            }
-        };
     }
 
     private void populateMusicSource(SimpleMusicProviderSource source) {

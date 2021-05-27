@@ -112,6 +112,9 @@ public class MusicPlayerPresenter implements MusicPlayerContract.Presenter, Rate
                             }
                         }
                     });
+
+
+
         }
     }
 

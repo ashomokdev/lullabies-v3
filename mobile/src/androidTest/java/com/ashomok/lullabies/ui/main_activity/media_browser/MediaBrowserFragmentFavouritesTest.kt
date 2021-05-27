@@ -53,7 +53,7 @@ class MediaBrowserFragmentFavouritesTest {
 
     @Test
     //https://github.com/ashomokdev/lullabies-v3/issues/91
-    fun testEvent91_NoEmptyViewWhenExpectedDeprecated() {
+    fun testEvent91_NoEmptyViewWhenExpected() {
         //GIVEN
         val scenario = launchActivity<MusicPlayerActivity>()
         scenario.moveToState(Lifecycle.State.RESUMED)
@@ -137,6 +137,5 @@ class MediaBrowserFragmentFavouritesTest {
         onView(withId(R.id.play_pause)).perform(click())
 
         onView(allOf(isDisplayed(), withId(R.id.empty_result_layout))).check(matches(isDisplayed()))
-        onView(withId(R.id.tap_me_img)).check(doesNotExist())
     }
 }

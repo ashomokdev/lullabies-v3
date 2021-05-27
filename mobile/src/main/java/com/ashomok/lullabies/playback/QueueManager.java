@@ -23,6 +23,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.ashomok.lullabies.AlbumArtCache;
 import com.ashomok.lullabies.R;
@@ -149,6 +150,29 @@ public class QueueManager {
         updateMetadata();
     }
 
+    public void setFavouriteQueue(@Nullable String initialMusicId) {
+        LogHelper.d(TAG, "setFavouriteQueue ", initialMusicId);
+        mPlayingQueue = QueueHelper.getFavouritePlayingQueue(mMusicProvider, mResources);
+
+        if (initialMusicId != null) {
+            for (int i = 0; i < mPlayingQueue.size(); i++) {
+                String mediaId = mPlayingQueue.get(i).getDescription().getMediaId();
+                if (mediaId != null) {
+                    String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
+                    if (initialMusicId.equals(musicId)) {
+                        mCurrentIndex = i;
+                        String queueTitle =
+                                mResources.getString(R.string.browse_musics_by_hierarchy_subtitle,
+                                MediaIDHelper.extractBrowseCategoryValueFromMediaID(mediaId));
+                        mListener.onQueueUpdated(queueTitle, mPlayingQueue);
+                        updateMetadata();
+                    }
+                }
+            }
+        }
+    }
+
+
     public MediaSessionCompat.QueueItem getCurrentMusic() {
         if (!QueueHelper.isIndexPlayable(mCurrentIndex, mPlayingQueue)) {
             return null;
@@ -222,8 +246,11 @@ public class QueueManager {
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
+
         void onMetadataRetrieveError();
+
         void onCurrentQueueIndexUpdated(int queueIndex);
+
         void onQueueUpdated(String title, List<MediaSessionCompat.QueueItem> newQueue);
     }
 }

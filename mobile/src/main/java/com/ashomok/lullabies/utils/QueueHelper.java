@@ -17,6 +17,7 @@
 package com.ashomok.lullabies.utils;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -32,6 +33,7 @@ import java.util.List;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_FAVOURITES;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_CATEGORY;
 import static com.ashomok.lullabies.utils.MediaIDHelper.MEDIA_ID_MUSICS_BY_SEARCH;
+import static com.ashomok.lullabies.utils.MediaIDHelper.getFavouritesCategoryTitle;
 
 /**
  * Utility class to help on queue related tasks.
@@ -77,11 +79,11 @@ public class QueueHelper {
     }
 
     public static List<MediaSessionCompat.QueueItem> getFavouritePlayingQueue(
-            MusicProvider musicProvider) {
-
+            MusicProvider musicProvider, Resources mResources) {
         LogHelper.d(TAG, "Creating playing queue for ", MEDIA_ID_FAVOURITES);
         List<MediaMetadataCompat> tracks = musicProvider.getFavouriteMusics();
-        return convertToQueue(tracks, MEDIA_ID_FAVOURITES);
+        return convertToQueue(tracks, MEDIA_ID_FAVOURITES,
+                getFavouritesCategoryTitle(mResources));
     }
 
     public static List<MediaSessionCompat.QueueItem> getPlayingQueueFromSearch(
@@ -259,6 +261,4 @@ public class QueueHelper {
         }
         return false;
     }
-
-
 }
